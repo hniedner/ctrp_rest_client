@@ -1,10 +1,18 @@
 from flask import Flask, render_template, json
+from flask_bootstrap import Bootstrap
+from flask_nav import Nav
 
 import api_client
 
 # Initialize the Flask application
 app = Flask(__name__)
 app.debug = True
+
+# Install our Bootstrap extension
+Bootstrap(app)
+# We initialize the navigation as well
+nav = Nav()
+nav.init_app(app)
 
 
 @app.route('/')
