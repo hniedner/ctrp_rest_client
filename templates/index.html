@@ -1,32 +1,43 @@
-<html>
-<head>
-    <title>Example</title>
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="static/css/style.css">
-</head>
-<body>
-<div class="container">
-    <div class="header">
-        <h3 class="text-muted">CTRP API example</h3>
-    </div>
+{# This simple template derives from ``base.html``. See ``base.html`` for
+more information about template inheritance. #}
+{%- extends "base.html" %}
 
-    <div class="row marketing">
-        <div class="col-lg-12">
-            <table>
-                {% for key, value in trial.items() %}
-                <tr>
-                    <th> {{ key }}</th>
-                    <td> {{ value }}</td>
-                </tr>
-                {% endfor %}
-            </table>
+{# Loads some of the macros included with Flask-Bootstrap. We are using the
+utils module here to automatically render Flask's flashed messages in a
+bootstrap friendly manner #}
+{% import "bootstrap/utils.html" as utils %}
+
+
+{% block title %}
+Clinical Trial Search Result
+{% endblock %}
+
+{# Inside the ``content`` is where you should place most of your own stuff.
+This will keep scripts at the page end and a navbar you add on later
+intact. #}
+
+{% block content %}
+<div class="container">
+    {%- with messages = get_flashed_messages(with_categories=True) %}
+    {%- if messages %}
+    <div class="row">
+        <div class="col-md-12">
+            {{utils.flashed_messages(messages)}}
         </div>
     </div>
-
-    <div class="footer">
-        <p>&copy; Humanity 2017</p>
+    {%- endif %}
+    {%- endwith %}
+    <div class="jumbotron">
+        <h3>Clinical Trial {{ trial.nct_id }}</h3>
+        <br/>
+        <table>
+            {% for key, value in trial.items() %}
+            <tr>
+                <th> {{ key }}</th>
+                <td> {{ value }}</td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
-
-</div> <!-- /container -->
-</body>
-</html>
+</div>
+{%- endblock %}
