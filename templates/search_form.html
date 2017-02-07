@@ -1,0 +1,24 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{%- extends "base.html" %}
+
+{% block title %}
+Clinical Trial Search Form
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="jumbotron">
+        <h3>Enter the NCT ID</h3>
+        <p>Note: The trial data will be displayed if a trial with the NCT Id is found:</p>
+        <p>Try NCT02194738</p>
+    </div>
+    <div class="col-md-12">
+        <form method="POST">
+            {{ form.csrf_token }}
+            {{ form.nct_id.label }} {{ form.nct_id(size=20) }}
+            <input type="submit" value="Search">
+        </form>
+    </div>
+    {%- endblock %}
+</div>
