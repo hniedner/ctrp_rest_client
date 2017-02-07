@@ -4,6 +4,7 @@ import api_client
 
 # Initialize the Flask application
 app = Flask(__name__)
+app.debug = True
 
 
 @app.route('/')
