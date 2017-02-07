@@ -14,7 +14,7 @@ Clinical Trial Search Form
         <p>Try NCT02194738</p>
     </div>
     <div class="col-md-12">
-        <form method="POST">
+        <form method="POST" action="/search_form">
             {{ form.csrf_token }}
             {{ form.nct_id.label }} {{ form.nct_id(size=20) }}
             <input type="submit" value="Search">
