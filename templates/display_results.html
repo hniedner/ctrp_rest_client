@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Flask-DataTables</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.bootstrap.min.css">
+
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+    <script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+    <script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.colVis.min.js"></script>
+</head>
+
+<script>
+$(document).ready(function() {
+    var table = $('#datatable').DataTable( {
+        processing: true,
+        "ajax": {
+            "url": "{{ url_for('_get_data') }}",
+            "dataSrc": "trials"
+        },
+
+        columns: [
+            { "data": "nci_id" },
+            { "data": "nct_id" },
+            { "data": "phase.phase" },
+            { "data": "start_date" },
+            { "data": "current_trial_status" },
+            { "data": "official_title" }
+        ],
+
+        buttons: [
+            'copyHtml5',
+            'excelHtml5',
+            'csvHtml5',
+            'pdfHtml5'
+        ],
+        bJQueryUI: true,
+        lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+        sDom: 'flpitipBr',
+        bStateSave: true,
+        initComplete: function( settings, json ) {
+            table.buttons().container()
+            .appendTo( '#datatable_wrapper .col-sm-6:eq(0)' );
+        }
+    } );
+} );
+
+</script>
+
+<body>
+<div class="container">
+    <table id="datatable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+        <thead>
+        <tr>
+            <th>NCI ID</th>
+            <th>NCT ID</th>
+            <th>Phase</th>
+            <th>Start Date</th>
+            <th>Current Status</th>
+            <th>Official Title</th>
+        </tr>
+        </thead>
+        <tfoot>
+        <tr>
+            <th>NCI ID</th>
+            <th>NCT ID</th>
+            <th>Phase</th>
+            <th>Start Date</th>
+            <th>Current Status</th>
+            <th>Official Title</th>
+        </tr>
+        </tfoot>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -48,6 +48,23 @@ def search_form():
     return render_template('search_form.html', form=form)
 
 
+@app.route('/display_results')
+def display_results():
+    # Render template
+    return render_template('display_results.html')
+
+
+import json
+
+
+@app.route('/_get_data')
+def _get_data():
+    with open('data.json') as data_file:
+        result = json.load(data_file)
+
+    data = json.dumps(result)
+    return data
+
 # Run Flask webapp
 if __name__ == '__main__':
     app.run()
