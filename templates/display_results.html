@@ -27,10 +27,7 @@
 $(document).ready(function() {
     var table = $('#datatable').DataTable( {
         processing: true,
-        "ajax": {
-            "url": "{{ url_for('_get_data') }}",
-            "dataSrc": "trials"
-        },
+        ajax: "{{ url_for('_get_data') }}",
 
         columns: [
             { "data": "nci_id" },

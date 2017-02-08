@@ -60,12 +60,12 @@ def display_results():
 def _get_data():
     search_params = {
         "eligibility.structured.gender": "female",
-        "include": ["nci_id", "nct_id", "phase.phase", "start_date", "current_trial_status", "official_title"],
-        "size": 50
+        "include": ["nci_id", "nct_id", "phase.phase", "start_date", "current_trial_status", "official_title"]
     }
-
+    # calling the API
     result = api_client.find_trials(search_params)
 
+    # dump as json string
     data = json.dumps(result)
     return data
 
