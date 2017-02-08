@@ -1,16 +1,18 @@
+import json
+
 from flask import Flask, render_template, redirect, url_for
 from flask_bootstrap import Bootstrap
 from flask_nav import Nav
-
 from flask_wtf import FlaskForm
 from wtforms import StringField
 from wtforms.validators import DataRequired
+
+import api_client
 
 
 class SimpleSearchForm(FlaskForm):
     nct_id = StringField('nct_id', validators=[DataRequired()])
 
-import api_client
 
 # Initialize the Flask application
 app = Flask(__name__)
@@ -54,16 +56,19 @@ def display_results():
     return render_template('display_results.html')
 
 
-import json
-
-
 @app.route('/_get_data')
 def _get_data():
-    with open('data.json') as data_file:
-        result = json.load(data_file)
+    search_params = {
+        "eligibility.structured.gender": "female",
+        "include": ["nci_id", "nct_id", "phase.phase", "start_date", "current_trial_status", "official_title"],
+        "size": 50
+    }
+
+    result = api_client.find_trials(search_params)
 
     data = json.dumps(result)
     return data
+
 
 # Run Flask webapp
 if __name__ == '__main__':
