@@ -1,23 +1,11 @@
-{# ``base.html`` is the template all our other templates derive from. While
-Flask-Bootstrap ships with its own base, it is good form to create a custom
-one for our app, as it allows customizing some aspects.
-
-Deriving from bootstap/base.html gives us a basic page scaffoling.
-
-You can find additional information about template inheritance at
-
-http://jinja.pocoo.org/docs/templates/#template-inheritance
-#}
 {%- extends "bootstrap/base.html" %}
 
-{% block html_attribs %}
-lang="en"
-{% endblock %}
+{% block html_attribs %} lang="en"{% endblock %}
 
 {% block metas %}
 <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="description" content="Flask webapp">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="description" content="NCI Clinical Trial API Client Example">
 <meta name="author" content="hniedner@gmail.com">
 {% endblock %}
 
@@ -43,7 +31,8 @@ The sample application already contains the required static files. #}
 http://pythonhosted.org/Flask-Bootstrap/basic-usage.html#available-blocks
 for an overview. #}
 {% block styles -%}
-{{super()}}  {# do not forget to call super or Bootstrap's own stylesheets will disappear! #}
+{# do not forget to call super or Bootstrap's own stylesheets will disappear! #}
+{{super()}}
 <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}">
 {% endblock %}
 

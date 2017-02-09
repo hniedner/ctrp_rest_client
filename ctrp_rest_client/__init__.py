@@ -7,7 +7,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField
 from wtforms.validators import DataRequired
 
-import api_client
+from ctrp_rest_client.static import api_client
 
 
 class SimpleSearchForm(FlaskForm):
@@ -21,6 +21,7 @@ app.debug = True
 
 # Install our Bootstrap extension
 Bootstrap(app)
+
 # We initialize the navigation as well
 nav = Nav()
 nav.init_app(app)

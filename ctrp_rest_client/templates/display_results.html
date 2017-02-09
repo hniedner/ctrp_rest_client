@@ -1,15 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
+{%- extends "base.html" %}
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Flask-DataTables</title>
+{% block title %}
+Clinical Trial Search Results
+{% endblock %}
+
+{% block styles %}
+{{super()}}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.bootstrap.min.css">
+{% endblock %}
 
-
+{% block scripts %}
+{{super()}}
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"></script>
@@ -21,43 +24,43 @@
     <script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.print.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.colVis.min.js"></script>
-</head>
 
 <script>
-$(document).ready(function() {
-    var table = $('#datatable').DataTable( {
-        processing: true,
-        ajax: "{{ url_for('_get_data') }}",
+        $(document).ready(function() {
+            var table = $('#datatable').DataTable( {
+                ajax: "{{ url_for('_get_data') }}",
 
-        columns: [
-            { "data": "nci_id" },
-            { "data": "nct_id" },
-            { "data": "phase.phase" },
-            { "data": "start_date" },
-            { "data": "current_trial_status" },
-            { "data": "official_title" }
-        ],
+                columns: [
+                    { "data": "nci_id" },
+                    { "data": "nct_id" },
+                    { "data": "phase.phase" },
+                    { "data": "start_date" },
+                    { "data": "current_trial_status" },
+                    { "data": "official_title" }
+                ],
 
-        buttons: [
-            'copyHtml5',
-            'excelHtml5',
-            'csvHtml5',
-            'pdfHtml5'
-        ],
-        bJQueryUI: true,
-        lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
-        sDom: 'flpitipBr',
-        bStateSave: true,
-        initComplete: function( settings, json ) {
-            table.buttons().container()
-            .appendTo( '#datatable_wrapper .col-sm-6:eq(0)' );
-        }
-    } );
-} );
+                buttons: [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ],
+                bJQueryUI: true,
+                lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+                sDom: 'Bflpitipr',
+                bStateSave: true,
+                initComplete: function( settings, json ) {
+                    table.buttons().container()
+                    .appendTo( '#datatable_wrapper .col-sm-6:eq(0)' );
+                }
+            } );
+        } );
+
 
 </script>
+{% endblock %}
 
-<body>
+{% block content %}
 <div class="container">
     <table id="datatable" class="table table-striped table-bordered" cellspacing="0" width="100%">
         <thead>
@@ -84,5 +87,4 @@ $(document).ready(function() {
         </tbody>
     </table>
 </div>
-</body>
-</html>
+{% endblock %}
