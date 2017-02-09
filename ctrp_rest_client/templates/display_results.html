@@ -31,8 +31,17 @@ Clinical Trial Search Results
                 ajax: "{{ url_for('_get_data') }}",
 
                 columns: [
-                    { "data": "nci_id" },
-                    { "data": "nct_id" },
+                    { "data": "nci_id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).html("<a href='/display_trial/" + oData.nci_id + "'>" + oData.nci_id + "</a>");
+                        }
+                    },
+
+                    { "data": "nct_id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).html("<a href='/display_trial/" + oData.nct_id + "'>" + oData.nct_id + "</a>");
+                        }
+                    },
                     { "data": "phase.phase" },
                     { "data": "start_date" },
                     { "data": "current_trial_status" },
@@ -45,6 +54,7 @@ Clinical Trial Search Results
                     'csvHtml5',
                     'pdfHtml5'
                 ],
+                nowrap: true,
                 bJQueryUI: true,
                 lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
                 sDom: 'Bflpitipr',
