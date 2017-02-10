@@ -16,8 +16,7 @@ Clinical Trial
     {%- endif %}
     {%- endwith %}
     <div>
-        <h3>{{ trial.brief_title }}</h3>
-        <br/>
+        <h4>{{ trial.brief_title }}</h4>
         <table class="table table-bordered">
             <tbody>
             <tr>
@@ -30,52 +29,33 @@ Clinical Trial
             </tr>
             <tr>
                 <th scope="row">Trial Status</th>
-                <td><b>{{ trial.current_trial_status }}</b> (as of {{ trial.current_trial_status_date }})</td>
-            </tr>
-            <tr>
-                <th scope="row">Start Date ({{ trial.start_date_type_code }})</th>
-                <td>{{ trial.start_date }}</td>
+                <td>
+                    <b>Start Date:</b> {{ trial.start_date }} ({{ trial.start_date_type_code }}) &nbsp; * &nbsp;
+                    <b>{{ trial.current_trial_status }}</b> (as of {{ trial.current_trial_status_date }})
+                </td>
             </tr>
             <tr>
                 <th scope="row">Study Type</th>
-                <td>{{ trial.study_protocol_type }} : {{ trial.study_subtype_code }}</td>
+                <td>{{ trial.study_protocol_type }} Trial
+                    {% if trial.study_subtype_code %}
+                    : {{ trial.study_subtype_code }}
+                    {% endif %}
+                    &nbsp; * &nbsp; <b>Phase:</b> {{ trial.phase.phase }}
+                    &nbsp; * &nbsp; <b>Minimum Accrual:</b> {{ trial.minimum_target_accrual_number }}
+                </td>
             </tr>
             <tr>
-                <th scope="row">Phase</th>
-                <td>{{ trial.phase.phase }}</td>
+                <th scope="row">Principal Investigator</th>
+                <td>{{ trial.principal_investigator }}
+                    &nbsp; * &nbsp; {{ trial.lead_org }}
+                </td>
             </tr>
-            <tr>
-                <th scope="row">Official Title</th>
-                <td>{{ trial.official_title }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Brief Title</th>
-                <td>{{ trial.brief_title }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Brief Summary</th>
-                <td>{{ trial.brief_summary }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Detailed Description</th>
-                <td>{{ trial.detailed_description }}</td>
-            </tr>
+            {% if trial.study_population_description %}
             <tr>
                 <th scope="row">Target Population</th>
                 <td>{{ trial.study_population_description }}</td>
             </tr>
-            <tr>
-                <th scope="row">Principal Investigator</th>
-                <td>{{ trial.principal_investigator }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Lead Organization</th>
-                <td>{{ trial.lead_org }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Minimum Accrual</th>
-                <td>{{ trial.minimum_target_accrual_number }}</td>
-            </tr>
+            {% endif %}
             <tr>
                 <th scope="row">Anatomic Sites</th>
                 <td>{% if trial.anatomic_sites %}
@@ -85,9 +65,71 @@ Clinical Trial
                     {% endif %}
                 </td>
             </tr>
+            <tr>
+                <td colspan="2">
+                    <b>Official Title</b><br/>
+                    {{ trial.official_title }}
+                </td>
+            </tr>
+            <tr data-toggle="collapse" data-target="#brief_summary" class="clickable">
+                <th colspan="2" scope="row" style="text-align: center;">
+                    <a href="#">+ Brief Summary +</a>
+                </th>
+            </tr>
+            <tr id="brief_summary" class="collapse">
+                <td colspan="2">{{ trial.brief_summary }}</td>
+            </tr>
+            {% if trial.detailed_description %}
+            <tr data-toggle="collapse" data-target="#detailed_description" class="clickable">
+                <th colspan="2" scope="row" style="text-align: center;">
+                    <a href="#">+ Detailed Description +</a>
+                </th>
+            </tr>
+            <tr id="detailed_description" class="collapse">
+                <td colspan="2">{ trial.detailed_description }}</td>
+            </tr>
+            {% endif %}
+            <tr data-toggle="collapse" data-target="#sites" class="clickable">
+                <th colspan="2" scope="row" style="text-align: center;">
+                    <a href="#">+ Clinical Trial Sites +</a>
+                </th>
+            </tr>
+            <tr id="sites" class="collapse">
+                <td colspan="2">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Site Name</th>
+                            <th>Address</th>
+                            <th>Contact</th>
+                            <th>Phone</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for site in trial.sites %}
+                        <tr>
+                            <th scope="row">
+                                {{ site.org_name }}
+                                <br/>({{ site.recruitment_status }} as of {{ site.recruitment_status_date }})
+                            </th>
+                            <td>{{ site.org_address_line_1 }}
+                                {% if site.org_address_line_2 %}
+                                <br/>{{ site.org_address_line_2 }}
+                                {% endif %}
+                                <br>{{ site.org_city }}, {{ site.org_state_or_province }} {{ site.org_postal_code }}
+                                <br/>{{ site.org_country }}
+                            </td>
+                            <td>{{ site.contact_name }}</td>
+                            <td>{{ site.contact_phone }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
             <tr data-toggle="collapse" data-target="#diseases" class="clickable">
                 <th colspan="2" scope="row" style="text-align: center;">
-                    + Diseases Structured +
+                    <a href="#">+ Eligible Diseases +</a>
                 </th>
             </tr>
             <tr id="diseases" class="collapse">
@@ -118,7 +160,7 @@ Clinical Trial
             {% if trial.biomarkers %}
             <tr data-toggle="collapse" data-target="#biomarkers" class="clickable">
                 <th colspan="2" scope="row" style="text-align: center;">
-                    + Biomarkers Structured +
+                    <a href="#">+ Biomarkers Structured +</a>
                 </th>
             </tr>
             <tr id="biomarkers" class="collapse">
@@ -148,7 +190,7 @@ Clinical Trial
             {% endif %}
             <tr data-toggle="collapse" data-target="#struct_eligibility" class="clickable">
                 <th colspan="2" scope="row" style="text-align: center;">
-                    + Eligibility Structured +
+                    <a href="#">+ Eligibility Structured +</a>
                 </th>
             </tr>
             <tr id="struct_eligibility" class="collapse">
@@ -173,7 +215,7 @@ Clinical Trial
             </tr>
             <tr data-toggle="collapse" data-target="#unstruct_eligibility" class="clickable">
                 <th colspan="2" scope="row" style="text-align: center;">
-                    + Eligibility Unstructured +
+                    <a href="#">+ Eligibility Unstructured +</a>
                 </th>
             </tr>
             <tr id="unstruct_eligibility" class="collapse">
