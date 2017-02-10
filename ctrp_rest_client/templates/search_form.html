@@ -8,11 +8,9 @@ Clinical Trial Search Form
 
 {% block content %}
 <div class="container">
-    <div class="jumbotron">
-        <h3>Enter the NCT ID</h3>
-        <p>Note: The trial data will be displayed if a trial with the NCT Id is found:</p>
-        <p>Try NCT02194738</p>
-    </div>
+    <h3>Enter the NCT ID</h3>
+    <p>Note: The trial data will be displayed if a trial with the NCT Id is found:</p>
+    <p>Try NCT02194738</p>
     <div class="col-md-12">
         <form method="POST" action="/search_form">
             {{ form.csrf_token }}

@@ -3,6 +3,7 @@ import json
 from flask import Flask, render_template, redirect, url_for
 from flask_bootstrap import Bootstrap
 from flask_nav import Nav
+from flask_nav.elements import Navbar, View
 from flask_wtf import FlaskForm
 from wtforms import StringField
 from wtforms.validators import DataRequired
@@ -24,6 +25,13 @@ Bootstrap(app)
 
 # We initialize the navigation as well
 nav = Nav()
+
+
+@nav.navigation()
+def top_navbar():
+    return Navbar(
+        'NCI Clinical Trial Search', View('Home', 'home'),
+    )
 nav.init_app(app)
 
 

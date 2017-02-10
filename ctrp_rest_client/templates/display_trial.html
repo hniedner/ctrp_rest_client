@@ -15,16 +15,186 @@ Clinical Trial
     </div>
     {%- endif %}
     {%- endwith %}
-    <div class="jumbotron">
-        <h3>Clinical Trial {{ trial.nct_id }}</h3>
+    <div>
+        <h3>{{ trial.brief_title }}</h3>
         <br/>
-        <table>
-            {% for key, value in trial.items() %}
+        <table class="table table-bordered">
+            <tbody>
             <tr>
-                <th> {{ key }}</th>
-                <td> {{ value }}</td>
+                <th scope="row">IDs</th>
+                <td>
+                    <b>NCI:</b> {{ trial.nci_id }} &nbsp; * &nbsp;
+                    <b>NCT:</b> {{ trial.nct_id }} &nbsp; * &nbsp;
+                    <b>CTEP:</b> {{ trial.ctep_id }}
+                </td>
             </tr>
-            {% endfor %}
+            <tr>
+                <th scope="row">Trial Status</th>
+                <td><b>{{ trial.current_trial_status }}</b> (as of {{ trial.current_trial_status_date }})</td>
+            </tr>
+            <tr>
+                <th scope="row">Start Date ({{ trial.start_date_type_code }})</th>
+                <td>{{ trial.start_date }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Study Type</th>
+                <td>{{ trial.study_protocol_type }} : {{ trial.study_subtype_code }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Phase</th>
+                <td>{{ trial.phase.phase }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Official Title</th>
+                <td>{{ trial.official_title }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Brief Title</th>
+                <td>{{ trial.brief_title }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Brief Summary</th>
+                <td>{{ trial.brief_summary }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Detailed Description</th>
+                <td>{{ trial.detailed_description }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Target Population</th>
+                <td>{{ trial.study_population_description }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Principal Investigator</th>
+                <td>{{ trial.principal_investigator }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Lead Organization</th>
+                <td>{{ trial.lead_org }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Minimum Accrual</th>
+                <td>{{ trial.minimum_target_accrual_number }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Anatomic Sites</th>
+                <td>{% if trial.anatomic_sites %}
+                    {{ ', '.join(trial.anatomic_sites) }}
+                    {% else %}
+                    {{ trial.anatomic_sites }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr data-toggle="collapse" data-target="#diseases" class="clickable">
+                <th colspan="2" scope="row" style="text-align: center;">
+                    + Diseases Structured +
+                </th>
+            </tr>
+            <tr id="diseases" class="collapse">
+                <td colspan="2">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>&nbsp;</th>
+                            <th>Other Names</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for disease in trial.diseases %}
+                        <tr>
+                            <th scope="row">{{ disease.preferred_name }}
+                                <br/><a href="https://ncit.nci.nih.gov/ncitbrowser/pages/concept_details.jsf?dictionary=NCI%20Thesaurus&code={{ disease.nci_thesaurus_concept_id }}">
+                                    {{ disease.nci_thesaurus_concept_id }}</a>
+                            </th>
+                            <td>&nbsp;</td>
+                            <td>{{ ' * '.join(disease.synonyms) }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            {% if trial.biomarkers %}
+            <tr data-toggle="collapse" data-target="#biomarkers" class="clickable">
+                <th colspan="2" scope="row" style="text-align: center;">
+                    + Biomarkers Structured +
+                </th>
+            </tr>
+            <tr id="biomarkers" class="collapse">
+                <td colspan="2">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Purpose</th>
+                            <th>NCI Thesaurus</th>
+                            <th>Other Names</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for biomarker in trial.biomarkers %}
+                        <tr>
+                            <th scope="row">{{ biomarker.long_name }}</th>
+                            <th>{{ biomarker.assay_purpose }}</th>
+                            <td>{{ biomarker.nci_thesaurus_concept_id }}</td>
+                            <td>{{ ' * '.join(biomarker.synonyms) }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            {% endif %}
+            <tr data-toggle="collapse" data-target="#struct_eligibility" class="clickable">
+                <th colspan="2" scope="row" style="text-align: center;">
+                    + Eligibility Structured +
+                </th>
+            </tr>
+            <tr id="struct_eligibility" class="collapse">
+                <td colspan="2">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Gender</th>
+                            <th>Minimal Age</th>
+                            <th>Maximum Age</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{{ trial.eligibility.structured.gender }}</td>
+                            <td>{{ trial.eligibility.structured.min_age }}</td>
+                            <td>{{ trial.eligibility.structured.max_age }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr data-toggle="collapse" data-target="#unstruct_eligibility" class="clickable">
+                <th colspan="2" scope="row" style="text-align: center;">
+                    + Eligibility Unstructured +
+                </th>
+            </tr>
+            <tr id="unstruct_eligibility" class="collapse">
+                <td colspan="2">
+                    <table class="table table-striped">
+                        {% for criterion in trial.eligibility.unstructured %}
+                        <tr>
+                            <th scope="row">
+                                {% if criterion.inclusion_indicator %}
+                                Inclusion: &nbsp;
+                                {% else %}
+                                Exclusion: &nbsp;
+                                {% endif %}
+                            </th>
+                            <td>&nbsp;</td>
+                            <td>{{ criterion.description }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+            </tr>
         </table>
     </div>
 </div>
