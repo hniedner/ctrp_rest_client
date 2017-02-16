@@ -7,14 +7,6 @@ setup(
     install_requires=[
         'flask',
         'Flask-Bootstrap',
-        'flask-nav',
         'Flask-WTF',
-        'itsdangerous',
-        'Jinja2',
-        'MarkupSafe',
-        'requests',
-        'visitor',
-        'Werkzeug',
-        'WTForms',
     ],
 )
