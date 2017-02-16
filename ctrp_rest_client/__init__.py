@@ -1,18 +1,8 @@
-import json
-
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, request
 from flask_bootstrap import Bootstrap
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired
 
 from ctrp_rest_client.static import api_client
-
-
-class SimpleSearchForm(FlaskForm):
-    nct_id = StringField('NCT or NCI Trial ID', validators=[DataRequired()])
-    submit = SubmitField("Display")
-
+from forms import TrialSearchForm
 
 # Initialize the Flask application
 app = Flask(__name__)
@@ -31,16 +21,6 @@ def home():
 
 
 # display information for the trial identified by the nct_id (or nci id)
-@app.route('/display_trial/<string:nct_id>', methods=['GET'])
-def display_trial(nct_id):
-    # retrieving trial as dictionary from the CTRP API client
-    trial_dict = api_client.get_trial_by_nct_id(nct_id)
-
-    # Render template
-    return render_template('display_trial.html', trial=trial_dict)
-
-
-# display information for the trial identified by the nct_id (or nci id)
 @app.route('/show_trial', methods=['POST'])
 def show_trial():
     # parse form parameter
@@ -52,37 +32,66 @@ def show_trial():
 
 
 # display search form
-@app.route('/search_form', methods=('GET', 'POST'))
-def search_form():
-    form = SimpleSearchForm()
-    if form.validate_on_submit():
-        return redirect(url_for('display_trial', nct_id=form.nct_id.data))
+@app.route('/search', methods=('GET', 'POST'))
+def search():
+    form = TrialSearchForm(request.form)
+    if request.method == 'POST' and form.validate_on_submit():
+        search_params = _parse_search_params(form)
+
+        # calling the API
+        result = api_client.find_trials(search_params)
+        return render_template('display_results.html', search_params=search_params, result=result)
 
     # Render template
     return render_template('search_form.html', form=form)
 
 
-# display datatable with search results
-@app.route('/display_results')
-def display_results():
-    # Render template
-    return render_template('display_results.html')
-
-
-# ajax callback to retrieve search results
-@app.route('/_get_data')
-def _get_data():
+def _parse_search_params(form):
     search_params = {
-        "eligibility.structured.gender": "female",
-        "include": ["nci_id", "nct_id", "phase.phase", "start_date", "current_trial_status", "official_title"]
+        "include": [
+            "nci_id",
+            "nct_id",
+            "phase.phase",
+            "start_date",
+            "current_trial_status",
+            "official_title"
+        ]
     }
-    # calling the API
-    result = api_client.find_trials(search_params)
 
-    # dump as json string
-    data = json.dumps(result)
-    return data
+    if form.disease_code.data:
+        search_params["diseases.nci_thesaurus_concept_id"] = form.disease_code.data
+    if form.accepts_healthy_volunteers_indicator.data != 'NA':
+        search_params["accepts_healthy_volunteers_indicator"] = form.accepts_healthy_volunteers_indicator.data
+    if form.gender.data != 'Any':
+        search_params["eligibility.structured.gender"] = form.gender.data
 
+    phases = _parse_phase(form)
+    if phases:
+        search_params["phase.phase"] = phases
+
+    return search_params
+
+
+def _parse_phase(form):
+    phases = []
+    if form.phasena.data:
+        phases.append('NA')
+    if form.phase0.data:
+        phases.append('0')
+    if form.phase1.data:
+        phases.extend(['I', 'I_II'])
+    if form.phase2.data:
+        phases.extend(['II', 'II_III'])
+        if 'I_II' not in phases:
+            phases.append('I_II')
+    if form.phase3.data:
+        phases.append('III')
+        if 'II_III' not in phases:
+            phases.append('II_III')
+    if form.phase4.data:
+        phases.append('IV')
+
+    return phases
 
 # Run Flask webapp
 if __name__ == '__main__':

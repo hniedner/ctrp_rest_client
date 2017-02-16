@@ -57,6 +57,10 @@ def find_trials(search_params):
         "data": data
     }
 
+    # sanitize search_params
+    search_params.pop('from', None)
+    search_params.pop('size', None)
+    search_params["returned"] = total
     return result
 
 

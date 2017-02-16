@@ -27,43 +27,8 @@ Clinical Trial Search Results
 
 <script>
         $(document).ready(function() {
-            var table = $('#datatable').DataTable( {
-                ajax: "{{ url_for('_get_data') }}",
 
-                columns: [
-                    { "data": "nci_id",
-                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                            $(nTd).html("<a href='/display_trial/" + oData.nci_id + "'>" + oData.nci_id + "</a>");
-                        }
-                    },
-
-                    { "data": "nct_id",
-                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                            $(nTd).html("<a href='/display_trial/" + oData.nct_id + "'>" + oData.nct_id + "</a>");
-                        }
-                    },
-                    { "data": "phase.phase" },
-                    { "data": "start_date" },
-                    { "data": "current_trial_status" },
-                    { "data": "official_title" }
-                ],
-
-                buttons: [
-                    'copyHtml5',
-                    'excelHtml5',
-                    'csvHtml5',
-                    'pdfHtml5'
-                ],
-                nowrap: true,
-                bJQueryUI: true,
-                lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
-                sDom: 'Bflpitipr',
-                bStateSave: true,
-                initComplete: function( settings, json ) {
-                    table.buttons().container()
-                    .appendTo( '#datatable_wrapper .col-sm-6:eq(0)' );
-                }
-            } );
+            var table = $('#datatable').DataTable( );
         } );
 
 
@@ -72,6 +37,26 @@ Clinical Trial Search Results
 
 {% block content %}
 <div class="container">
+    <div>
+        <h5>Search params</h5>
+        <table class="table">
+            {% for key in search_params %}
+            <tr>
+
+                <th>{{ key }}</th>
+                <td>
+                    {% if key == "include" %}
+                    {{ ", ".join(search_params[key]) }}
+                    {% else %}
+                    {{ search_params[key] }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <br/>
+    <br/>
     <table id="datatable" class="table table-striped table-bordered" cellspacing="0" width="100%">
         <thead>
         <tr>
@@ -94,6 +79,16 @@ Clinical Trial Search Results
         </tr>
         </tfoot>
         <tbody>
+        {% for row in result.data %}
+        <tr>
+            <td>{{ row.nci_id }}</td>
+            <td>{{ row.nct_id }}</td>
+            <td>{{ row.phase.phase }}</td>
+            <td>{{ row.start_date }}</td>
+            <td>{{ row.current_trial_status }}</td>
+            <td>{{ row.official_title }}</td>
+        </tr>
+        {% endfor %}
         </tbody>
     </table>
 </div>
