@@ -67,23 +67,44 @@ def _parse_search_params(form):
     if form.max_age_number.data:
         search_params["eligibility.structured.max_age_number_lte"] = form.max_age_number.data
 
-    disease_codes = _parse_disease_codes(form)
+    disease_codes = _parse_list_values(form.disease_codes)
     if disease_codes:
         search_params["diseases.nci_thesaurus_concept_id"] = disease_codes
+
+    biomarker_codes = _parse_list_values(form.biomarker_codes)
+    if biomarker_codes:
+        search_params["biomarkers.nci_thesaurus_concept_id"] = biomarker_codes
+
+    assay_purposes = _parse_biomarker_assay_purpose(form)
+    if assay_purposes:
+        search_params["biomarkers.assay_purpose"] = assay_purposes
 
     phases = _parse_phase(form)
     if phases:
         search_params["phase.phase"] = phases
 
+    print(search_params)
+
     return search_params
 
 
-def _parse_disease_codes(form):
-    disease_codes = []
-    if form.disease_codes.data:
-        disease_codes = [x.strip() for x in form.disease_codes.data.split(',')]
+def _parse_list_values(formfield):
+    items = []
+    if formfield.data:
+        items = [x.strip() for x in formfield.data.split(',')]
 
-    return disease_codes
+    print(items)
+    return items
+
+
+def _parse_biomarker_assay_purpose(form):
+    assay_purposes = []
+    if form.biomarker_assay_purpose_inclusion.data:
+        assay_purposes.append('Eligibility Criterion - Inclusion')
+    if form.biomarker_assay_purpose_exclusion.data:
+        assay_purposes.append('Eligibility Criterion - Exclusion')
+
+    return assay_purposes
 
 
 def _parse_phase(form):

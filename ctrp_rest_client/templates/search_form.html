@@ -28,6 +28,16 @@ Clinical Trial Search Form
                 {{ form.disease_codes }}
             </div>
             <div class="form-group">
+                {{ form.biomarker_codes.label }}
+                {{ form.biomarker_codes }}
+            </div>
+            <div class="form-group">
+                {{ form.biomarker_assay_purpose_inclusion.label }}
+                {{ form.biomarker_assay_purpose_inclusion }} &nbsp;
+                {{ form.biomarker_assay_purpose_exclusion.label }}
+                {{ form.biomarker_assay_purpose_exclusion }}
+            </div>
+            <div class="form-group">
                 {{ form.accepts_healthy_volunteers_indicator.label }}
                 {{ form.accepts_healthy_volunteers_indicator(class_="horizontal") }}
             </div>

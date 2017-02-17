@@ -6,11 +6,14 @@ class TrialSearchForm(FlaskForm):
     gender_choices = [('Any', 'Any'), ('Both', 'Both'), ('Male', 'Male'), ('Female', 'Female')]
     healthy_volunteer_choices = [('NA', 'NA'), ('Yes', 'Yes'), ('No', 'No')]
 
-    disease_codes = StringField(u'NCI Thesaurus Disease Code', validators=[validators.DataRequired()])
-    accepts_healthy_volunteers_indicator = SelectField('Accepts Healthy Volunteers',
-                                                       choices=healthy_volunteer_choices,
-                                                       default='NA')
+    disease_codes = StringField(u'NCI Thesaurus Disease Codes')
+
+    biomarker_codes = StringField(u'NCI Thesaurus Biomarker Codes')
+    biomarker_assay_purpose_inclusion = BooleanField(u'Biomarker Inclusion Criterion')
+    biomarker_assay_purpose_exclusion = BooleanField(u'Biomarker Exclusion Criterion')
+
     gender = SelectField(u'Gender', choices=gender_choices, default='Any')
+
     phasena = BooleanField(u'Phase NA')
     phase0 = BooleanField(u'Phase 0')
     phase1 = BooleanField(u'Phase I')
@@ -22,3 +25,7 @@ class TrialSearchForm(FlaskForm):
     # apparently IntegerField is required by default
     min_age_number = IntegerField(u'Minimum Age in years', validators=[validators.optional()])
     max_age_number = IntegerField(u'Maximum Age in years', validators=[validators.optional()])
+
+    accepts_healthy_volunteers_indicator = SelectField('Accepts Healthy Volunteers',
+                                                       choices=healthy_volunteer_choices,
+                                                       default='NA')
