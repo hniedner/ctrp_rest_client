@@ -81,7 +81,7 @@ Clinical Trial Search Results
         <tbody>
         {% for row in result.data %}
         <tr>
-            <td>{{ row.nci_id }}</td>
+            <td><a href="{{ url_for('display_trial', trial_id=row.nci_id) }}">{{ row.nci_id }}</a> </td>
             <td>{{ row.nct_id }}</td>
             <td>{{ row.phase.phase }}</td>
             <td>{{ row.start_date }}</td>

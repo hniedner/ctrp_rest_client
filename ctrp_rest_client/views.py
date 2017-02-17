@@ -1,4 +1,4 @@
-from flask import render_template, request
+from flask import render_template, request,redirect, url_for
 
 from ctrp_rest_client import app, api_client
 from ctrp_rest_client.forms import TrialSearchForm
@@ -12,10 +12,17 @@ def home():
 
 
 # display information for the trial identified by the nct_id (or nci id)
-@app.route('/show_trial', methods=['POST'])
-def show_trial():
+@app.route('/find_trial', methods=['POST'])
+def find_trial():
     # parse form parameter
     trial_id = request.form["trial_id"]
+    # Render template
+    return redirect(url_for('display_trial', trial_id=trial_id))
+
+
+# display information for the trial identified by the nct_id (or nci id)
+@app.route('/display_trial/<trial_id>', methods=['GET'])
+def display_trial(trial_id):
     # retrieving trial as dictionary from the CTRP API client
     trial_dict = api_client.get_trial_by_nct_id(trial_id)
     # Render template
@@ -55,10 +62,16 @@ def _parse_search_params(form):
         search_params["accepts_healthy_volunteers_indicator"] = form.accepts_healthy_volunteers_indicator.data
     if form.gender.data != 'Any':
         search_params["eligibility.structured.gender"] = form.gender.data
+    if form.min_age_number.data:
+        search_params["eligibility.structured.min_age_number_gte"] = form.min_age_number.data
+    if form.max_age_number.data:
+        search_params["eligibility.structured.max_age_number_lte"] = form.max_age_number.data
 
     phases = _parse_phase(form)
     if phases:
         search_params["phase.phase"] = phases
+
+    print(search_params)
 
     return search_params
 
