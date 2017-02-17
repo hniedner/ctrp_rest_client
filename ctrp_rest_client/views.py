@@ -56,8 +56,8 @@ def _parse_search_params(form):
         ]
     }
 
-    if form.disease_code.data:
-        search_params["diseases.nci_thesaurus_concept_id"] = form.disease_code.data
+    if form.disease_codes.data:
+        search_params["diseases.nci_thesaurus_concept_id"] = form.disease_codes.data
     if form.accepts_healthy_volunteers_indicator.data != 'NA':
         search_params["accepts_healthy_volunteers_indicator"] = form.accepts_healthy_volunteers_indicator.data
     if form.gender.data != 'Any':
@@ -67,13 +67,23 @@ def _parse_search_params(form):
     if form.max_age_number.data:
         search_params["eligibility.structured.max_age_number_lte"] = form.max_age_number.data
 
+    disease_codes = _parse_disease_codes(form)
+    if disease_codes:
+        search_params["diseases.nci_thesaurus_concept_id"] = disease_codes
+
     phases = _parse_phase(form)
     if phases:
         search_params["phase.phase"] = phases
 
-    print(search_params)
-
     return search_params
+
+
+def _parse_disease_codes(form):
+    disease_codes = []
+    if form.disease_codes.data:
+        disease_codes = [x.strip() for x in form.disease_codes.data.split(',')]
+
+    return disease_codes
 
 
 def _parse_phase(form):

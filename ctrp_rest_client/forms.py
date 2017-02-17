@@ -6,7 +6,7 @@ class TrialSearchForm(FlaskForm):
     gender_choices = [('Any', 'Any'), ('Both', 'Both'), ('Male', 'Male'), ('Female', 'Female')]
     healthy_volunteer_choices = [('NA', 'NA'), ('Yes', 'Yes'), ('No', 'No')]
 
-    disease_code = StringField(u'NCI Thesaurus Disease Code', validators=[validators.DataRequired()])
+    disease_codes = StringField(u'NCI Thesaurus Disease Code', validators=[validators.DataRequired()])
     accepts_healthy_volunteers_indicator = SelectField('Accepts Healthy Volunteers',
                                                        choices=healthy_volunteer_choices,
                                                        default='NA')
