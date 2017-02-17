@@ -24,6 +24,10 @@ Clinical Trial Search Form
             {{ form.csrf_token }}
 
             <div class="form-group">
+                {{ form.fulltext.label }}
+                {{ form.fulltext }}
+            </div>
+            <div class="form-group">
                 {{ form.disease_codes.label }}
                 {{ form.disease_codes }}
             </div>

@@ -6,9 +6,11 @@ class TrialSearchForm(FlaskForm):
     gender_choices = [('Any', 'Any'), ('Both', 'Both'), ('Male', 'Male'), ('Female', 'Female')]
     healthy_volunteer_choices = [('NA', 'NA'), ('Yes', 'Yes'), ('No', 'No')]
 
-    disease_codes = StringField(u'NCI Thesaurus Disease Codes')
+    fulltext = StringField(u'Keywords')
 
-    biomarker_codes = StringField(u'NCI Thesaurus Biomarker Codes')
+    disease_codes = StringField(u'NCI Thesaurus Disease Codes (comma separated list)')
+
+    biomarker_codes = StringField(u'NCI Thesaurus Biomarker Codes (comma separated list)')
     biomarker_assay_purpose_inclusion = BooleanField(u'Biomarker Inclusion Criterion')
     biomarker_assay_purpose_exclusion = BooleanField(u'Biomarker Exclusion Criterion')
 

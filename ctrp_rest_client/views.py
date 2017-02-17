@@ -56,6 +56,8 @@ def _parse_search_params(form):
         ]
     }
 
+    if form.fulltext.data:
+        search_params["_fulltext"] = form.fulltext.data
     if form.disease_codes.data:
         search_params["diseases.nci_thesaurus_concept_id"] = form.disease_codes.data
     if form.accepts_healthy_volunteers_indicator.data != 'NA':
