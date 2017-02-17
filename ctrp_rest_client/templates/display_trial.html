@@ -144,6 +144,7 @@ Clinical Trial
                         </thead>
                         <tbody>
                         {% for disease in trial.diseases %}
+                        {% if disease.inclusion_indicator == 'TRIAL' %}
                         <tr>
                             <th scope="row">{{ disease.preferred_name }}
                                 <br/><a href="https://ncit.nci.nih.gov/ncitbrowser/pages/concept_details.jsf?dictionary=NCI%20Thesaurus&code={{ disease.nci_thesaurus_concept_id }}">
@@ -152,6 +153,7 @@ Clinical Trial
                             <td>&nbsp;</td>
                             <td>{{ ' * '.join(disease.synonyms) }}</td>
                         </tr>
+                        {% endif %}
                         {% endfor %}
                         </tbody>
                     </table>
