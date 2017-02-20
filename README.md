@@ -28,7 +28,7 @@ Example client for the NCI CTRP RESTful API
 In order to run the application you need to export an environment variable that 
 tells Flask where to find the application instance:
 
-    export FLASK_APP=yourapplication
+    export FLASK_APP=ctrp_rest_client
 
 If you are outside of the project directory make sure to provide the exact path to your application directory. 
 Similarly you can turn on “debug mode” with this environment variable:
