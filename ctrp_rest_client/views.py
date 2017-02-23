@@ -1,4 +1,4 @@
-from flask import render_template, request,redirect, url_for
+from flask import render_template, request, redirect, url_for
 
 from ctrp_rest_client import app, api_client
 from ctrp_rest_client.forms import TrialSearchForm
@@ -35,6 +35,8 @@ def search():
     form = TrialSearchForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
         search_params = _parse_search_params(form)
+
+        print(search_params)
 
         # calling the API
         result = api_client.find_trials(search_params)
