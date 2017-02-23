@@ -9,20 +9,12 @@ Example client for the NCI CTRP RESTful API
     source venv/bin/activate
 ## Install required python packages (modules)
     pip install -r requirements.txt
-## Download NCI Thesaurus in tab-delimited format https://cbiit.nci.nih.gov/evs-download/thesaurus-downloads/
-## Download and Install DB Browser for SQLite from http://sqlitebrowser.org/
-## Create the Sqlite3 database for the NCI Thesaurus
-    sqlite3 ncit # opens sqlite shell and create db ncit
-## in the sqlite shell create the table for the thesaurus flat export
-    create table terms (code CHARACTER(10), 
-                        concept_name VARCHAR(255), 
-                        parents VARCHAR(255), 
-                        synonyms TEXT,
-                        definition text, 
-                        other_name TEXT, 
-                        retired_concept TEXT, 
-                        type VARCHAR(120));
-                        
+## In order to use the sqlite3 module in python you either need to copy the sqllite3 module directory
+from your system python installation to your virtual environment's library directory or
+install the virtual environment to use the system libraries.
+see more: http://stackoverflow.com/questions/23181197/install-pysqlite-in-virtualenv-with-python3-support
+use parameter when creating the virtual Python environment: --system-site-packages
+see more at: https://docs.python.org/3/library/venv.html
                         
 # Run the application #
 In order to run the application you need to export an environment variable that 
