@@ -28,7 +28,7 @@ def search_disease():
 
     try:
         cursor = connection.cursor()
-        sql = "select code data, preferred_term value from neoplasm_core where preferred_term like '%" \
+        sql = "select code data, name value from neoplasm_core where name like '%" \
               + query + "%' or synonyms like '%" + query + "%'"
 
         cursor.execute(sql)
@@ -83,3 +83,31 @@ def expand_ncit_code():
         print("An error occurred:", e.args[0])
 
     return jsonify(result)
+
+
+@app.route('/get_name_for_ncit_code')
+def get_name_for_ncit_code():
+    connection = get_connection()
+
+    domain = request.args.get('dom')
+    code = request.args.get('code')
+    name = 'not found'
+
+    if domain == 'biomarkers':
+        table = 'biomarkers'
+    elif domain == 'diseases':
+        table = 'neoplasm_core'
+    else:
+        table = 'ncit'
+
+    try:
+        cursor = connection.cursor()
+        sql = "select name from " + table + " where code = '" + code + "'"
+
+        cursor.execute(sql)
+        name = cursor.fetchone()['name'];
+
+    except sqlite3.Error as e:
+        print("An error occurred:", e.args[0])
+
+    return jsonify(name)

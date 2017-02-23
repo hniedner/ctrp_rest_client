@@ -83,9 +83,6 @@ def _parse_search_params(form):
     phases = _parse_phase(form)
     if phases:
         search_params["phase.phase"] = phases
-
-    print(search_params)
-
     return search_params
 
 
@@ -93,8 +90,6 @@ def _parse_list_values(formfield):
     items = []
     if formfield.data:
         items = [x.strip() for x in formfield.data.split(',')]
-
-    print(items)
     return items
 
 
