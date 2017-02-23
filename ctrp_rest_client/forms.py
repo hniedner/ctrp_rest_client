@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import validators, StringField, SubmitField, BooleanField, SelectField, IntegerField
+from wtforms import validators, StringField, SubmitField, BooleanField, SelectField, IntegerField, HiddenField
 
 
 class TrialSearchForm(FlaskForm):
@@ -7,10 +7,11 @@ class TrialSearchForm(FlaskForm):
     healthy_volunteer_choices = [('NA', 'NA'), ('Yes', 'Yes'), ('No', 'No')]
 
     fulltext = StringField(u'Keywords')
-
-    disease_codes = StringField(u'NCI Thesaurus Disease Codes (comma separated list)')
-
-    biomarker_codes = StringField(u'NCI Thesaurus Biomarker Codes (comma separated list)')
+    # NCI Thesaurus Disease Codes (comma separated list)
+    disease_codes = HiddenField()
+    # NCI Thesaurus Biomarker Codes (comma separated list)
+    biomarker_codes = HiddenField()
+    # inclusion and exclusion applies to all biomarkers due to API limitation
     biomarker_assay_purpose_inclusion = BooleanField(u'Biomarker Inclusion Criterion')
     biomarker_assay_purpose_exclusion = BooleanField(u'Biomarker Exclusion Criterion')
 
@@ -22,7 +23,6 @@ class TrialSearchForm(FlaskForm):
     phase2 = BooleanField(u'Phase 2')
     phase3 = BooleanField(u'Phase 3')
     phase4 = BooleanField(u'Phase 4')
-    submit = SubmitField(u'Search')
 
     # apparently IntegerField is required by default
     min_age_number = IntegerField(u'Minimum Age in years', validators=[validators.optional()])
@@ -31,3 +31,5 @@ class TrialSearchForm(FlaskForm):
     accepts_healthy_volunteers_indicator = SelectField('Accepts Healthy Volunteers',
                                                        choices=healthy_volunteer_choices,
                                                        default='NA')
+
+    submit = SubmitField(u'Search')

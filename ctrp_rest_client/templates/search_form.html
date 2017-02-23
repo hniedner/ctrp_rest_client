@@ -7,68 +7,159 @@ Clinical Trial Search Form
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <h4>Enter your search criteria</h4>
-    <br/>
+<div class="jumbotron">
+    <div class="container">
+        <h4>Enter your search criteria</h4>
+        <br/>
 
-    {% if form.errors %}
-    <ul class=errors>
-        {% for error in form.errors %}
-        <li>{{ error }}</li>
-        {% endfor %}
-    </ul>
-    <br/>
-    {% endif %}
-    <div class="col-md-12">
-        <form method=post>
-            {{ form.csrf_token }}
+        {% if form.errors %}
+        <ul class=errors>
+            {% for error in form.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        <br/>
+        {% endif %}
+        <div class="col-md-12">
+            <form method=post>
+                {{ form.csrf_token }}
 
-            <div class="form-group">
-                {{ form.fulltext.label }}
-                {{ form.fulltext }}
-            </div>
-            <div class="form-group">
-                {{ form.disease_codes.label }}
-                {{ form.disease_codes }}
-            </div>
-            <div class="form-group">
-                {{ form.biomarker_codes.label }}
-                {{ form.biomarker_codes }}
-            </div>
-            <div class="form-group">
-                {{ form.biomarker_assay_purpose_inclusion.label }}
-                {{ form.biomarker_assay_purpose_inclusion }} &nbsp;
-                {{ form.biomarker_assay_purpose_exclusion.label }}
-                {{ form.biomarker_assay_purpose_exclusion }}
-            </div>
-            <div class="form-group">
-                {{ form.accepts_healthy_volunteers_indicator.label }}
-                {{ form.accepts_healthy_volunteers_indicator }} &nbsp;
-                {{ form.gender.label }}
-                {{ form.gender }}
-            </div>
-            <div class="form-group">
-                {{ form.min_age_number.label }}
-                {{ form.min_age_number }} &nbsp;
-                {{ form.max_age_number.label }}
-                {{ form.max_age_number }}
-            </div>
-            <div class="form-group horizontal">
-                {{ form.phasena.label }}
-                {{ form.phasena }} &nbsp;
-                {{ form.phase0.label }}
-                {{ form.phase0 }} &nbsp;
-                {{ form.phase1.label }}
-                {{ form.phase1 }} &nbsp;
-                {{ form.phase2.label }}
-                {{ form.phase2 }} &nbsp;
-                {{ form.phase3.label }}
-                {{ form.phase3 }} &nbsp;
-                {{ form.phase4.label }}
-                {{ form.phase4 }}
-            </div>
-            {{ form.submit(class_="btn btn-primary") }}
-        </form>
+                <div class="form-group">
+                    {{ form.fulltext.label }}
+                    {{ form.fulltext(class_="form-control") }}
+                </div>
+                <div class="form-group horizontal">
+                    {{ form.disease_codes(placeholder="auto populated", class_="form-control") }}
+                    <strong>Search for disease: </strong>
+                    <input id="search_diseases" placeholder="Start typing a disease name" class="form-control">
+                    <br/>
+                    <a><strong data-toggle="collapse" data-target="#disease_list" class="clickable">
+                        + Trial search will included these diseases: +</strong></a>
+                    <div id="disease_list" class="collapse in" aria-expanded="true">
+                        <ul id="diseases">
+                        </ul>
+                        <br/>
+                    </div>
+                </div>
+
+                <div class="form-group horizontal">
+                    {{ form.biomarker_codes(placeholder="auto populated", class_="form-control") }}
+                    <strong>Search for biomarker: </strong>
+                    <input id="search_biomarkers" placeholder="Start typing a biomarker name" class="form-control">
+                    <br/>
+                    <a><strong data-toggle="collapse" data-target="#biomarker_list" class="clickable">
+                        + Trial search will included these biomarkers: +</strong></a>
+                    <div id="biomarker_list" class="collapse in" aria-expanded="true">
+                        <ul id="biomarkers">
+                        </ul>
+                        <br/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.biomarker_assay_purpose_inclusion.label }}
+                    {{ form.biomarker_assay_purpose_inclusion }} &nbsp;
+                    {{ form.biomarker_assay_purpose_exclusion.label }}
+                    {{ form.biomarker_assay_purpose_exclusion }}
+                </div>
+                <div class="form-group">
+                    {{ form.accepts_healthy_volunteers_indicator.label }}
+                    {{ form.accepts_healthy_volunteers_indicator }} &nbsp;
+                    {{ form.gender.label }}
+                    {{ form.gender }}
+                </div>
+                <div class="form-group">
+                    {{ form.min_age_number.label }}
+                    {{ form.min_age_number }} &nbsp;
+                    {{ form.max_age_number.label }}
+                    {{ form.max_age_number }}
+                </div>
+                <div class="form-group horizontal">
+                    {{ form.phasena.label }}
+                    {{ form.phasena }} &nbsp;
+                    {{ form.phase0.label }}
+                    {{ form.phase0 }} &nbsp;
+                    {{ form.phase1.label }}
+                    {{ form.phase1 }} &nbsp;
+                    {{ form.phase2.label }}
+                    {{ form.phase2 }} &nbsp;
+                    {{ form.phase3.label }}
+                    {{ form.phase3 }} &nbsp;
+                    {{ form.phase4.label }}
+                    {{ form.phase4 }}
+                </div>
+                {{ form.submit(class_="btn btn-primary") }}
+            </form>
+        </div>
     </div>
 </div>
 {%- endblock %}
+
+{% block scripts %}
+{{super()}}
+<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap-typeahead.js') }}"></script>
+<script type="text/javascript">
+$('#search_diseases').typeahead({
+    source: function (query, process) {
+        return $.get('search_diseases?q=' + query, function (data) {
+            diseases = [];
+            map = {};
+            $.each(data, function (i, row) {
+                map[row.value] = row;
+                diseases.push(row.value);
+            });
+            return process(diseases);
+        });
+    },
+    updater: function (item) {
+        code = map[item].data;
+        if(!$('#disease_codes').val().includes(code)) {
+            $('#disease_codes').val(
+                $.grep([$('#disease_codes').val(), code], Boolean).join(", ")
+            );
+
+            $('#diseases').append(
+                '<li id="' + code + '">'
+                + '<a href="#" onclick="$(\'#' + code + '\').remove();">remove</a>'
+                + '&nbsp; ' + item
+                + '</li>');
+        }
+        return '';
+    }
+});
+
+
+</script>
+
+<script type="text/javascript">
+$('#search_biomarkers').typeahead({
+    source: function (query, process) {
+        return $.get('search_biomarkers?q=' + query, function (data) {
+            biomarkers = [];
+            map = {};
+            $.each(data, function (i, row) {
+                map[row.value] = row;
+                biomarkers.push(row.value);
+            });
+            return process(biomarkers);
+        });
+    },
+    updater: function (item) {
+        code = map[item].data;
+        if(!$('#biomarker_codes').val().includes(code)) {
+            $('#biomarker_codes').val(
+                $.grep([$('#biomarker_codes').val(), code], Boolean).join(", ")
+            );
+
+            $('#biomarkers').append(
+                '<li id="' + code + '">'
+                + '<a href="#" onclick="$(\'#' + code + '\').remove();">remove</a>'
+                + '&nbsp; ' + item
+                + '</li>');
+        }
+        return '';
+    }
+});
+
+
+</script>
+{% endblock %}

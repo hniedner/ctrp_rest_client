@@ -1,5 +1,4 @@
 **/.idea
-__pycache__
+**/__pycache__
 venv
-sqllite
 **/*.egg-info
