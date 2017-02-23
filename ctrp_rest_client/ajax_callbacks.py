@@ -13,10 +13,15 @@ class TestForm(FlaskForm):
     disease_codes = HiddenField()
 
 
-@app.route('/search_diseases')
-def search_disease():
+def get_connection():
     connection = sqlite3.connect('db/terminology.db')
     connection.row_factory = sqlite3.Row
+    return connection
+
+
+@app.route('/search_diseases')
+def search_disease():
+    connection = get_connection()
 
     query = request.args.get('q')
     result = []
@@ -38,8 +43,7 @@ def search_disease():
 
 @app.route('/search_biomarkers')
 def search_biomarkers():
-    connection = sqlite3.connect('db/terminology.db')
-    connection.row_factory = sqlite3.Row
+    connection = get_connection()
 
     query = request.args.get('q')
     result = []
@@ -48,6 +52,28 @@ def search_biomarkers():
         cursor = connection.cursor()
         sql = "select code data, name value from biomarkers where name like '%" \
               + query + "%'"
+
+        cursor.execute(sql)
+        for row in cursor.fetchall():
+            result.append({'value': row['value'], 'data': row['data']})
+
+    except sqlite3.Error as e:
+        print("An error occurred:", e.args[0])
+
+    return jsonify(result)
+
+
+@app.route('/expand_ncit_code')
+def expand_ncit_code():
+    connection = get_connection()
+
+    code = request.args.get('code')
+    result = []
+
+    try:
+        cursor = connection.cursor()
+        sql = "select code data, name value from ncit where parent_codes like '%" \
+              + code + "%'"
 
         cursor.execute(sql)
         for row in cursor.fetchall():

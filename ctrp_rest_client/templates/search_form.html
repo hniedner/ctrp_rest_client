@@ -113,15 +113,22 @@ $('#search_diseases').typeahead({
     updater: function (item) {
         code = map[item].data;
         if(!$('#disease_codes').val().includes(code)) {
-            $('#disease_codes').val(
-                $.grep([$('#disease_codes').val(), code], Boolean).join(", ")
-            );
 
-            $('#diseases').append(
-                '<li id="' + code + '">'
-                + '<a href="#" onclick="$(\'#' + code + '\').remove();">remove</a>'
-                + '&nbsp; ' + item
-                + '</li>');
+            $.get('expand_ncit_code?code=' + code, function (data) {
+                console.log(data);
+
+                data.forEach(function(entry) {
+                    $('#disease_codes').val(
+                        $.grep([$('#disease_codes').val(), entry.data], Boolean).join(", ")
+                    );
+
+                    $('#diseases').append(
+                        '<li id="' + entry.data + '">'
+                        + '<a href="#" onclick="$(\'#' + entry.data + '\').remove();">remove</a>'
+                        + '&nbsp; ' + entry.value
+                        + '</li>');
+                });
+            });
         }
         return '';
     }
@@ -149,7 +156,6 @@ $('#search_biomarkers').typeahead({
             $('#biomarker_codes').val(
                 $.grep([$('#biomarker_codes').val(), code], Boolean).join(", ")
             );
-
             $('#biomarkers').append(
                 '<li id="' + code + '">'
                 + '<a href="#" onclick="$(\'#' + code + '\').remove();">remove</a>'
@@ -159,7 +165,5 @@ $('#search_biomarkers').typeahead({
         return '';
     }
 });
-
-
 </script>
 {% endblock %}
