@@ -9,8 +9,10 @@ class TrialSearchForm(FlaskForm):
     fulltext = StringField(u'Keywords')
     # NCI Thesaurus Disease Codes (comma separated list)
     disease_codes = HiddenField()
+    disease_names = HiddenField()
     # NCI Thesaurus Biomarker Codes (comma separated list)
     biomarker_codes = HiddenField()
+    biomarker_names = HiddenField()
     # inclusion and exclusion applies to all biomarkers due to API limitation
     biomarker_assay_purpose_inclusion = BooleanField(u'Biomarker Inclusion Criterion')
     biomarker_assay_purpose_exclusion = BooleanField(u'Biomarker Exclusion Criterion')

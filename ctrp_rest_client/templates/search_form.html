@@ -29,7 +29,8 @@ Clinical Trial Search Form
                     {{ form.fulltext(class_="form-control") }}
                 </div>
                 <div class="form-group horizontal">
-                    {{ form.disease_codes(placeholder="auto populated", class_="form-control") }}
+                    {{ form.disease_codes }}
+                    {{ form.disease_names }}
                     <strong>Search for disease: </strong>
                     <input id="search_diseases" placeholder="Start typing a disease name" class="form-control">
                     <br/>
@@ -43,7 +44,8 @@ Clinical Trial Search Form
                 </div>
 
                 <div class="form-group horizontal">
-                    {{ form.biomarker_codes(placeholder="auto populated", class_="form-control") }}
+                    {{ form.biomarker_codes }}
+                    {{ form.biomarker_names }}
                     <strong>Search for biomarker: </strong>
                     <input id="search_biomarkers" placeholder="Start typing a biomarker name" class="form-control">
                     <br/>
@@ -102,8 +104,8 @@ Clinical Trial Search Form
 // load comma delimited list of codes from hidden fields
 // populate the selected search terms on browser back button
 $(window).bind("pageshow", function() {
-  refresh_list_from_hidden('disease_codes', 'diseases');
-  refresh_list_from_hidden('biomarker_codes', 'biomarkers');
+  refresh_ul_list_from_hidden('disease');
+  refresh_ul_list_from_hidden('biomarker');
 });
 
 $('#search_diseases').typeahead({
@@ -119,7 +121,7 @@ $('#search_diseases').typeahead({
         });
     },
     updater: function (item) {
-        update_typeahead(item, 'disease_codes', 'diseases');
+        update_typeahead(item, 'disease');
         return '';
     }
 });
@@ -137,7 +139,7 @@ $('#search_biomarkers').typeahead({
         });
     },
     updater: function (item) {
-        update_typeahead(item, 'biomarker_codes', 'biomarkers');
+        update_typeahead(item, 'biomarker');
         return '';
     }
 });

@@ -35,6 +35,8 @@ def search_disease():
         for row in cursor.fetchall():
             result.append({'value': row['value'], 'data': row['data']})
 
+        cursor.close()
+
     except sqlite3.Error as e:
         print("An error occurred:", e.args[0])
 
@@ -56,6 +58,8 @@ def search_biomarkers():
         cursor.execute(sql)
         for row in cursor.fetchall():
             result.append({'value': row['value'], 'data': row['data']})
+
+        cursor.close()
 
     except sqlite3.Error as e:
         print("An error occurred:", e.args[0])
@@ -79,6 +83,8 @@ def expand_ncit_code():
         for row in cursor.fetchall():
             result.append({'value': row['value'], 'data': row['data']})
 
+        cursor.close()
+
     except sqlite3.Error as e:
         print("An error occurred:", e.args[0])
 
@@ -91,7 +97,6 @@ def get_name_for_ncit_code():
 
     domain = request.args.get('dom')
     code = request.args.get('code')
-    name = 'not found'
 
     if domain == 'biomarkers':
         table = 'biomarkers'
@@ -103,9 +108,23 @@ def get_name_for_ncit_code():
     try:
         cursor = connection.cursor()
         sql = "select name from " + table + " where code = '" + code + "'"
-
         cursor.execute(sql)
-        name = cursor.fetchone()['name'];
+
+        result = cursor.fetchone()['name']
+
+        if not result:
+            cursor.close()
+            cursor = connection.cursor()
+            sql = "select name from ncit where code = '" + code + "'"
+            cursor.execute(sql)
+            result = cursor.fetchone()['name']
+
+        if result:
+            name = result
+        else:
+            name = 'not found'
+
+        cursor.close()
 
     except sqlite3.Error as e:
         print("An error occurred:", e.args[0])
