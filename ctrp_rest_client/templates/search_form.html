@@ -109,7 +109,7 @@ $(window).bind("pageshow", function() {
 $('#search_diseases').typeahead({
     source: function (query, process) {
         return $.get('search_diseases?q=' + query, function (data) {
-            diseases = [];
+            var diseases = [];
             map = {};
             $.each(data, function (i, row) {
                 map[row.value] = row;
@@ -119,23 +119,15 @@ $('#search_diseases').typeahead({
         });
     },
     updater: function (item) {
-        code = map[item].data;
-        if(!$('#disease_codes').val().includes(code)) {
-            $('#disease_codes').val(
-                $.grep([$('#disease_codes').val(), code], Boolean).join(", ")
-            );
-            $('#diseases').append( create_li(code, item, 'disease_codes') );
-        }
+        update_typeahead(item, 'disease_codes', 'diseases');
         return '';
     }
 });
-</script>
 
-<script type="text/javascript">
 $('#search_biomarkers').typeahead({
     source: function (query, process) {
         return $.get('search_biomarkers?q=' + query, function (data) {
-            biomarkers = [];
+            var biomarkers = [];
             map = {};
             $.each(data, function (i, row) {
                 map[row.value] = row;
@@ -145,17 +137,7 @@ $('#search_biomarkers').typeahead({
         });
     },
     updater: function (item) {
-        code = map[item].data;
-        if(!$('#biomarker_codes').val().includes(code)) {
-            $('#biomarker_codes').val(
-                $.grep([$('#biomarker_codes').val(), code], Boolean).join(", ")
-            );
-            $('#biomarkers').append(
-                '<li id="' + code + '">'
-                + '<a href="#" onclick="rm_term(\''+code+'\', \'biomarker_codes\');">remove</a>'
-                + '&nbsp; ' + item
-                + '</li>');
-        }
+        update_typeahead(item, 'biomarker_codes', 'biomarkers');
         return '';
     }
 });
