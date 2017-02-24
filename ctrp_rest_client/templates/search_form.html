@@ -97,45 +97,14 @@ Clinical Trial Search Form
 {% block scripts %}
 {{super()}}
 <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap-typeahead.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/search_utils.js') }}"></script>
 <script type="text/javascript">
-
-function refresh_list_from_hidden(code_list_name, ul_list_name) {
-    var code_list = '#' + code_list_name;
-    var ul_list = '#' + ul_list_name;
-
-    var codes = $(code_list).val().split(', ');
-    if (codes[0] == "") codes = [];
-    $.each(codes, function (i, code) {
-
-        $.get('get_name_for_ncit_code?code=' + code + '&dom=' + ul_list_name, function(data) {
-
-            var name = data.replace('_', ' ');
-
-            $(ul_list).append(
-                '<li id="' + code + '">'
-                + '<a href="#" onclick="rm_term(\''+code+'\', \'' + code_list_name + '\');">remove</a>'
-                + '&nbsp; ' + name
-                + '</li>');
-        });
-    });
-}
-
+// load comma delimited list of codes from hidden fields
+// populate the selected search terms on browser back button
 $(window).bind("pageshow", function() {
   refresh_list_from_hidden('disease_codes', 'diseases');
   refresh_list_from_hidden('biomarker_codes', 'biomarkers');
 });
-
-
-</script>
-<script type="text/javascript">
-
-function rm_term(code, list) {
-    $('#' + code).remove();
-    var codes = $('#' + list).val().split(', ');
-    var pos = codes.indexOf(code);
-    codes.splice(pos, 1);
-    $('#' + list).val(codes.join(", "));
-}
 
 $('#search_diseases').typeahead({
     source: function (query, process) {
@@ -155,11 +124,7 @@ $('#search_diseases').typeahead({
             $('#disease_codes').val(
                 $.grep([$('#disease_codes').val(), code], Boolean).join(", ")
             );
-            $('#diseases').append(
-                '<li id="' + code + '">'
-                + '<a href="#" onclick="rm_term(\''+code+'\', \'disease_codes\');">remove</a>'
-                + '&nbsp; ' + item
-                + '</li>');
+            $('#diseases').append( create_li(code, item, 'disease_codes') );
         }
         return '';
     }
