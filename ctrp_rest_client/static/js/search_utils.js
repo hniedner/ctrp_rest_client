@@ -73,6 +73,20 @@ function expand_term(code, dom) {
     });
 };
 
+// code is nci thesaurus concept id
+// dom is domain either biomarker or disease (or other in the future)
+function parent_term(code, dom) {
+
+    $.get('get_code_parent?code=' + code, function (data) {
+        data.forEach(function(entry) {
+
+            var code = entry.code;
+            var name = entry.name.replace(/_/g,' ');
+            update_selections(code, name, dom);
+        });
+    });
+};
+
 
 // generates link for selected code and name
 // to be appended in the ul
@@ -80,8 +94,9 @@ function create_li(code, name, dom) {
 
     return '<li id="' + code + '">'
     + '<a href="#" onclick="rm_term(\'' + code + '\', \'' + name + '\', \'' + dom + '\');">remove</a>'
-    + '&nbsp; ' + '<a href="#" onclick="expand_term(\'' + code + '\', \'' + dom + '\');">expand</a>'
-    + '&nbsp; ' + name + '</li>';
+    + '&nbsp;|&nbsp;' + '<a href="#" onclick="expand_term(\'' + code + '\', \'' + dom + '\');">expand</a>'
+    + '&nbsp;|&nbsp;' + '<a href="#" onclick="parent_term(\'' + code + '\', \'' + dom + '\');">parent</a>'
+    + '&nbsp;|&nbsp;' + name + '</li>';
 };
 
 // update the hidden fields for codes and names

@@ -11,12 +11,15 @@ def get_connection():
 # execute submitted sql that must retrieve a resultset
 # with two fields named 'code' and 'name'
 # function returns [{code: 'code1', name: 'name1'}, {code: 'code2', name: 'name2'}, ...]
-def get_code_name_list_result(sql, querytokens=[]):
+def get_code_name_list_result(sql, querytokens=None):
     connection = get_connection()
     results = []
     try:
         cursor = connection.cursor()
-        cursor.execute(sql, querytokens)
+        if querytokens:
+            cursor.execute(sql, querytokens)
+        else:
+            cursor.execute(sql)
         for row in cursor.fetchall():
             results.append({'code': row['code'], 'name': row['name']})
         cursor.close()
@@ -25,12 +28,16 @@ def get_code_name_list_result(sql, querytokens=[]):
     return results
 
 
-def get_single_string_result(sql, querytokens=[]):
+# get a single row or a single field as a string
+def get_single_string_result(sql, querytokens=None):
     connection = get_connection()
     result = None
     try:
         cursor = connection.cursor()
-        cursor.execute(sql, querytokens)
+        if querytokens:
+            cursor.execute(sql, querytokens)
+        else:
+            cursor.execute(sql)
         result = cursor.fetchone()[0]
         cursor.close()
     except sqlite3.Error as e:
@@ -59,6 +66,17 @@ def expand_code_subtree(code):
     # such as C8461 matching C84615
     querytokens = ['%' + code, '%' + code + '|%']
     results = get_code_name_list_result(sql, querytokens)
+    return results
+
+
+def get_code_parent(code):
+    sql = 'select parent_codes from ncit where code = ?'
+    parent_codes = get_single_string_result(sql, [code])
+    results = []
+    # parent codes are in a pipe (|) delimited list
+    for parent_code in parent_codes.split('|'):
+        sql = 'select code, name from ncit where code = ?'
+        results.extend(get_code_name_list_result(sql, [parent_code]))
     return results
 
 

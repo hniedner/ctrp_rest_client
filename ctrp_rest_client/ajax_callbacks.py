@@ -24,6 +24,13 @@ def expand_ncit_code():
     return jsonify(result)
 
 
+@app.route('/get_code_parent')
+def get_code_parent():
+    code = request.args.get('code')
+    result = terminology.get_code_parent(code)
+    return jsonify(result)
+
+
 @app.route('/get_name_for_ncit_code')
 def get_name_for_ncit_code():
     domain = request.args.get('dom')
