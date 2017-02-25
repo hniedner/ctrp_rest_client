@@ -52,11 +52,11 @@ function rm_term(code, name, dom) {
 // remove term from comma separated list in text field
 function remove_term(term, list_id) {
 
-    var hidden_field_value = $(tag_id(list_id)).val();
+    var hidden_field_value = $(list_id).val();
     var terms = hidden_field_value.split(', ');
     var pos = terms.indexOf(term);
     terms.splice(pos, 1);
-    $(tag_id(list_id)).val(terms.join(", "));
+    $(list_id).val(terms.join(", "));
 };
 
 // code is nci thesaurus concept id
@@ -66,8 +66,8 @@ function expand_term(code, dom) {
     $.get('expand_ncit_code?code=' + code, function (data) {
         data.forEach(function(entry) {
 
-            var code = entry.data;
-            var name = entry.value.replace('_',' ');
+            var code = entry.code;
+            var name = entry.name.replace(/_/g,' ');
             update_selections(code, name, dom);
         });
     });

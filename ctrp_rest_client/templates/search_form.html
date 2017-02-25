@@ -114,14 +114,14 @@ $('#search_diseases').typeahead({
             var diseases = [];
             map = {};
             $.each(data, function (i, row) {
-                map[row.value] = row;
-                diseases.push(row.value);
+                map[row.name] = row;
+                diseases.push(row.name);
             });
             return process(diseases);
         });
     },
     updater: function (item) {
-        update_selections(map[item].data, item, 'disease');
+        update_selections(map[item].code, item, 'disease');
         return '';
     }
 });
@@ -132,14 +132,14 @@ $('#search_biomarkers').typeahead({
             var biomarkers = [];
             map = {};
             $.each(data, function (i, row) {
-                map[row.value] = row;
-                biomarkers.push(row.value);
+                map[row.name] = row;
+                biomarkers.push(row.name);
             });
             return process(biomarkers);
         });
     },
     updater: function (item) {
-        update_selections(map[item].data, item, 'biomarker');
+        update_selections(map[item].code, item, 'biomarker');
         return '';
     }
 });
