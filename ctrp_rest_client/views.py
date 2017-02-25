@@ -35,14 +35,28 @@ def search():
     form = TrialSearchForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
         search_params = _parse_search_params(form)
+        terms = _parse_terms(form)
         # calling the API
         result = api_client.find_trials(search_params)
-        return render_template('display_results.html', search_params=search_params, result=result)
+        return render_template('display_results.html', search_params=search_params, result=result, terms=terms)
 
     # Render template
     return render_template('search_form.html', form=form)
 
 
+# parse list of names for terminology based search fields
+# these are for display only as the search is using the codes (concept ids)
+def _parse_terms(form):
+    terms = {}
+    if form.disease_names.data:
+        terms['disease_names'] = form.disease_names.data.split(', ')
+    if form.biomarker_names.data:
+        terms['biomarker_names'] = form.biomarker_names.data.split(', ')
+    return terms
+
+
+# extract values from form fields and populate the query for the
+# search request to the API
 def _parse_search_params(form):
     search_params = {
         "include": [

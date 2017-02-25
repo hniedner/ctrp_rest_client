@@ -38,22 +38,36 @@ Clinical Trial Search Results
 {% block content %}
 <div class="container">
     <div>
-        <h5>Search params</h5>
-        <table class="table">
-            {% for key in search_params %}
-            <tr>
-
-                <th>{{ key }}</th>
-                <td>
-                    {% if key == "include" %}
-                    {{ ", ".join(search_params[key]) }}
-                    {% else %}
-                    {{ search_params[key] }}
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
+        <h5 data-toggle="collapse" data-target="#search_params" class="clickable">
+            + Click to show Search Parameters +</h5>
+        <div id="search_params" class="collapse">
+            <table class="table">
+                {% for key in search_params %}
+                <tr>
+                    <th>{{ key }}</th>
+                    <td>
+                        {% if key == "include" %}
+                        {{ ", ".join(search_params[key]) }}
+                        {% else %}
+                        {{ search_params[key] }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% for dom in terms %}
+                <tr>
+                    <th>{{ dom }}</th>
+                    <td>
+                        <ul>
+                            {% for term in terms[dom] %}
+                            <li>{{ term }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
     <br/>
     <br/>
