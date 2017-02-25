@@ -11,12 +11,12 @@ def get_connection():
 # execute submitted sql that must retrieve a resultset
 # with two fields named 'code' and 'name'
 # function returns [{code: 'code1', name: 'name1'}, {code: 'code2', name: 'name2'}, ...]
-def get_code_name_list_result(sql):
+def get_code_name_list_result(sql, querytokens=[]):
     connection = get_connection()
     results = []
     try:
         cursor = connection.cursor()
-        cursor.execute(sql)
+        cursor.execute(sql, querytokens)
         for row in cursor.fetchall():
             results.append({'code': row['code'], 'name': row['name']})
         cursor.close()
@@ -25,12 +25,12 @@ def get_code_name_list_result(sql):
     return results
 
 
-def get_single_string_result(sql):
+def get_single_string_result(sql, querytokens=[]):
     connection = get_connection()
     result = None
     try:
         cursor = connection.cursor()
-        cursor.execute(sql)
+        cursor.execute(sql, querytokens)
         result = cursor.fetchone()[0]
         cursor.close()
     except sqlite3.Error as e:
@@ -39,23 +39,26 @@ def get_single_string_result(sql):
 
 
 def search_cancertypes_by_substring(query):
-    sql = "select code, name from neoplasm_core where name like '%" \
-          + query + "%' or synonyms like '%" + query + "%'"
-    results = get_code_name_list_result(sql)
+    sql = 'select code, name from neoplasm_core where name like ? or synonyms like ?'
+    querytokens = ['%' + query + '%', '%' + query + '%']
+    results = get_code_name_list_result(sql, querytokens)
     return results
 
 
 def search_biomarkers_by_substring(query):
-    sql = "select code, name from biomarkers where name like '%" \
-          + query + "%'"
-    results = get_code_name_list_result(sql)
+    sql = 'select code, name from biomarkers where name like ?'
+    querytokens = ['%' + query + '%']
+    results = get_code_name_list_result(sql, querytokens)
     return results
 
 
 def expand_code_subtree(code):
-    sql = "select code, name from ncit where parent_codes like '%" \
-          + code + "%'"
-    results = get_code_name_list_result(sql)
+    sql = 'select code, name from ncit where parent_codes like ? or parent_codes like ?'
+    # parent codes are in a pipe (|) delimited list
+    # just matching on the first term we get spurious substring matches
+    # such as C8461 matching C84615
+    querytokens = ['%' + code, '%' + code + '|%']
+    results = get_code_name_list_result(sql, querytokens)
     return results
 
 
@@ -67,13 +70,12 @@ def get_name_for_code(domain, code):
     else:
         table = 'ncit'
 
-    sql = "select name from " + table + " where code = '" + code + "'"
-    name = get_single_string_result(sql)
+    sql = 'select name from ' + table + ' where code = ?'
+    name = get_single_string_result(sql, [code])
 
     if name:
         return name
 
-    sql = "select name from ncit where code = '" + code + "'"
-    name = get_single_string_result(sql)
-
+    sql = 'select name from ncit where code = ?'
+    name = get_single_string_result(sql, [code])
     return name
