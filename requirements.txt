@@ -1,5 +1,4 @@
 click==6.7
--e git+https://github.com/hniedner/ctrp_rest_client.git@df2727e8d530a2538b969b8fd0b00025a328fc08#egg=ctrp_rest_client
 dominate==2.3.1
 Flask==0.12
 Flask-Bootstrap==3.3.7.1
