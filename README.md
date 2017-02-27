@@ -18,6 +18,7 @@ see more at: https://docs.python.org/3/library/venv.html
 ## Install Bower to install and manage javascript libraries
     https://bower.io/
 ## Install javascript resources from bower.json with Bower
+    cd ctrp_rest_client
     bower install
    
 # Run the application #
