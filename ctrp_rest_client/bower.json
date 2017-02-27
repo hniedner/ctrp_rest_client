@@ -1,0 +1,26 @@
+{
+  "name": "ctrp_rest_client",
+  "homepage": "https://github.com/hniedner/ctrp_rest_client",
+  "authors": [
+    "R. Hannes Niedner <hniedner@gmail.com>"
+  ],
+  "description": "Example client for the NCI Clinical Trial Search RESTful API",
+  "main": "",
+  "keywords": [
+    "clinical",
+    "trials",
+    "research"
+  ],
+  "license": "Apache License 2.0",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap3-typeahead": "^4.0.2"
+  }
+}

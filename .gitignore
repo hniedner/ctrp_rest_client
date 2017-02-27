@@ -3,3 +3,4 @@
 venv
 **/*.egg-info
 db/*.db-journal
+**/bower_components

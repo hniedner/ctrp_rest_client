@@ -98,7 +98,8 @@ Clinical Trial Search Form
 
 {% block scripts %}
 {{super()}}
-<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap-typeahead.js') }}"></script>
+<script type="text/javascript"
+        src="{{ url_for('bower.static', filename='bootstrap3-typeahead/bootstrap3-typeahead.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/search_utils.js') }}"></script>
 <script type="text/javascript">
 // load comma delimited list of codes from hidden fields
