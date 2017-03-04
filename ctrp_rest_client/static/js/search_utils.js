@@ -59,34 +59,44 @@ function remove_term(term, list_id) {
     $(list_id).val(terms.join(", "));
 };
 
-// code is nci thesaurus concept id
-// dom is domain either biomarker or disease (or other in the future)
-function expand_term(code, dom) {
+function _do_code_callback(code, dom, url, reverse) {
 
-    $.get('expand_ncit_code?code=' + code, function (data) {
+    $.get(url + code, function (data) {
         data.forEach(function(entry) {
-
             var code = entry.code;
             var name = entry.name.replace(/_/g,' ');
-            update_selections(code, name, dom);
+            if (reverse) {
+                rm_term(code, name, dom);
+            } else {
+                add_term(code, name, dom);
+            }
         });
     });
-};
+}
 
 // code is nci thesaurus concept id
 // dom is domain either biomarker or disease (or other in the future)
-function parent_term(code, dom) {
+function add_child_terms(code, dom) {
+    _do_code_callback(code, dom, 'expand_ncit_code?code=', false);
+}
 
-    $.get('get_code_parent?code=' + code, function (data) {
-        data.forEach(function(entry) {
+// code is nci thesaurus concept id
+// dom is domain either biomarker or disease (or other in the future)
+function rm_child_terms(code, dom) {
+    _do_code_callback(code, dom, 'expand_ncit_code?code=', true);
+}
 
-            var code = entry.code;
-            var name = entry.name.replace(/_/g,' ');
-            update_selections(code, name, dom);
-        });
-    });
-};
+// code is nci thesaurus concept id
+// dom is domain either biomarker or disease (or other in the future)
+function add_parent_terms(code, dom) {
+    _do_code_callback(code, dom, 'get_code_parent?code=', false);
+}
 
+// code is nci thesaurus concept id
+// dom is domain either biomarker or disease (or other in the future)
+function rm_parent_terms(code, dom) {
+    _do_code_callback(code, dom, 'get_code_parent?code=', true);
+}
 
 // generates link for selected code and name
 // to be appended in the ul
@@ -94,14 +104,16 @@ function create_li(code, name, dom) {
 
     return '<li id="' + code + '">'
     + '<a href="#" onclick="rm_term(\'' + code + '\', \'' + name + '\', \'' + dom + '\');">remove</a>'
-    + '&nbsp;|&nbsp;' + '<a href="#" onclick="expand_term(\'' + code + '\', \'' + dom + '\');">expand</a>'
-    + '&nbsp;|&nbsp;' + '<a href="#" onclick="parent_term(\'' + code + '\', \'' + dom + '\');">parent</a>'
+    + '&nbsp;|&nbsp;' + '<a href="#" onclick="add_child_terms(\'' + code + '\', \'' + dom + '\');">add child terms</a>'
+    + '&nbsp;|&nbsp;' + '<a href="#" onclick="rm_child_terms(\'' + code + '\', \'' + dom + '\');">remove child terms</a>'
+    + '&nbsp;|&nbsp;' + '<a href="#" onclick="add_parent_terms(\'' + code + '\', \'' + dom + '\');">add parent terms</a>'
+    + '&nbsp;|&nbsp;' + '<a href="#" onclick="rm_parent_terms(\'' + code + '\', \'' + dom + '\');">remove parent terms</a>'
     + '&nbsp;|&nbsp;' + name + '</li>';
 };
 
 // update the hidden fields for codes and names
 // and the unordered list for selected terms
-function update_selections(code, name, dom) {
+function add_term(code, name, dom) {
 
     var fields = get_fields(dom);
 

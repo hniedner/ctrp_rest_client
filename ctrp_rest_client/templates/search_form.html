@@ -122,7 +122,7 @@ $('#search_diseases').typeahead({
         });
     },
     updater: function (item) {
-        update_selections(map[item].code, item, 'disease');
+        add_term(map[item].code, item, 'disease');
         return '';
     }
 });
@@ -140,7 +140,7 @@ $('#search_biomarkers').typeahead({
         });
     },
     updater: function (item) {
-        update_selections(map[item].code, item, 'biomarker');
+        add_term(map[item].code, item, 'biomarker');
         return '';
     }
 });
