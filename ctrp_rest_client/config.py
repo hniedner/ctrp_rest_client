@@ -5,6 +5,7 @@ import os
 class BaseConfig(object):
     DEBUG = False
     SECRET_KEY = '2z54e22a-1r39-1525-b42a-t49cw3au7f5b'
+    BOOTSTRAP_SERVE_LOCAL = True
 
 
 class DevelopmentConfig(BaseConfig):
