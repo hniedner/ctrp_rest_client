@@ -1,4 +1,6 @@
-from flask import render_template, request, redirect, url_for
+import os
+
+from flask import render_template, request, redirect, url_for, send_from_directory
 
 from ctrp_rest_client import app, api_client
 from ctrp_rest_client.forms import TrialSearchForm
@@ -9,6 +11,13 @@ from ctrp_rest_client.forms import TrialSearchForm
 def home():
     # Render template
     return render_template('home.html')
+
+
+# favicon serving
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static/img'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 # display information for the trial identified by the nct_id (or nci id)
