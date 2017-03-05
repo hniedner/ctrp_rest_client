@@ -64,49 +64,51 @@ def _parse_terms(form):
     return terms
 
 
+def _add_included_fields(search_params):
+    search_params['include'] = [
+        "nci_id",
+        "nct_id",
+        "phase.phase",
+        "start_date",
+        "current_trial_status",
+        "official_title"
+    ]
+    return search_params
+
+
 # extract values from form fields and populate the query for the
 # search request to the API
 def _parse_search_params(form):
-    search_params = {
-        "include": [
-            "nci_id",
-            "nct_id",
-            "phase.phase",
-            "start_date",
-            "current_trial_status",
-            "official_title"
-        ]
-    }
+    search_params = _add_included_fields({})
 
-    if form.fulltext.data:
-        search_params["_fulltext"] = form.fulltext.data
-    if form.disease_codes.data:
-        search_params["diseases.nci_thesaurus_concept_id"] = form.disease_codes.data
     if form.accepts_healthy_volunteers_indicator.data != 'NA':
         search_params["accepts_healthy_volunteers_indicator"] = form.accepts_healthy_volunteers_indicator.data
+
     if form.gender.data != 'Any':
         search_params["eligibility.structured.gender"] = form.gender.data
-    if form.min_age_number.data:
-        search_params["eligibility.structured.min_age_number_gte"] = form.min_age_number.data
-    if form.max_age_number.data:
-        search_params["eligibility.structured.max_age_number_lte"] = form.max_age_number.data
+
+    _conditional_add_value(search_params, '_fulltext', form.fulltext.data)
+    _conditional_add_value(search_params, 'eligibility.structured.min_age_number_gte', form.min_age_number.data)
+    _conditional_add_value(search_params, 'eligibility.structured.max_age_number_lte', form.max_age_number.data)
 
     disease_codes = _parse_list_values(form.disease_codes)
-    if disease_codes:
-        search_params["diseases.nci_thesaurus_concept_id"] = disease_codes
+    _conditional_add_value(search_params, 'diseases.nci_thesaurus_concept_id', disease_codes)
 
     biomarker_codes = _parse_list_values(form.biomarker_codes)
-    if biomarker_codes:
-        search_params["biomarkers.nci_thesaurus_concept_id"] = biomarker_codes
+    _conditional_add_value(search_params, 'biomarkers.nci_thesaurus_concept_id', biomarker_codes)
 
     assay_purposes = _parse_biomarker_assay_purpose(form)
-    if assay_purposes:
-        search_params["biomarkers.assay_purpose"] = assay_purposes
+    _conditional_add_value(search_params, 'biomarkers.assay_purpose', assay_purposes)
 
     phases = _parse_phase(form)
-    if phases:
-        search_params["phase.phase"] = phases
+    _conditional_add_value(search_params, 'phase.phase', phases)
+
     return search_params
+
+
+def _conditional_add_value(target_dict, key, value):
+    if value:
+        target_dict[key] = value
 
 
 def _parse_list_values(formfield):
@@ -118,31 +120,26 @@ def _parse_list_values(formfield):
 
 def _parse_biomarker_assay_purpose(form):
     assay_purposes = []
-    if form.biomarker_assay_purpose_inclusion.data:
-        assay_purposes.append('Eligibility Criterion - Inclusion')
-    if form.biomarker_assay_purpose_exclusion.data:
-        assay_purposes.append('Eligibility Criterion - Exclusion')
-
+    _conditional_add_to_list(assay_purposes, ['Eligibility Criterion - Inclusion'],
+                             form.biomarker_assay_purpose_inclusion.data)
+    _conditional_add_to_list(assay_purposes, ['Eligibility Criterion - Exclusion'],
+                             form.biomarker_assay_purpose_exclusion.data)
     return assay_purposes
 
 
 def _parse_phase(form):
     phases = []
-    if form.phasena.data:
-        phases.append('NA')
-    if form.phase0.data:
-        phases.append('0')
-    if form.phase1.data:
-        phases.extend(['I', 'I_II'])
-    if form.phase2.data:
-        phases.extend(['II', 'II_III'])
-        if 'I_II' not in phases:
-            phases.append('I_II')
-    if form.phase3.data:
-        phases.append('III')
-        if 'II_III' not in phases:
-            phases.append('II_III')
-    if form.phase4.data:
-        phases.append('IV')
-
+    _conditional_add_to_list(phases, ['NA'], form.phasena.data)
+    _conditional_add_to_list(phases, ['0'], form.phase0.data)
+    _conditional_add_to_list(phases, ['I', 'I_II'], form.phase1.data)
+    _conditional_add_to_list(phases, ['I_II', 'II', 'II_III'], form.phase2.data)
+    _conditional_add_to_list(phases, ['II_III', 'III'], form.phase3.data)
+    _conditional_add_to_list(phases, ['IV'], form.phase4.data)
     return phases
+
+
+def _conditional_add_to_list(target_list, values, form_value):
+    if form_value:
+        for value in values:
+            if value not in target_list:
+                target_list.append(value)
