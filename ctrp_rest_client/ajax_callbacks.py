@@ -17,22 +17,22 @@ def search_biomarkers():
     return jsonify(result)
 
 
-@app.route('/expand_ncit_code')
-def expand_ncit_code():
+@app.route('/get_child_codes')
+def get_child_codes():
     code = request.args.get('code')
-    result = terminology.expand_code_subtree(code)
+    result = terminology.get_child_codes(code)
     return jsonify(result)
 
 
-@app.route('/get_code_parent')
-def get_code_parent():
+@app.route('/get_parent_codes')
+def get_parent_codes():
     code = request.args.get('code')
-    result = terminology.get_code_parent(code)
+    result = terminology.get_parent_codes(code)
     return jsonify(result)
 
 
-@app.route('/get_name_for_ncit_code')
-def get_name_for_ncit_code():
+@app.route('/get_name_for_code')
+def get_name_for_code():
     domain = request.args.get('dom')
     code = request.args.get('code')
     name = terminology.get_name_for_code(domain, code)

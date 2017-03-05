@@ -77,25 +77,25 @@ function _do_code_callback(code, dom, url, reverse) {
 // code is nci thesaurus concept id
 // dom is domain either biomarker or disease (or other in the future)
 function add_child_terms(code, dom) {
-    _do_code_callback(code, dom, 'expand_ncit_code?code=', false);
+    _do_code_callback(code, dom, 'get_child_codes?code=', false);
 }
 
 // code is nci thesaurus concept id
 // dom is domain either biomarker or disease (or other in the future)
 function rm_child_terms(code, dom) {
-    _do_code_callback(code, dom, 'expand_ncit_code?code=', true);
+    _do_code_callback(code, dom, 'get_child_codes?code=', true);
 }
 
 // code is nci thesaurus concept id
 // dom is domain either biomarker or disease (or other in the future)
 function add_parent_terms(code, dom) {
-    _do_code_callback(code, dom, 'get_code_parent?code=', false);
+    _do_code_callback(code, dom, 'get_parent_codes?code=', false);
 }
 
 // code is nci thesaurus concept id
 // dom is domain either biomarker or disease (or other in the future)
 function rm_parent_terms(code, dom) {
-    _do_code_callback(code, dom, 'get_code_parent?code=', true);
+    _do_code_callback(code, dom, 'get_parent_codes?code=', true);
 }
 
 // generates link for selected code and name

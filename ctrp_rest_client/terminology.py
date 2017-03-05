@@ -59,7 +59,7 @@ def search_biomarkers_by_substring(query):
     return results
 
 
-def expand_code_subtree(code):
+def get_child_codes(code):
     sql = 'select code, name from ncit where parent_codes like ? or parent_codes like ?'
     # parent codes are in a pipe (|) delimited list
     # just matching on the first term we get spurious substring matches
@@ -69,7 +69,7 @@ def expand_code_subtree(code):
     return results
 
 
-def get_code_parent(code):
+def get_parent_codes(code):
     sql = 'select parent_codes from ncit where code = ?'
     parent_codes = get_single_string_result(sql, [code])
     results = []
