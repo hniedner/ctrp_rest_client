@@ -118,8 +118,16 @@ function add_term(code, name, dom) {
     var fields = get_fields(dom);
 
     if(!$(fields.code_list).val().includes(code)) {
-        $(fields.name_list).val( $.grep([$(fields.name_list).val(), name], Boolean).join(", ") );
-        $(fields.code_list).val( $.grep([$(fields.code_list).val(), code], Boolean).join(", ") );
+        add_item_to_comma_delimited_list(fields.name_list, name);
+        add_item_to_comma_delimited_list(fields.code_list, code);
         $(fields.ul_list).append( create_li(code, name, dom) );
     }
+}
+
+// split the comma-delimited string into array
+// add item to list if it doesn't already exist in the list
+// join it back together and replace the value
+function add_item_to_comma_delimited_list(field_name, item) {
+
+    $(field_name).val( $.grep([$(field_name).val(), item], Boolean).join(", ") );
 }
