@@ -20,7 +20,6 @@ class TrialSearchForm(FlaskForm):
     gender = SelectField(u'Gender', choices=gender_choices, default='Any')
 
     phasena = BooleanField(u'Phase NA')
-    phase0 = BooleanField(u'Phase 0')
     phase1 = BooleanField(u'Phase I')
     phase2 = BooleanField(u'Phase 2')
     phase3 = BooleanField(u'Phase 3')

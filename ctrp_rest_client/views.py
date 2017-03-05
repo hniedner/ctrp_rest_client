@@ -130,7 +130,6 @@ def _parse_biomarker_assay_purpose(form):
 def _parse_phase(form):
     phases = []
     _conditional_add_to_list(phases, ['NA'], form.phasena.data)
-    _conditional_add_to_list(phases, ['0'], form.phase0.data)
     _conditional_add_to_list(phases, ['I', 'I_II'], form.phase1.data)
     _conditional_add_to_list(phases, ['I_II', 'II', 'II_III'], form.phase2.data)
     _conditional_add_to_list(phases, ['II_III', 'III'], form.phase3.data)
