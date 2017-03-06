@@ -26,12 +26,20 @@ Clinical Trial Search Results
     <script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.colVis.min.js"></script>
 
 <script>
-        $(document).ready(function() {
 
-            var table = $('#datatable').DataTable( );
+    $(document).ready(function() {
+        $('#datatable').DataTable( {
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copyHtml5'
+                },
+                'excelHtml5',
+                'csvHtml5',
+                'pdfHtml5'
+            ]
         } );
-
-
+    } );
 </script>
 {% endblock %}
 
