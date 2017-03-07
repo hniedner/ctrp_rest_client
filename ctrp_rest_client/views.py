@@ -13,6 +13,13 @@ def home():
     return render_template('home.html')
 
 
+# tree
+@app.route('/tree')
+def tree():
+    # Render template
+    return render_template('tree.html')
+
+
 # favicon serving
 @app.route('/favicon.ico')
 def favicon():
