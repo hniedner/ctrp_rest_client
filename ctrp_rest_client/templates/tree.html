@@ -1,0 +1,107 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{%- extends "base.html" %}
+
+{% block title %}
+Clinical Trial Excursions
+{% endblock %}
+
+{% block styles -%}
+{{ super() }}
+<link rel="stylesheet" type="text/css"
+      href="{{url_for('bower.static', filename='jstree/dist/themes/default/style.min.css')}}">
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+	<div class="container" id="content">
+        <div class="col-md-12">
+
+            <div class="form-group horizontal">
+                <input id="disease_codes" name="disease_codes" type="hidden" value="">
+                <input id="disease_names" name="disease_names" type="hidden" value="">
+                <strong>Search for disease (add node to tree): </strong>
+                <input id="search_diseases" placeholder="Start typing a disease name" class="form-control">
+                <br>
+                <span>Try: 'Neoplasm', 'Neoplasm By Site' or 'Neoplasm By Cause'</span>
+            </div>
+
+            <div>
+                <strong>Search for disease within the Tree: </strong>
+                <input class="search-input form-control"></input>
+            </div>
+            <br/>
+
+            <div id="jstree">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+
+<script type="text/javascript"
+        src="{{ url_for('bower.static', filename='bootstrap3-typeahead/bootstrap3-typeahead.js') }}"></script>
+<script type="text/javascript"
+        src="{{ url_for('bower.static', filename='jstree/dist/jstree.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/search_utils.js') }}"></script>
+<script type="text/javascript">
+
+$('#search_diseases').typeahead({
+    source: function (query, process) {
+        return $.get('search_diseases?q=' + query, function (data) {
+            var diseases = [];
+            map = {};
+            $.each(data, function (i, row) {
+                map[row.name] = row;
+                diseases.push(row.name);
+            });
+            return process(diseases);
+        });
+    },
+    updater: function (item) {
+        update_tree(map[item].code, item, 'disease');
+    },
+    items: 20
+});
+
+$(".search-input").keyup(function() {
+    var searchString = $(this).val();
+    $('#jstree').jstree('search', searchString);
+});
+
+$('#jstree').jstree({
+    'core': {
+        'check_callback': true,
+        'data': [
+            build_jstree_node('root', 'Diseases', undefined)
+        ]
+    },
+    'search': {
+        'case_insensitive': true,
+        'show_only_matches': true
+    },
+    'plugins': ['contextmenu', 'dnd', 'search', 'sort',
+                'state', 'types', 'wholerow'],
+
+    "contextmenu": get_jstree_context_menu()
+
+}).on('dblclick','.jstree-anchor', function (e) {
+    var tree = $.jstree.reference(this);
+    var node = tree.get_node(this);
+    if (tree.is_leaf(node)) {
+        add_children(node, tree);
+    } else {
+        remove_children(node, tree);
+    }
+
+}).on('click', '.jstree-anchor', function (e) {
+    $('#jstree').jstree(true).toggle_node(e.target);
+});
+</script>
+
+{% endblock %}

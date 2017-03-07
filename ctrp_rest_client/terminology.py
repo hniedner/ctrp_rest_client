@@ -38,7 +38,8 @@ def get_single_string_result(sql, querytokens=None):
             cursor.execute(sql, querytokens)
         else:
             cursor.execute(sql)
-        result = cursor.fetchone()[0]
+        if cursor.arraysize > 0:
+            result = cursor.fetchone()[0]
         cursor.close()
     except sqlite3.Error as e:
         print("An error occurred:", e.args[0])
@@ -46,7 +47,10 @@ def get_single_string_result(sql, querytokens=None):
 
 
 def search_cancertypes_by_substring(query):
-    sql = 'select code, name from neoplasm_core where name like ? or synonyms like ?'
+    sql = 'select code, name from ncit ' \
+          'where semantic_type = "Neoplastic Process" ' \
+          'or semantic_type = "Anatomical Structure"' \
+          'and (name like ? or synonyms like ?)'
     querytokens = ['%' + query + '%', '%' + query + '%']
     results = get_code_name_list_result(sql, querytokens)
     return results

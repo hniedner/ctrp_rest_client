@@ -131,3 +131,175 @@ function add_item_to_comma_delimited_list(field_name, item) {
 
     $(field_name).val( $.grep([$(field_name).val(), item], Boolean).join(", ") );
 }
+
+
+
+function update_tree(code, item, dom) {
+    var tree = $('#jstree').jstree(true);
+    var root = tree.get_node('root');
+    var node = build_jstree_node(code, item, 'root');
+    add_jstree_node(root, node, tree);
+}
+
+function get_code_for_id(node_id) {
+    var codes = node_id.split('*');
+    return codes[codes.length-1];
+}
+
+function get_id_for_code(parent_code, code) {
+    return parent_code ? parent_code + '*' + code : code;
+}
+
+function get_icon_for_code(code) {
+    return (code == 'root') ? 'glyphicon glyphicon-info-sign' : 'glyphicon glyphicon-check';
+}
+
+function build_jstree_node(code, name, parent_id) {
+    var id;
+    if (parent_id) {
+        var parent_code = get_code_for_id(parent_id);
+        id = get_id_for_code(parent_code, code);
+    } else {
+        id = code;
+    }
+    var node = {
+        'id': id,
+        'text': name.replace(/_/g,' '),
+        'icon': get_icon_for_code(code),
+        'state': { 'opened' : true, 'selected' : false }
+    };
+    return node;
+}
+
+function add_jstree_node(parent, node, tree) {
+    if(tree.get_node(node)) {
+        return node.id;
+    }
+    var position = 'last';
+    function callback(){ };
+    function is_loaded(){ };
+    return tree.create_node(parent, node, position, callback, is_loaded);
+}
+
+function add_children(parent, tree, node_ids_to_recurse) {
+    parent.state.opened = true;
+    parent.state.selected = true;
+    $.get('/get_child_codes?code=' + get_code_for_id(parent.id), function (data) {
+        data.forEach(function (item) {
+            var node = build_jstree_node(item.code, item.name, parent.id);
+            if(tree.get_node(node)) {
+                if(tree.is_leaf(node) == false) {
+                    node_ids_to_recurse = node_ids_to_recurse ? node_ids_to_recurse : [];
+                    node_ids_to_recurse.push(node.id);
+                }
+                tree.delete_node(node);
+            }
+            var new_id = add_jstree_node(parent, node, tree);
+            if(node_ids_to_recurse && node_ids_to_recurse.includes(new_id)) {
+                tree.select_node(node);
+                add_children(node, tree);
+                node_ids_to_recurse.pop(new_id);
+            }
+        });
+    });
+}
+
+function remove_children(parent, tree) {
+    parent.state.opened = false;
+    $.get('/get_child_codes?code=' + get_code_for_id(parent.id), function (data) {
+        data.forEach(function(item) {
+            var parent_code = get_code_for_id(parent.id);
+            var id = get_id_for_code(parent_code, item.code);
+            var node = tree.get_node(id);
+            if(node) {
+                tree.delete_node(node);
+            }
+        });
+    });
+}
+
+function add_parents(child, tree) {
+    var current_parent_id = tree.get_parent(child);
+    var current_parent = tree.get_node(current_parent_id);
+    var grandparent = ('root' == current_parent_id) ? current_parent : tree.get_node(tree.get_parent(current_parent));
+    var child_code = get_code_for_id(child.id);
+    $.get('/get_parent_codes?code=' + child_code, function (data) {
+        data.forEach(function(item) {
+            var parent_code = item.code;
+            var parent = build_jstree_node(parent_code, item.name, grandparent.id);
+            if (tree.get_node(parent) == false) {
+                add_jstree_node(grandparent, parent, tree);
+                add_children(parent, tree, [get_id_for_code(parent_code, child_code)]);
+                // we dispose the child nodes
+                if ('root' == current_parent_id) {
+                    tree.delete_node(child);
+                }
+            }
+        });
+    });
+}
+
+function remove_parents(child, tree) {
+    var parent_id = tree.get_parent(child);
+    var parent = tree.get_node(parent_id);
+    if(parent && parent != tree.get_node('root')) {
+        tree.delete_node(parent);
+    }
+}
+
+function get_jstree_context_menu() {
+    return {
+        "items": function($node) {
+            var tree = $("#jstree").jstree(true);
+            return {
+                "Remove": {
+                    "separator_before": false,
+                    "separator_after": false,
+                    "icon": 'glyphicon glyphicon-minus',
+                    "label": "Remove",
+                    "action": function (obj) {
+                        if ($node !== tree.get_node('root')) {
+                            tree.delete_node($node);
+                        }
+                    }
+                },
+                "AddChildren": {
+                    "separator_before": false,
+                    "separator_after": false,
+                    "icon": 'glyphicon glyphicon-plus',
+                    "label": "Add child concepts",
+                    "action": function (obj) {
+                        add_children($node, tree);
+                    }
+                },
+                "RemoveChildren": {
+                    "separator_before": false,
+                    "separator_after": false,
+                    "icon": 'glyphicon glyphicon-minus',
+                    "label": "Remove child concepts",
+                    "action": function (obj) {
+                        remove_children($node, tree);
+                    }
+                },
+                "AddParent": {
+                    "separator_before": false,
+                    "separator_after": false,
+                    "icon": 'glyphicon glyphicon-plus',
+                    "label": "Add parent concepts",
+                    "action": function (obj) {
+                        add_parents($node, tree);
+                    }
+                },
+                "RemoveParents": {
+                    "separator_before": false,
+                    "separator_after": false,
+                    "icon": 'glyphicon glyphicon-minus',
+                    "label": "Remove parent concepts",
+                    "action": function (obj) {
+                        remove_parents($node, tree);
+                    }
+                }
+            };
+        }
+    }
+}
