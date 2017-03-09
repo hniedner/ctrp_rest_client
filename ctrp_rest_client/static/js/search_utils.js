@@ -62,9 +62,9 @@ function remove_term(term, list_id) {
 function _do_code_callback(code, dom, url, reverse) {
 
     $.get(url + code, function (data) {
-        data.forEach(function(entry) {
+        data.forEach(function (entry) {
             var code = entry.code;
-            var name = entry.name.replace(/_/g,' ');
+            var name = entry.name.replace(/_/g, ' ');
             if (reverse) {
                 rm_term(code, name, dom);
             } else {
@@ -103,12 +103,12 @@ function rm_parent_terms(code, dom) {
 function create_li(code, name, dom) {
 
     return '<li id="' + code + '">'
-    + '<a href="#" onclick="rm_term(\'' + code + '\', \'' + name + '\', \'' + dom + '\');">remove</a>'
-    + '&nbsp;|&nbsp;<a href="#" onclick="add_child_terms(\'' + code + '\', \'' + dom + '\');">add child terms</a>'
-    + '&nbsp;|&nbsp;<a href="#" onclick="rm_child_terms(\'' + code + '\', \'' + dom + '\');">remove child terms</a>'
-    + '&nbsp;|&nbsp;<a href="#" onclick="add_parent_terms(\'' + code + '\', \'' + dom + '\');">add parent terms</a>'
-    + '&nbsp;|&nbsp;<a href="#" onclick="rm_parent_terms(\'' + code + '\', \'' + dom + '\');">remove parent terms</a>'
-    + '&nbsp;|&nbsp;' + name + '</li>';
+        + '<a href="#" onclick="rm_term(\'' + code + '\', \'' + name + '\', \'' + dom + '\');">remove</a>'
+        + '&nbsp;|&nbsp;<a href="#" onclick="add_child_terms(\'' + code + '\', \'' + dom + '\');">add child terms</a>'
+        + '&nbsp;|&nbsp;<a href="#" onclick="rm_child_terms(\'' + code + '\', \'' + dom + '\');">remove child terms</a>'
+        + '&nbsp;|&nbsp;<a href="#" onclick="add_parent_terms(\'' + code + '\', \'' + dom + '\');">add parent terms</a>'
+        + '&nbsp;|&nbsp;<a href="#" onclick="rm_parent_terms(\'' + code + '\', \'' + dom + '\');">remove parent terms</a>'
+        + '&nbsp;|&nbsp;' + name + '</li>';
 }
 
 // update the hidden fields for codes and names
@@ -117,10 +117,10 @@ function add_term(code, name, dom) {
 
     var fields = get_fields(dom);
 
-    if(!$(fields.code_list).val().includes(code)) {
+    if (!$(fields.code_list).val().includes(code)) {
         add_item_to_comma_delimited_list(fields.name_list, name);
         add_item_to_comma_delimited_list(fields.code_list, code);
-        $(fields.ul_list).append( create_li(code, name, dom) );
+        $(fields.ul_list).append(create_li(code, name, dom));
     }
 }
 
@@ -129,9 +129,8 @@ function add_term(code, name, dom) {
 // join it back together and replace the value
 function add_item_to_comma_delimited_list(field_name, item) {
 
-    $(field_name).val( $.grep([$(field_name).val(), item], Boolean).join(", ") );
+    $(field_name).val($.grep([$(field_name).val(), item], Boolean).join(", "));
 }
-
 
 
 function update_tree(code, item, dom) {
@@ -143,7 +142,7 @@ function update_tree(code, item, dom) {
 
 function get_code_for_id(node_id) {
     var codes = node_id.split('*');
-    return codes[codes.length-1];
+    return codes[codes.length - 1];
 }
 
 function get_id_for_code(parent_code, code) {
@@ -164,20 +163,25 @@ function build_jstree_node(code, name, parent_id) {
     }
     var node = {
         'id': id,
-        'text': name.replace(/_/g,' '),
+        'text': name.replace(/_/g, ' '),
         'icon': get_icon_for_code(code),
-        'state': { 'opened' : true, 'selected' : false }
+        'state': {'opened': true, 'selected': false}
     };
     return node;
 }
 
 function add_jstree_node(parent, node, tree) {
-    if(tree.get_node(node)) {
+    if (tree.get_node(node)) {
         return node.id;
     }
     var position = 'last';
-    function callback(){ }
-    function is_loaded(){ }
+
+    function callback() {
+    }
+
+    function is_loaded() {
+    }
+
     return tree.create_node(parent, node, position, callback, is_loaded);
 }
 
@@ -187,15 +191,15 @@ function add_children(parent, tree, node_ids_to_recurse) {
     $.get('/get_child_codes?code=' + get_code_for_id(parent.id), function (data) {
         data.forEach(function (item) {
             var node = build_jstree_node(item.code, item.name, parent.id);
-            if(tree.get_node(node)) {
-                if(tree.is_leaf(node) === false) {
+            if (tree.get_node(node)) {
+                if (tree.is_leaf(node) === false) {
                     node_ids_to_recurse = node_ids_to_recurse ? node_ids_to_recurse : [];
                     node_ids_to_recurse.push(node.id);
                 }
                 tree.delete_node(node);
             }
             var new_id = add_jstree_node(parent, node, tree);
-            if(node_ids_to_recurse && node_ids_to_recurse.includes(new_id)) {
+            if (node_ids_to_recurse && node_ids_to_recurse.includes(new_id)) {
                 tree.select_node(node);
                 add_children(node, tree);
                 node_ids_to_recurse.pop(new_id);
@@ -207,11 +211,11 @@ function add_children(parent, tree, node_ids_to_recurse) {
 function remove_children(parent, tree) {
     parent.state.opened = false;
     $.get('/get_child_codes?code=' + get_code_for_id(parent.id), function (data) {
-        data.forEach(function(item) {
+        data.forEach(function (item) {
             var parent_code = get_code_for_id(parent.id);
             var id = get_id_for_code(parent_code, item.code);
             var node = tree.get_node(id);
-            if(node) {
+            if (node) {
                 tree.delete_node(node);
             }
         });
@@ -224,7 +228,7 @@ function add_parents(child, tree) {
     var grandparent = ('root' === current_parent_id) ? current_parent : tree.get_node(tree.get_parent(current_parent));
     var child_code = get_code_for_id(child.id);
     $.get('/get_parent_codes?code=' + child_code, function (data) {
-        data.forEach(function(item) {
+        data.forEach(function (item) {
             var parent_code = item.code;
             var parent = build_jstree_node(parent_code, item.name, grandparent.id);
             if (tree.get_node(parent) === false) {
@@ -242,64 +246,59 @@ function add_parents(child, tree) {
 function remove_parents(child, tree) {
     var parent_id = tree.get_parent(child);
     var parent = tree.get_node(parent_id);
-    if(parent && parent !== tree.get_node('root')) {
+    if (parent && parent !== tree.get_node('root')) {
         tree.delete_node(parent);
     }
 }
 
 function get_jstree_context_menu() {
     return {
-        "items": function($node) {
+        "items": function ($node) {
             var tree = $("#jstree").jstree(true);
             return {
-                "Remove": {
-                    "separator_before": false,
-                    "separator_after": false,
-                    "icon": 'glyphicon glyphicon-minus',
-                    "label": "Remove",
-                    "action": function (obj) {
+                "Remove": _build_jstree_context_menu_item(
+                    "Remove concept",
+                    function rm(obj) {
                         if ($node !== tree.get_node('root')) {
                             tree.delete_node($node);
                         }
                     }
-                },
-                "AddChildren": {
-                    "separator_before": false,
-                    "separator_after": false,
-                    "icon": 'glyphicon glyphicon-plus',
-                    "label": "Add child concepts",
-                    "action": function (obj) {
+                ),
+                "AddChildren": _build_jstree_context_menu_item(
+                    "Add child concepts",
+                    function add_ch(obj) {
                         add_children($node, tree);
                     }
-                },
-                "RemoveChildren": {
-                    "separator_before": false,
-                    "separator_after": false,
-                    "icon": 'glyphicon glyphicon-minus',
-                    "label": "Remove child concepts",
-                    "action": function (obj) {
+                ),
+                "RemoveChildren": _build_jstree_context_menu_item(
+                    "Remove child concepts",
+                    function rm_ch(obj) {
                         remove_children($node, tree);
                     }
-                },
-                "AddParent": {
-                    "separator_before": false,
-                    "separator_after": false,
-                    "icon": 'glyphicon glyphicon-plus',
-                    "label": "Add parent concepts",
-                    "action": function (obj) {
+                ),
+                "AddParent": _build_jstree_context_menu_item(
+                    "Add parent concepts",
+                    function add_par(obj) {
                         add_parents($node, tree);
                     }
-                },
-                "RemoveParents": {
-                    "separator_before": false,
-                    "separator_after": false,
-                    "icon": 'glyphicon glyphicon-minus',
-                    "label": "Remove parent concepts",
-                    "action": function (obj) {
+                ),
+                "RemoveParents": _build_jstree_context_menu_item(
+                    "Remove parent concepts",
+                    function rm_par(obj) {
                         remove_parents($node, tree);
                     }
-                }
-            };
+                )
+            }
         }
+    }
+}
+
+function _build_jstree_context_menu_item(label, action) {
+    return {
+        "separator_before": false,
+        "separator_after": false,
+        "icon": 'glyphicon glyphicon-minus',
+        "label": label,
+        "action": action
     }
 }
