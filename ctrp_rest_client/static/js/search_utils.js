@@ -151,7 +151,7 @@ function get_id_for_code(parent_code, code) {
 }
 
 function get_icon_for_code(code) {
-    return (code == 'root') ? 'glyphicon glyphicon-info-sign' : 'glyphicon glyphicon-check';
+    return (code === 'root') ? 'glyphicon glyphicon-info-sign' : 'glyphicon glyphicon-check';
 }
 
 function build_jstree_node(code, name, parent_id) {
@@ -176,8 +176,8 @@ function add_jstree_node(parent, node, tree) {
         return node.id;
     }
     var position = 'last';
-    function callback(){ };
-    function is_loaded(){ };
+    function callback(){ }
+    function is_loaded(){ }
     return tree.create_node(parent, node, position, callback, is_loaded);
 }
 
@@ -188,7 +188,7 @@ function add_children(parent, tree, node_ids_to_recurse) {
         data.forEach(function (item) {
             var node = build_jstree_node(item.code, item.name, parent.id);
             if(tree.get_node(node)) {
-                if(tree.is_leaf(node) == false) {
+                if(tree.is_leaf(node) === false) {
                     node_ids_to_recurse = node_ids_to_recurse ? node_ids_to_recurse : [];
                     node_ids_to_recurse.push(node.id);
                 }
@@ -221,17 +221,17 @@ function remove_children(parent, tree) {
 function add_parents(child, tree) {
     var current_parent_id = tree.get_parent(child);
     var current_parent = tree.get_node(current_parent_id);
-    var grandparent = ('root' == current_parent_id) ? current_parent : tree.get_node(tree.get_parent(current_parent));
+    var grandparent = ('root' === current_parent_id) ? current_parent : tree.get_node(tree.get_parent(current_parent));
     var child_code = get_code_for_id(child.id);
     $.get('/get_parent_codes?code=' + child_code, function (data) {
         data.forEach(function(item) {
             var parent_code = item.code;
             var parent = build_jstree_node(parent_code, item.name, grandparent.id);
-            if (tree.get_node(parent) == false) {
+            if (tree.get_node(parent) === false) {
                 add_jstree_node(grandparent, parent, tree);
                 add_children(parent, tree, [get_id_for_code(parent_code, child_code)]);
                 // we dispose the child nodes
-                if ('root' == current_parent_id) {
+                if ('root' === current_parent_id) {
                     tree.delete_node(child);
                 }
             }
@@ -242,7 +242,7 @@ function add_parents(child, tree) {
 function remove_parents(child, tree) {
     var parent_id = tree.get_parent(child);
     var parent = tree.get_node(parent_id);
-    if(parent && parent != tree.get_node('root')) {
+    if(parent && parent !== tree.get_node('root')) {
         tree.delete_node(parent);
     }
 }
