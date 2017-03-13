@@ -256,34 +256,34 @@ function get_jstree_context_menu() {
             return {
                 "Remove": _build_jstree_context_menu_item(
                     "Remove concept",
-                    function rm(node) {
-                        if (node !== tree.get_node('root')) {
+                    function rm(obj) {
+                        if ($node !== tree.get_node('root')) {
                             tree.delete_node($node);
                         }
                     }
                 ),
                 "AddChildren": _build_jstree_context_menu_item(
                     "Add child concepts",
-                    function add_ch(node) {
-                        add_children(node, tree);
+                    function add_ch(obj) {
+                        add_children($node, tree);
                     }
                 ),
                 "RemoveChildren": _build_jstree_context_menu_item(
                     "Remove child concepts",
-                    function rm_ch(node) {
-                        remove_children(node, tree);
+                    function rm_ch(obj) {
+                        remove_children($node, tree);
                     }
                 ),
                 "AddParent": _build_jstree_context_menu_item(
                     "Add parent concepts",
-                    function add_par(node) {
-                        add_parents(node, tree);
+                    function add_par(obj) {
+                        add_parents($node, tree);
                     }
                 ),
                 "RemoveParents": _build_jstree_context_menu_item(
                     "Remove parent concepts",
-                    function rm_par(node) {
-                        remove_parents(node, tree);
+                    function rm_par(obj) {
+                        remove_parents($node, tree);
                     }
                 )
             }
