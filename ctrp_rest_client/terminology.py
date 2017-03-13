@@ -1,4 +1,8 @@
 import sqlite3
+import logging
+
+# create logger
+logger = logging.getLogger('terminology')
 
 
 # get connection to sqlite3 terminology database
@@ -24,7 +28,7 @@ def get_code_name_list_result(sql, querytokens=None):
             results.append({'code': row['code'], 'name': row['name']})
         cursor.close()
     except sqlite3.Error as e:
-        print("An error occurred:", e.args[0])
+        logger.error("An error occurred:", e.args[0])
     return results
 
 
@@ -42,7 +46,7 @@ def get_single_string_result(sql, querytokens=None):
             result = cursor.fetchone()[0]
         cursor.close()
     except sqlite3.Error as e:
-        print("An error occurred:", e.args[0])
+        logger.error("An error occurred:", e.args[0])
     return result
 
 
