@@ -131,6 +131,27 @@ function add_item_to_comma_delimited_list(field_name, item) {
 }
 
 
+function get_callback_url(dom) {
+    var url = '';
+    if ('disease' === dom) {
+        url = 'search_diseases?q=';
+    } else if('finding' === dom) {
+        url = 'search_findings?q=';
+    } else if('diagnostic' === dom) {
+        url = 'search_diagnostic_test?q=';
+    } else if('test' === dom) {
+        url = 'search_lab_test?q=';
+    } else if('drug' === dom) {
+        url = 'search_drugs?q=';
+    } else if('procedure' === dom) {
+        url = 'search_therapies?q=';
+    } else if('biomarker' === dom) {
+        url = 'search_biomarkers?q=';
+    }
+    return url;
+}
+
+
 function update_tree(code, item, dom) {
     var tree = $('#jstree').jstree(true);
     var root = tree.get_node('root');

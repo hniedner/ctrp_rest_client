@@ -5,6 +5,13 @@ import logging
 logger = logging.getLogger('terminology')
 
 
+# if code (concept id) is 'root' replace with NCIt root concept
+def check_for_root(code):
+    if 'root' == code:
+        return 'C7057'
+    return code
+
+
 # get connection to sqlite3 terminology database
 def get_connection():
     connection = sqlite3.connect('db/terminology.db')
@@ -50,29 +57,128 @@ def get_single_string_result(sql, querytokens=None):
     return result
 
 
-def search_cancertypes_by_substring(query):
+def search_anatomicsite_by_substring(query):
     sql = 'select code, name from ncit ' \
-          'where semantic_type = "Neoplastic Process" ' \
-          'or semantic_type = "Anatomical Structure"' \
+          'where semantic_type = "Anatomical Structure"' \
           'and (name like ? or synonyms like ?)'
     querytokens = ['%' + query + '%', '%' + query + '%']
     results = get_code_name_list_result(sql, querytokens)
     return results
 
 
-def search_biomarkers_by_substring(query):
-    sql = 'select code, name from biomarkers where name like ?'
-    querytokens = ['%' + query + '%']
+def search_finding_by_substring(query):
+    sql = 'select code, name from ncit ' \
+          'where semantic_type = "Finding"' \
+          'and (name like ? or synonyms like ?)'
+    querytokens = ['%' + query + '%', '%' + query + '%']
+    results = get_code_name_list_result(sql, querytokens)
+    return results
+
+
+def search_cancertype_by_substring(query):
+    sql = 'select code, name from ncit ' \
+          'where semantic_type = "Neoplastic Process" ' \
+          'and (name like ? or synonyms like ?)'
+    querytokens = ['%' + query + '%', '%' + query + '%']
+    results = get_code_name_list_result(sql, querytokens)
+    return results
+
+
+def search_therapeutic_procedure_by_substring(query):
+    sql = 'select code, name from ncit ' \
+          'where semantic_type = "Therapeutic or Preventive Procedure" ' \
+          'and (name like ? or synonyms like ?)'
+    querytokens = ['%' + query + '%', '%' + query + '%']
+    results = get_code_name_list_result(sql, querytokens)
+    return results
+
+
+def search_diagnostic_procedure_by_substring(query):
+    sql = 'select code, name from ncit ' \
+          'where semantic_type = "Diagnostic Procedure" ' \
+          'and (name like ? or synonyms like ?)'
+    querytokens = ['%' + query + '%', '%' + query + '%']
+    results = get_code_name_list_result(sql, querytokens)
+    return results
+
+
+def search_laboratory_procedure_by_substring(query):
+    sql = 'select code, name from ncit ' \
+          'where semantic_type = "Laboratory Procedure" ' \
+          'and (name like ? or synonyms like ?)'
+    querytokens = ['%' + query + '%', '%' + query + '%']
+    results = get_code_name_list_result(sql, querytokens)
+    return results
+
+
+def search_drug_by_substring(query):
+    sql = 'select code, name from ncit ' \
+          'where (semantic_type = "Pharmacologic Substance"' \
+          'or semantic_type = "Pharmacologic Substance|Plant"' \
+          'or semantic_type = "Pharmacologic Substance|Research Device"' \
+          'or semantic_type = "Pharmacologic Substance|Steroid"' \
+          'or semantic_type = "Pharmacologic Substance|Substance"' \
+          'or semantic_type = "Pharmacologic Substance|Virus"' \
+          'or semantic_type = "Pharmacologic Substance|Vitamin"' \
+          'or semantic_type = "Organic Chemical|Pharmacologic Substance|Vitamin"' \
+          'or semantic_type = "Organic Chemical|Pharmacologic Substance"' \
+          'or semantic_type = "Nucleic Acid, Nucleoside, or Nucleotide|Pharmacologic Substance"' \
+          'or semantic_type = "Inorganic Chemical|Pharmacologic Substance"' \
+          'or semantic_type = "Immunologic Factor|Pharmacologic Substance"' \
+          'or semantic_type = "Element, Ion, or Isotope|Pharmacologic Substance"' \
+          'or semantic_type = "Clinical Drug"' \
+          'or semantic_type = "Cell|Pharmacologic Substance"' \
+          'or semantic_type = "Antibiotic|Pharmacologic Substance"' \
+          'or semantic_type = "Amino Acid, Peptide, or Protein|Pharmacologic Substance"' \
+          'or semantic_type = "Amino Acid, Peptide, or Protein|Immunologic Factor|Pharmacologic Substance")' \
+          'and (name like ? or synonyms like ?)'
+    querytokens = ['%' + query + '%', '%' + query + '%']
+    results = get_code_name_list_result(sql, querytokens)
+    return results
+
+
+def search_biomarker_by_substring(query):
+    sql = 'select code, name from ncit ' \
+          'where (semantic_type = "Acquired Abnormality" ' \
+          'or semantic_type = "Amino Acid, Peptide, or Protein" ' \
+          'or semantic_type = "Amino Acid, Peptide, or Protein|Biologically Active Substance" ' \
+          'or semantic_type = "Amino Acid, Peptide, or Protein|Enzyme" ' \
+          'or semantic_type = "Amino Acid, Peptide, or Protein|Enzyme|Receptor" ' \
+          'or semantic_type = "Amino Acid, Peptide, or Protein|Hormone" ' \
+          'or semantic_type = "Amino Acid, Peptide, or Protein|Immunologic Factor" ' \
+          'or semantic_type = "Amino Acid, Peptide, or Protein|Receptor" ' \
+          'or semantic_type = "Cell" ' \
+          'or semantic_type = "Cell Component" ' \
+          'or semantic_type = "Cell or Molecular Dysfunction" ' \
+          'or semantic_type = "Clinical Attribute" ' \
+          'or semantic_type = "Element, Ion, or Isotope" ' \
+          'or semantic_type = "Finding" ' \
+          'or semantic_type = "Functional Concept" ' \
+          'or semantic_type = "Gene or Genome" ' \
+          'or semantic_type = "Hazardous or Poisonous Substance|Inorganic Chemical" ' \
+          'or semantic_type = "Hormone" ' \
+          'or semantic_type = "Hormone|Organic Chemical" ' \
+          'or semantic_type = "Immunologic Factor|Organic Chemical" ' \
+          'or semantic_type = "Laboratory Procedure" ' \
+          'or semantic_type = "Laboratory or Test Result" ' \
+          'or semantic_type = "Nucleotide Sequence" ' \
+          'or semantic_type = "Organic Chemical|Pharmacologic Substance" ' \
+          'or semantic_type = "Pharmacologic Substance" ' \
+          'or semantic_type = "Pharmacologic Substance|Vitamin" ' \
+          'or semantic_type = "Virus") ' \
+          'and (name like ? or synonyms like ?)'
+    querytokens = ['%' + query + '%', '%' + query + '%']
     results = get_code_name_list_result(sql, querytokens)
     return results
 
 
 def get_child_codes(code):
+    ccode = check_for_root(code)
     sql = 'select code, name from ncit where parent_codes like ? or parent_codes like ?'
     # parent codes are in a pipe (|) delimited list
     # just matching on the first term we get spurious substring matches
     # such as C8461 matching C84615
-    querytokens = ['%' + code, '%' + code + '|%']
+    querytokens = ['%' + ccode, '%' + ccode + '|%']
     results = get_code_name_list_result(sql, querytokens)
     return results
 
