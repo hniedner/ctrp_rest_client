@@ -42,6 +42,36 @@ def search_finding():
     return _process_route('q', terminology.search_finding_by_substring)
 
 
+@app.route('/search_diseases_associated_with_anatomic_site')
+def search_diseases_associated_with_anatomic_site():
+    return _process_route('code', terminology.search_diseases_associated_with_anatomic_site)
+
+
+@app.route('/search_diseases_associated_with_finding')
+def search_diseases_associated_with_finding():
+    return _process_route('code', terminology.search_diseases_associated_with_finding)
+
+
+@app.route('/search_diseases_associated_with_gene')
+def search_diseases_associated_with_gene():
+    return _process_route('code', terminology.search_diseases_associated_with_gene)
+
+
+@app.route('/search_diseases_is_stage')
+def search_diseases_is_stage():
+    return _process_route('code', terminology.search_diseases_is_stage)
+
+
+@app.route('/search_diseases_is_grade')
+def search_diseases_is_grade():
+    return _process_route('code', terminology.search_diseases_is_grade)
+
+
+@app.route('/get_subtree_codes')
+def get_subtree_codes():
+    return _process_route('code', terminology.get_subtree_codes)
+
+
 @app.route('/get_child_codes')
 def get_child_codes():
     return _process_route('code', terminology.get_child_codes)

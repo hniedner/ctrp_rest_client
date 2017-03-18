@@ -35,7 +35,7 @@ def get_code_name_list_result(sql, querytokens=None):
             results.append({'code': row['code'], 'name': row['name']})
         cursor.close()
     except sqlite3.Error as e:
-        logger.error("An error occurred:", e.args[0])
+        logger.error("An error occurred:", e.args)
     return results
 
 
@@ -169,6 +169,77 @@ def search_biomarker_by_substring(query):
           'and (name like ? or synonyms like ?)'
     querytokens = ['%' + query + '%', '%' + query + '%']
     results = get_code_name_list_result(sql, querytokens)
+    return results
+
+
+def search_diseases_associated_with_anatomic_site(code):
+    sql = 'SELECT DISTINCT rel.subject_code code, ncit.name name ' \
+          'FROM ncit_relationships rel ' \
+          'JOIN ncit ON rel.subject_code = ncit.code ' \
+          'WHERE rel.object_code = ? ' \
+          'AND (role = "Disease Has Associated Anatomic Site" ' \
+          'OR role = "Disease Has Primary Anatomic Site" ' \
+          'OR role = "Disease Has Metastatic Anatomic Site")'
+    results = get_code_name_list_result(sql, [check_for_root(code)])
+    return results
+
+
+def search_diseases_associated_with_finding(code):
+    sql = 'SELECT DISTINCT rel.subject_code code, ncit.name name ' \
+          'FROM ncit_relationships rel ' \
+          'JOIN ncit ON rel.subject_code = ncit.code ' \
+          'WHERE rel.object_code = ? ' \
+          'AND role = "Disease Has Finding"'
+    return get_code_name_list_result(sql, [check_for_root(code)])
+
+
+def search_diseases_associated_with_gene(code):
+    sql = 'select rel.subject_code, ncit.name ' \
+        'FROM ncit_relationships rel ' \
+        'JOIN ncit ON ncit.code = rel.subject_code ' \
+        'WHERE rel.object_code = ? ' \
+        'AND (role = "Gene Associated With Disease" ' \
+        'OR role = "Gene Involved In Pathogenesis Of Disease" ' \
+        'OR role = "Gene Product Malfunction Associated With Disease")'
+    return get_code_name_list_result(sql, [check_for_root(code)])
+
+
+def search_diseases_is_stage(code):
+    sql = 'SELECT DISTINCT rel.subject_code code, ncit.name name ' \
+          'FROM ncit_relationships rel ' \
+          'JOIN ncit ON rel.subject_code = ncit.code ' \
+          'WHERE rel.object_code = ? ' \
+          'AND role = "Disease Is Stage"'
+    return get_code_name_list_result(sql, [check_for_root(code)])
+
+
+def search_diseases_is_grade(code):
+    sql = 'SELECT DISTINCT rel.subject_code code, ncit.name name ' \
+          'FROM ncit_relationships rel ' \
+          'JOIN ncit ON rel.subject_code = ncit.code ' \
+          'WHERE rel.object_code = ? ' \
+          'AND role = "Disease Is Grade"'
+    return get_code_name_list_result(sql, [check_for_root(code)])
+
+
+def get_subtree_codes(code):
+    sql = 'WITH RECURSIVE ' \
+          'subtree(x) AS (VALUES(?) ' \
+          'UNION ' \
+          'SELECT ncit.code FROM ncit, subtree ' \
+          'WHERE ncit.parent_codes LIKE "%" || subtree.x ' \
+          'OR ncit.parent_codes LIKE "%" || subtree.x || "|") ' \
+          'SELECT ncit.code FROM ncit WHERE ncit.code IN subtree;'
+    connection = sqlite3.connect('db/terminology.db')
+    connection.row_factory = lambda cursor, row: row[0]
+    results = []
+    try:
+        cursor = connection.cursor()
+        cursor.execute(sql, [check_for_root(code)])
+        results = cursor.fetchall()
+        cursor.close()
+    except sqlite3.Error as e:
+        logger.error("An error occurred:", e)
     return results
 
 

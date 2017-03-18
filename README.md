@@ -2,6 +2,9 @@
 Example client for the NCI Clinical Trial Search RESTful API
 
 # Setup #
+The application currently uses a local sqlite database that provides parsed
+information from the NCI Thesaurus. Plans are to switch this to use NCI EVS provided 
+web services.
 ## Install Python 3
 ## Create virtual Python environment
     python -m venv venv # creates virtual environment in directory venv in the current directory
