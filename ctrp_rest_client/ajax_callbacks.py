@@ -1,6 +1,22 @@
 from flask import jsonify, request
-from ctrp_rest_client import app
+from ctrp_rest_client import app, api_client
 from ctrp_rest_client import terminology
+
+
+@app.route('/get_nr_of_trials')
+def get_nr_of_trials():
+    domain = request.args.get('dom')
+    code = request.args.get('code')
+    codes = terminology.get_subtree_codes(code)
+    search_param = {}
+    if 'disease' == domain:
+        search_param['diseases.nci_thesaurus_concept_id'] = codes
+    elif 'biomarker' == domain:
+        search_param['biomarkers.nci_thesaurus_concept_id'] = codes
+    else:
+        return jsonify(0)
+    return jsonify(api_client.get_nr_of_trials(search_param))
+
 
 @app.route('/search_diseases')
 def search_disease():

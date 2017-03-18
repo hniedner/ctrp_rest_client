@@ -64,6 +64,12 @@ def find_trials(search_params):
     return result
 
 
+# return the total number of trials found matching
+# the submitted search paramters
+def get_nr_of_trials(search_params):
+    result = _call_api(search_params)
+    return result['total']
+
 # call clinical trials API and retrieves results and total number of results
 
 def _call_api(search_params):

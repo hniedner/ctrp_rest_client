@@ -229,16 +229,11 @@ function add_children(parent, tree, node_ids_to_recurse) {
 
 function remove_children(parent, tree) {
     parent.state.opened = false;
-    $.get('/get_child_codes?code=' + get_code_for_id(parent.id), function (data) {
-        data.forEach(function (item) {
-            var parent_code = get_code_for_id(parent.id);
-            var id = get_id_for_code(parent_code, item.code);
-            var node = tree.get_node(id);
-            if (node) {
-                tree.delete_node(node);
-            }
-        });
-    });
+    tree.get_children_dom(parent).each(
+        function (index, child) {
+            tree.delete_node(child);
+        }
+    );
 }
 
 function add_parents(child, tree) {
@@ -270,11 +265,44 @@ function remove_parents(child, tree) {
     }
 }
 
+function select(node, dom) {
+    var code = get_code_for_id(node.id);
+    var tmp_li_id = code +'_li';
+    var list_item = '<li id="' + tmp_li_id + '">' + node.text + ' (' + code + ') - ' +
+        '<img style="width:2%;" src="static/img/spinner.gif"/> trials found</li>\n';
+    if ("disease" == dom) {
+        $("#selected_diseases").append(list_item);
+    } else if (("biomarker" == dom)) {
+        $("#selected_biomarkers").append(list_item);
+    }
+
+
+    $.get('get_nr_of_trials?code=' + code + '&dom=' + dom,
+        function (nr_of_trials) {
+            list_item = "<li>" + node.text + " (" + code + ") - " + nr_of_trials + " trials found</li>\n";
+            $('#' + tmp_li_id).remove();
+            if ("disease" == dom) {
+                $("#selected_diseases").append(list_item);
+            } else if (("biomarker" == dom)) {
+                $("#selected_biomarkers").append(list_item);
+            }
+        });
+}
+
 function get_jstree_context_menu() {
     return {
         "items": function ($node) {
             var tree = $("#jstree").jstree(true);
             return {
+                "Select": _build_jstree_context_menu_item(
+                    "Select",
+                    function select_term(obj) {
+                        select($node, dom);
+                        if ($node !== tree.get_node('root')) {
+                            tree.delete_node($node);
+                        }
+                    }
+                ),
                 "Remove": _build_jstree_context_menu_item(
                     "Remove concept",
                     function rm(obj) {
@@ -292,7 +320,18 @@ function get_jstree_context_menu() {
                 "RemoveChildren": _build_jstree_context_menu_item(
                     "Remove child concepts",
                     function rm_ch(obj) {
-                        remove_children($node, tree);
+                        if ("root" === $node.id) {
+                            var children = tree.get_children_dom($node);
+                            children.each(
+                                function (index, child) {
+                                    console.log(child);
+                                    tree.delete_node(child);
+                                }
+                            );
+                        } else {
+                            remove_children($node, tree);
+                        }
+
                     }
                 ),
                 "AddParent": _build_jstree_context_menu_item(
