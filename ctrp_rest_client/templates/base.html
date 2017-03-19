@@ -38,7 +38,7 @@ for an overview. #}
 
 {# Finally, round things out with navigation #}
 {% block navbar %}
-<nav class="navbar navbar-default" role="navigation">
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -54,15 +54,15 @@ for an overview. #}
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
             <li><a href="/">Home</a></li>
+            <li><a href="/live_search">Live Trial Search</a></li>
             <li><a href="/search">Search Trial</a></li>
-            <li><a href="/tree">Browse Tree</a></li>
+            <li><a href="/tree">Browse NCI Thesaurus</a></li>
         </ul>
         <div class="nav navbar-nav navbar-right col-sm-3 col-md-3">
             <form class="navbar-form" method=post action="{{ url_for('find_trial') }}">
-                <span>Find Trial &nbsp;</span>
                 <div class="input-group">
                     <input id="trial_id" name="trial_id" type="text" class="form-control"
-                           placeholder="Enter NCT or NCI ID">
+                           placeholder="Search by NCT/NCI ID">
                     <div class="input-group-btn">
                         <button id="submit" name="submit" type="submit" class="btn btn-default">
                             <i class="glyphicon glyphicon-search"></i>

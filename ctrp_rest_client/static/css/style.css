@@ -1,3 +1,119 @@
 body {
-    background: #F0F0F0;
+    padding-top: 65px;
+}
+
+@media (min-width: 767px) {
+    .affix, .affix-top {
+        position: fixed;
+    }
+}
+
+div.col-sm-2.left {
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+}
+
+button.accordion {
+    background-color: #f8f8f8;
+    color: #444;
+    cursor: pointer;
+    padding: 10px;
+    width: 100%;
+    border: solid;
+    border-width: thin;
+    border-color: #e7e7e0;
+    border-radius: 5px;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+    transition: 0.4s;
+}
+
+button.accordion.active, button.accordion:hover {
+    background-color: #ddd;
+}
+
+button.accordion:after {
+    content: '\002B';
+    color: #777;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+}
+
+button.accordion.active:after {
+    content: "\2212";
+}
+
+div.panel {
+    margin: 0px;
+    padding: 0 18px;
+    background-color: white;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+}
+
+div.jumbotron {
+    background-color: #f8f8f8;
+    border: solid;
+    border-width: thin;
+    border-color: #e7e7e0;
+}
+
+/* Datatables additional formatting */
+
+th {
+    background-color: #c0c0c0;
+}
+
+th.sorting_asc {
+    background-color: #9d9d9d;
+}
+
+th.sorting_desc {
+    background-color: #9d9d9d;
+}
+
+.table-striped > tbody {
+    background-color: #fafaff;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #fff;
+}
+
+/* Right align Search Filter Input Field for Datatable */
+.dataTables_filter {
+    width: 50%;
+    float: right;
+    text-align: right;
+}
+
+/* Search Filter Input Field for Datatable */
+input.form-control.input-sm {
+    margin-left: 5px;
+}
+
+/* Datatable info number of rec shown */
+div#datatable_info.dataTables_info {
+    padding-left: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+/* iFrame voodoo */
+iframe {
+    background-color: #fff;
+    width: 100%;
+    height: 800px;
+}
+
+fieldset, legend {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
 }

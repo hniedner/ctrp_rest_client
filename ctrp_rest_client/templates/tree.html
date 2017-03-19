@@ -13,47 +13,50 @@ Clinical Trial Excursions
 {% endblock %}
 
 {% block content %}
-<div class="jumbotron">
-	<div class="container" id="content">
-        <div class="col-md-12">
+<div class="container">
+    <div id="content" class="jumbotron">
+        <div class="row">
+            <div class="col-md-12">
 
-            <div class="form-group horizontal">
-                <input id="disease_codes" name="disease_codes" type="hidden" value="">
-                <input id="disease_names" name="disease_names" type="hidden" value="">
-                <strong>Search for: &nbsp; </strong>
-                <label class="radio-inline"><input checked="checked" type="radio" id="disease" name="dom">Disease</label>
-                <label class="radio-inline"><input type="radio" id="finding" name="dom">Finding</label>
-                <label class="radio-inline"><input type="radio" id="procedure" name="dom">Therapeutic Procedure</label>
-                <label class="radio-inline"><input type="radio" id="diagnostic" name="dom">Diagnostic Procedure</label>
-                <label class="radio-inline"><input type="radio" id="test" name="dom">Lab Test</label>
-                <label class="radio-inline"><input type="radio" id="drug" name="dom">Drug</label>
-                <label class="radio-inline"><input type="radio" id="biomarker" name="dom">Biomarker</label>
-                <br /><br />
-                <input id="search_diseases" placeholder="Start typing a disease" class="form-control">
-                <br />
-                <span>Try: 'Neoplasm', 'Neoplasm By Site' or 'Neoplasm By Cause'</span>
-            </div>
+                <div class="form-group horizontal">
+                    <input id="disease_codes" name="disease_codes" type="hidden" value="">
+                    <input id="disease_names" name="disease_names" type="hidden" value="">
+                    <strong>Search for: &nbsp; </strong>
+                    <label class="radio-inline"><input checked="checked" type="radio" id="disease"
+                                                       name="dom">Disease</label>
+                    <label class="radio-inline"><input type="radio" id="finding" name="dom">Finding</label>
+                    <label class="radio-inline"><input type="radio" id="procedure" name="dom">Therapeutic
+                        Procedure</label>
+                    <label class="radio-inline"><input type="radio" id="diagnostic" name="dom">Diagnostic
+                        Procedure</label>
+                    <label class="radio-inline"><input type="radio" id="test" name="dom">Lab Test</label>
+                    <label class="radio-inline"><input type="radio" id="drug" name="dom">Drug</label>
+                    <label class="radio-inline"><input type="radio" id="biomarker" name="dom">Biomarker</label>
+                    <br/><br/>
+                    <input id="search_diseases" placeholder="Start typing a disease" class="form-control">
+                </div>
 
-            <div>
-                <strong>Search for disease within the Tree: </strong>
-                <input class="search-input form-control"></input>
-            </div>
-            <br/>
+                <div>
+                    <strong>Search for term within the tree: </strong>
+                    <input class="search-input form-control"></input>
+                </div>
+                <br/>
 
-            <div id="jstree"></div>
-            <br/>
-            <br/>
-            <div>
-                <strong>Selected Diseases: </strong>
-                <ul id="selected_diseases">
-                </ul>
-            </div>
-            <br/>
-            <br/>
-            <div>
-                <strong>Selected Biomarkers: </strong>
-                <ul id="selected_biomarkers">
-                </ul>
+                <div id="jstree"></div>
+                <br/>
+                <br/>
+                <div>
+                    <strong>Selected Diseases: </strong>
+                    <ul id="selected_diseases">
+                    </ul>
+                </div>
+                <br/>
+                <br/>
+                <div>
+                    <strong>Selected Biomarkers: </strong>
+                    <ul id="selected_biomarkers">
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -71,67 +74,67 @@ Clinical Trial Excursions
 <script type="text/javascript" src="{{ url_for('static', filename='js/search_utils.js') }}"></script>
 <script type="text/javascript">
 
-var dom = 'disease';
+    var dom = 'disease';
 
-$('input[name="dom"]').change(function() {
-    $('#search_diseases').attr("placeholder", "Start typing a " + this.id);
-    $('#search_diseases').focus();
-    dom = this.id;
-});
+    $('input[name="dom"]').change(function () {
+        $('#search_diseases').attr("placeholder", "Start typing a " + this.id);
+        $('#search_diseases').focus();
+        dom = this.id;
+    });
 
-$('#search_diseases').typeahead({
-    source: function (query, process) {
-        return $.get(get_callback_url(dom) + query, function (data) {
-            var diseases = [];
-            map = {};
-            $.each(data, function (i, row) {
-                map[row.name] = row;
-                diseases.push(row.name);
+    $('#search_diseases').typeahead({
+        source: function (query, process) {
+            return $.get(get_callback_url(dom) + query, function (data) {
+                var diseases = [];
+                map = {};
+                $.each(data, function (i, row) {
+                    map[row.name] = row;
+                    diseases.push(row.name);
+                });
+                return process(diseases);
             });
-            return process(diseases);
-        });
-    },
-    updater: function (item) {
-        var dom = $('input[name="dom"]').id;
-        update_tree(map[item].code, item, dom);
-    },
-    items: 20
-});
+        },
+        updater: function (item) {
+            var dom = $('input[name="dom"]').id;
+            update_tree(map[item].code, item, dom);
+        },
+        items: 20
+    });
 
 
-$('.search-input').keyup(function() {
-    var searchString = $(this).val();
-    $('#jstree').jstree('search', searchString);
-});
+    $('.search-input').keyup(function () {
+        var searchString = $(this).val();
+        $('#jstree').jstree('search', searchString);
+    });
 
-$('#jstree').jstree({
-    core: {
-        'check_callback': true,
-        'data': [
-            build_jstree_node('root', 'Diseases', undefined)
-        ]
-    },
-    search: {
-        'case_insensitive': true,
-        'show_only_matches': true
-    },
-    plugins: ['contextmenu', 'dnd', 'search', 'sort',
-                'state', 'types', 'wholerow'],
+    $('#jstree').jstree({
+        core: {
+            'check_callback': true,
+            'data': [
+                build_jstree_node('root', 'NCI Thesaurus Tree', undefined)
+            ]
+        },
+        search: {
+            'case_insensitive': true,
+            'show_only_matches': true
+        },
+        plugins: ['contextmenu', 'dnd', 'search', 'sort',
+            'state', 'types', 'wholerow'],
 
-    contextmenu: get_jstree_context_menu()
+        contextmenu: get_jstree_context_menu()
 
-}).on('dblclick','.jstree-anchor', function (e) {
-    var tree = $.jstree.reference(this);
-    var node = tree.get_node(this);
-    if (tree.is_leaf(node)) {
-        add_children(node, tree);
-    } else {
-        remove_children(node, tree);
-    }
+    }).on('dblclick', '.jstree-anchor', function (e) {
+        var tree = $.jstree.reference(this);
+        var node = tree.get_node(this);
+        if (tree.is_leaf(node)) {
+            add_children(node, tree);
+        } else {
+            remove_children(node, tree);
+        }
 
-}).on('click', '.jstree-anchor', function (e) {
-    $('#jstree').jstree(true).toggle_node(e.target);
-});
+    }).on('click', '.jstree-anchor', function (e) {
+        $('#jstree').jstree(true).toggle_node(e.target);
+    });
 </script>
 
 {% endblock %}

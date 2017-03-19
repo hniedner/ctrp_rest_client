@@ -13,6 +13,12 @@ def home():
     return render_template('home.html')
 
 
+@app.route('/live_search')
+def test():
+    # Render template
+    return render_template('live_search.html')
+
+
 # tree
 @app.route('/tree')
 def tree():
