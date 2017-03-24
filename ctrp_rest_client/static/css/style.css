@@ -48,12 +48,23 @@ button.accordion.active:after {
 }
 
 div.panel {
-    margin: 0px;
+    margin: 5px 0px 0px 0px;
     padding: 0 18px;
     background-color: white;
     max-height: 0;
+    height: auto;
     overflow: hidden;
     transition: max-height 0.2s ease-out;
+}
+
+.select2-selection__choice {
+    word-wrap: break-word;
+    text-overflow: inherit;
+    white-space: normal;
+}
+
+.select2-search__field {
+    width: 90% !important;
 }
 
 div.jumbotron {
@@ -116,4 +127,9 @@ fieldset, legend {
     padding: 0;
     width: 100%;
     height: 100%;
+}
+
+.slider {
+    margin: 10px;
+    width: 90% !important;
 }

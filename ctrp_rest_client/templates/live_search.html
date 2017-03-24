@@ -11,27 +11,181 @@ Clinical Trial Excursions
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-2 left">
-            <button class="accordion">Structured Criteria</button>
+
+            <button class="accordion">Keywords</button>
             <div class="panel">
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                    aliquip ex ea commodo consequat.
-                </p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                    aliquip ex ea commodo consequat.
-                </p>
+                <div class="row form-group">
+                    <div class="col-sm-12 input-group select2-search">
+                        <input class="form-control" id="fulltext" name="fulltext"
+                               placeholder="Keyword or phrase" type="text">
+                    </div>
+                </div>
             </div>
 
             <button class="accordion">Disease</button>
             <div class="panel">
+                <div class="row form-group">
+                    <div class="col-sm-12 input-group select2-bootstrap-prepend select2-bootstrap-prepend">
+                        <select id="diseases" class="form-control select2 select2-multiple wrap"
+                                data-placeholder="Type Disease" multiple style="width: 100%;">
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button class="accordion">Biomarkers</button>
+            <div class="panel">
+                <div class="row form-group">
+                    <div class="col-sm-12 input-group select2-bootstrap-prepend select2-bootstrap-prepend">
+                        <select id="biomarkers" class="form-control select2 select2-multiple wrap"
+                                data-placeholder="Type Biomarker" multiple style="width: 100%;">
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button class="accordion">Anatomic Sites</button>
+            <div class="panel">
+                <div class="row form-group">
+                    <div class="col-sm-12 input-group select2-bootstrap-prepend select2-bootstrap-prepend">
+                        <select id="anatomicsites" class="form-control select2 select2-multiple wrap"
+                                data-placeholder="Type Anatomic Site" multiple style="width: 100%;">
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button class="accordion">Drugs</button>
+            <div class="panel">
+                <div class="row form-group">
+                    <div class="col-sm-12 input-group select2-bootstrap-prepend select2-bootstrap-prepend">
+                        <select id="drugs" class="form-control select2 select2-multiple wrap"
+                                multiple style="width: 100%;">
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button class="accordion">Findings</button>
+            <div class="panel">
+                <div class="row form-group">
+                    <div class="col-sm-12 input-group select2-bootstrap-prepend select2-bootstrap-prepend">
+                        <select id="findings" class="form-control select2 select2-multiple wrap"
+                                data-placeholder="Type Finding" multiple style="width: 100%;">
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button class="accordion">Therapies</button>
+            <div class="panel">
+                <div class="row form-group">
+                    <div class="col-sm-12 input-group select2-bootstrap-prepend select2-bootstrap-prepend">
+                        <select id="therapies" class="form-control select2 select2-multiple wrap"
+                                data-placeholder="Type Therapy" multiple style="width: 100%;">
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button class="accordion">Structured Criteria</button>
+            <div class="panel">
+                <br/>
+                <div class="row form-group">
+                    <div class="col-sm-12 input-group ">
+                        <div class="row">
+                            <div class="col-sm-9">
+                                Constrain Age Range<br/>
+                                (<span id="age_min"/>0</span> - <span id="age_max">999</span>)
+                            </div>
+                            <div class="col-sm-3">
+                                <input id="age-enabled" type="checkbox"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <input id="age" type="text" data-slider-enabled="false"/>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="row">
+                            <div class="col-sm-7">
+                                <label for="accepts_healthy_volunteers_indicator">Accepts Healthy Volunteers</label>
+                            </div>
+                            <div class="col-sm-5 right">
+                                <select id="accepts_healthy_volunteers_indicator"
+                                        name="accepts_healthy_volunteers_indicator">
+                                    <option selected="" value="NA">NA</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-7">
+                                <label for="gender">Gender</label>
+                            </div>
+                            <div class="col-sm-5 right">
+                                <select id="gender" name="gender">
+                                    <option selected="" value="Any">Any</option>
+                                    <option value="Both">Both</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+            </div>
+
+            <button class="accordion">Other</button>
+            <div class="panel">
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
                     et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
                     aliquip ex ea commodo consequat.
                 </p>
             </div>
 
-            <button class="accordion">Biomarkers</button>
+            <button class="accordion">Trial Phase</button>
+            <div class="panel">
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <div class="checkbox">
+                            <label>
+                                <input id="phasena" name="phasena" type="checkbox"/>
+                                Phase N/A
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="phase1" name="phase1" type="checkbox">
+                                Phase I
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="phase2" name="phase2" type="checkbox">
+                                Phase II
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="phase3" name="phase3" type="checkbox">
+                                Phase III
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="phase4" name="phase4" type="checkbox">
+                                Phase IV
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="accordion">More</button>
             <div class="panel">
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
                     et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
@@ -39,6 +193,7 @@ Clinical Trial Excursions
                 </p>
             </div>
         </div>
+
         <div class="col-sm-10">
             <div class="jumbotron">
                 <h5>Instant Search Results</h5>
@@ -80,7 +235,8 @@ Clinical Trial Excursions
                         <td>2013-08-29</td>
                         <td>Active</td>
                         <td>A Phase II, Open-Label Study of Ponatinib, a Multi-targeted Oral Tyrosine Kinase Inhibitor,
-                            in Advanced Non-small Cell Lung Cancer Harboring RET Translocations</td>
+                            in Advanced Non-small Cell Lung Cancer Harboring RET Translocations
+                        </td>
                     </tr>
                     </tbody>
                 </table>
@@ -89,36 +245,281 @@ Clinical Trial Excursions
     </div>
 </div>
 
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" type="text/css"
+      href="{{url_for('bower.static', filename='datatables.net-bs/css/dataTables.bootstrap.min.css')}}">
+<link rel="stylesheet" type="text/css"
+      href="{{url_for('bower.static', filename='datatables.net-bs/css/dataTables.bootstrap.min.css')}}">
+<link rel="stylesheet" type="text/css"
+      href="{{url_for('bower.static', filename='datatables.net-buttons-dt/css/buttons.dataTables.min.css')}}">
+<link rel="stylesheet" type="text/css"
+      href="{{url_for('bower.static', filename='datatables.net-buttons-bs/css/buttons.bootstrap.min.css')}}">
+<link rel="stylesheet" type="text/css"
+      href="{{url_for('bower.static', filename='seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css')}}">
+<link rel="stylesheet" type="text/css"
+      href="{{ url_for('bower.static', filename='select2/dist/css/select2.min.css') }}">
+<link rel="stylesheet" type="text/css"
+      href="{{ url_for('bower.static', filename='select2-bootstrap-css/select2-bootstrap.min.css') }}">
+<link rel="stylesheet" type="text/css"
+      href="{{url_for('bower.static', filename='jstree/dist/themes/default/style.min.css')}}">
+
+{% endblock %}
+
 {% endblock %}
 {% block scripts %}
 {{super()}}
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
-<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
-<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.print.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.colVis.min.js"></script>
 
-<script>
+<script type="text/javascript"
+        src="{{ url_for('bower.static', filename='bootstrap3-typeahead/bootstrap3-typeahead.js') }}"></script>
+<script type="text/javascript"
+        src="{{ url_for('bower.static', filename='datatables.net/js/jquery.dataTables.min.js') }}"></script>
+<script type="text/javascript"
+        src="{{ url_for('bower.static', filename='datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+<script type="text/javascript"
+        src="{{ url_for('bower.static', filename='datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
+<script type="text/javascript"
+        src="{{ url_for('bower.static', filename='datatables.net-buttons-bs/js/buttons.bootstrap.min.js') }}"></script>
+<script type="text/javascript"
+        src="{{ url_for('bower.static', filename='datatables.net-buttons/js/buttons.print.min.js') }}"></script>
+<script type="text/javascript"
+        src="{{ url_for('bower.static', filename='datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
+<script type="text/javascript"
+        src="{{ url_for('bower.static', filename='datatables.net-buttons/js/buttons.colVis.min.js') }}"></script>
+<script type="text/javascript"
+        src="{{ url_for('bower.static', filename='jzip/jzip.js') }}"></script>
+<script type="text/javascript"
+        src="{{ url_for('bower.static', filename='pdfmake/build/pdfmake.min.js') }}"></script>
+<script type="text/javascript"
+        src="{{ url_for('bower.static', filename='pdfmake/build/vfs_fonts.js') }}"></script>
+<script type="text/javascript"
+        src="{{ url_for('bower.static', filename='seiyria-bootstrap-slider/dist/bootstrap-slider.min.js') }}"></script>
+<script type="text/javascript"
+        src="{{ url_for('bower.static', filename='select2/dist/js/select2.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/search_utils.js') }}"></script>
+<script type="text/javascript">
 
-    $(document).ready(function () {
-        $('#datatable').DataTable({
-            dom: 'Bfirtp',
-            buttons: [
-                {
-                    extend: 'copyHtml5'
-                },
-                'excelHtml5',
-                'csvHtml5',
-                'pdfHtml5'
-            ]
-        });
+    $("#diseases").select2({
+        ajax: {
+            minimumInputLength: 2,
+            cache: true,
+            multiple: true,
+            url: "search_diseases",
+            contentType: "application/json",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term || 'Neoplasm' // search term
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: $.map(data, function (term) {
+                        return {
+                            text: term.name,
+                            id: term.code
+                        }
+                    })
+                };
+            }
+        },
     });
+
+    $("#biomarkers").select2({
+        ajax: {
+            minimumInputLength: 2,
+            cache: true,
+            multiple: true,
+            url: "search_biomarkers",
+            contentType: "application/json",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term || 'A' // search term
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: $.map(data, function (term) {
+                        return {
+                            text: term.name,
+                            id: term.code
+                        }
+                    })
+                };
+            }
+        },
+    });
+
+    $("#anatomicsites").select2({
+        ajax: {
+            minimumInputLength: 2,
+            cache: true,
+            multiple: true,
+            url: "search_anatomicsites",
+            contentType: "application/json",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term || 'A'  // search term
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: $.map(data, function (term) {
+                        return {
+                            text: term.name,
+                            id: term.code
+                        }
+                    })
+                };
+            }
+        },
+    });
+
+    $("#drugs").select2({
+        ajax: {
+            minimumInputLength: 2,
+            cache: true,
+            multiple: true,
+            url: "search_drugs",
+            contentType: "application/json",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term || '1'  // search term
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: $.map(data, function (term) {
+                        return {
+                            text: term.name,
+                            id: term.code
+                        }
+                    })
+                };
+            }
+        },
+    });
+
+    $("#therapies").select2({
+        ajax: {
+            minimumInputLength: 2,
+            cache: true,
+            multiple: true,
+            url: "search_therapies",
+            contentType: "application/json",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term || 'A'  // search term
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: $.map(data, function (term) {
+                        return {
+                            text: term.name,
+                            id: term.code
+                        }
+                    })
+                };
+            }
+        },
+    });
+
+    $("#findings").select2({
+        ajax: {
+            minimumInputLength: 2,
+            cache: true,
+            multiple: true,
+            url: "search_findings",
+            contentType: "application/json",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term || 'A'  // search term
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: $.map(data, function (term) {
+                        return {
+                            text: term.name,
+                            id: term.code
+                        }
+                    })
+                };
+            }
+        },
+    });
+
+
+
+    $("#age").slider({
+        step: 1,
+        min: 0,
+        max: 100,
+        value: [0, 999],
+        labelledby: ['age_min', 'age_max']
+    });
+
+    $('#age').on('slideStop', function (slider) {
+        $('#age_min').text(slider.value[0]);
+        $('#age_max').text(slider.value[1]);
+    });
+
+
+    $("#age-enabled").click(function () {
+        if (this.checked) {
+            // With JQuery
+            $("#age").slider("enable");
+            $("#age_max").text(100);
+        }
+        else {
+            // With JQuery
+            $("#age").slider("disable");
+            $("#age_min").text(0);
+            $("#age_max").text(999);
+        }
+    });
+
+    var datatable = $('#datatable').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'copyHtml5'
+            },
+            'excelHtml5',
+            'csvHtml5',
+            'pdfHtml5'
+        ]
+    });
+
+    //        // Add search fields to every column at the datatable footer
+    //        $("#age").on("slideStop", function (slideStop) {
+    //            $("#age_min").text(slideStop.value[0]);
+    //            $("#age_max").text(slideStop.value[1]);
+    //        });
+    //
+    //        // Apply the search
+    //        datatable.columns().every(function () {
+    //            var that = this;
+    //            $('input', this.footer()).on('keyup change', function () {
+    //                if (that.search() !== this.value) {
+    //                    that
+    //                        .search(this.value)
+    //                        .draw();
+    //                }
+    //            });
+    //        });
 </script>
 
 <script>
