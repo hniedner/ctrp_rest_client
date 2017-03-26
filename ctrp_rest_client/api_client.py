@@ -37,19 +37,23 @@ def get_trial_by_nct_id(nct_id):
 # Bad hack to retrieve all records since API only returns
 # 50 records at the time
 
-def find_trials(search_params):
-    start = 0  # start retrieving results from list index
-    size = 50  # max number of trials retrieved as limited by the api
-    rv = _call_api(search_params)
-    total = rv["total"]
-    data = []
-    search_params["size"] = size
+def find_all_trials(search_params):
+    return find_trials(search_params, 0, 0, True)
 
-    while start < total:
-        search_params["from"] = start
-        this_draw = _call_api(search_params)
-        data.extend(this_draw["trials"])
-        start += size
+
+def find_trials(search_params, start, length, all=False):
+    search_params["from"] = start if start else 0
+    search_params["size"] = 50 if all or length > 50 else length
+    total = -1
+    data = []
+    while start < total or total < 0:
+        search_params['from'] = start
+        draw = _call_api(search_params)
+        data.extend(draw['trials'])
+        total = draw['total']
+        start += 50  # max number of retrieved record supported
+        if all is False:  # no aggregation needed/wanted
+            break
 
     # shaping the dictionary to suit jquery datatables
     result = {
@@ -70,8 +74,26 @@ def get_nr_of_trials(search_params):
     result = _call_api(search_params)
     return result['total']
 
-# call clinical trials API and retrieves results and total number of results
 
+# default columns/fields to be displayed for the search results
+cols = [
+        "nci_id",
+        "nct_id",
+        "phase.phase",
+        "start_date",
+        "current_trial_status",
+        "official_title"
+    ]
+
+
+# add the returned field to search_params
+def add_included_fields(search_params, fields=cols):
+    retval = search_params if search_params else {}
+    retval['include'] = fields
+    return retval
+
+
+# call clinical trials API and retrieves results and total number of results
 def _call_api(search_params):
     req_url = urljoin(base_url, 'clinical-trials?')
     log.debug('POST requesting: {}'.format(req_url))

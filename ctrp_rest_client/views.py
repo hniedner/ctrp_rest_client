@@ -58,8 +58,9 @@ def search():
     if request.method == 'POST' and form.validate_on_submit():
         search_params = _parse_search_params(form)
         terms = _parse_terms(form)
+
         # calling the API
-        result = api_client.find_trials(search_params)
+        result = api_client.find_all_trials(search_params)
         return render_template('display_results.html', search_params=search_params, result=result, terms=terms)
 
     # Render template
@@ -77,22 +78,10 @@ def _parse_terms(form):
     return terms
 
 
-def _add_included_fields(search_params):
-    search_params['include'] = [
-        "nci_id",
-        "nct_id",
-        "phase.phase",
-        "start_date",
-        "current_trial_status",
-        "official_title"
-    ]
-    return search_params
-
-
 # extract values from form fields and populate the query for the
 # search request to the API
 def _parse_search_params(form):
-    search_params = _add_included_fields({})
+    search_params = api_client.add_included_fields({})
 
     if form.accepts_healthy_volunteers_indicator.data != 'NA':
         search_params["accepts_healthy_volunteers_indicator"] = form.accepts_healthy_volunteers_indicator.data

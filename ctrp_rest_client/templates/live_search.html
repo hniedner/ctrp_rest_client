@@ -220,24 +220,6 @@ Clinical Trial Excursions
                     </tr>
                     </tfoot>
                     <tbody>
-                    <tr>
-                        <td><a href="{{ url_for('display_trial', trial_id='NCI-2014-01509') }}">NCI-2014-01509</a></td>
-                        <td>NCT02194738</td>
-                        <td>NA</td>
-                        <td>2014-08-18</td>
-                        <td>Active</td>
-                        <td>Adjuvant Lung Cancer Enrichment Marker Identification and Sequencing Trial (ALCHEMIST)</td>
-                    </tr>
-                    <tr>
-                        <td><a href="{{ url_for('display_trial', trial_id='NCI-2013-01802') }}">NCI-2013-01802</a></td>
-                        <td>NCT01813734</td>
-                        <td>II</td>
-                        <td>2013-08-29</td>
-                        <td>Active</td>
-                        <td>A Phase II, Open-Label Study of Ponatinib, a Multi-targeted Oral Tyrosine Kinase Inhibitor,
-                            in Advanced Non-small Cell Lung Cancer Harboring RET Translocations
-                        </td>
-                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -511,7 +493,21 @@ Clinical Trial Excursions
     });
 
     var datatable = $('#datatable').DataTable({
-        dom: 'Bfrtip',
+        dom: 'Brtip',
+        serverSide: true,
+        ajax: {
+            url: '/process_datatable_callback',
+            type: 'POST'
+        },
+        order: [], //disables sorted infication by first column
+        columns: [
+            { data: "nci_id", name: "NCI-ID", orderable: false},
+            { data: "nct_id", name: "NCT-ID", orderable: false},
+            { data: "phase.phase", name: "Phase", orderable: false},
+            { data: "start_date", name: "Start Date", orderable: false},
+            { data: "current_trial_status", name: "Status", orderable: false},
+            { data: "official_title", name: "Official Title", orderable: false}
+        ],
         buttons: [
             {
                 extend: 'copyHtml5'

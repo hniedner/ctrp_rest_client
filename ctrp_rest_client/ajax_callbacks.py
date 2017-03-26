@@ -106,6 +106,28 @@ def get_name_for_code():
     return jsonify(name)
 
 
+@app.route('/process_datatable_callback', methods=['POST'])
+def process_datatable_callback():
+
+    draw = request.values.get('draw', type=int)
+    start = request.values.get('start', type=int)
+    length = request.values.get('length', type=int)
+    # search = request.values.get('search', type=list)
+    # order = request.values['order']
+    # columns = request.values['columns']
+
+    search_params = {
+        'eligibility.structured.gender': 'male'
+    }
+
+    result = api_client.find_trials(api_client.add_included_fields(search_params), start, length)
+
+    result['draw'] = draw
+    result['recordsFiltered'] = result['recordsTotal']
+    # result['error'] = 'there was an error'
+    return jsonify(result)
+
+
 def _process_route(request_param, function_name):
     value = request.args.get(request_param)
     result = function_name(value)
