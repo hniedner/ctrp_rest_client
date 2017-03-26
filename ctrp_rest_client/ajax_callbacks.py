@@ -1,4 +1,4 @@
-from flask import jsonify, request
+from flask import jsonify, request, json
 from ctrp_rest_client import app, api_client
 from ctrp_rest_client import terminology
 
@@ -113,17 +113,18 @@ def process_datatable_callback():
     start = request.values.get('start', type=int)
     length = request.values.get('length', type=int)
     # search = request.values.get('search', type=list)
-    # order = request.values['order']
-    # columns = request.values['columns']
+    search_val = request.values.get('search[value]', type=str)
 
-    search_params = {
-        'eligibility.structured.gender': 'male'
-    }
+    if search_val:
+        print('search_val', search_val)
+        search_params = {**api_client.add_included_fields({}), **json.loads(search_val)}
+    else:
+        search_params = api_client.add_included_fields({})
 
-    result = api_client.find_trials(api_client.add_included_fields(search_params), start, length)
+    result = api_client.find_trials(search_params, start, length)
 
     result['draw'] = draw
-    result['recordsFiltered'] = result['recordsTotal']
+    result['recordsFiltered'] = result['recordsTotal'] if result['recordsTotal'] else 0
     # result['error'] = 'there was an error'
     return jsonify(result)
 

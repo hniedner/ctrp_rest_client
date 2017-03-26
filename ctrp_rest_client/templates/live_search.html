@@ -142,33 +142,34 @@ Clinical Trial Excursions
             <div class="panel">
                 <div class="row form-group">
                     <div class="col-sm-12">
+                        <label>Show only trials with:</label>
                         <div class="checkbox">
                             <label>
-                                <input id="phasena" name="phasena" type="checkbox"/>
+                                <input id="phasena" name="phase[]" type="checkbox"/>
                                 Phase N/A
                             </label>
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input id="phase1" name="phase1" type="checkbox">
-                                Phase I
+                                <input id="phase1" name="phase[]" type="checkbox">
+                                Phase I (includes I_II)
                             </label>
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input id="phase2" name="phase2" type="checkbox">
-                                Phase II
+                                <input id="phase2" name="phase[]" type="checkbox">
+                                Phase II (includes I_II and II_III)
                             </label>
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input id="phase3" name="phase3" type="checkbox">
-                                Phase III
+                                <input id="phase3" name="phase[]" type="checkbox">
+                                Phase III (includes II_III)
                             </label>
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input id="phase4" name="phase4" type="checkbox">
+                                <input id="phase4" name="phase[]" type="checkbox">
                                 Phase IV
                             </label>
                         </div>
@@ -195,10 +196,17 @@ Clinical Trial Excursions
 
         <div id="main" class="col-sm-10">
             <div class="jumbotron">
-                <span id="open_nav" style="font-size:20px;cursor:pointer" onclick="openNav()">&#9776; Open</span>
-                <span id="close_nav" style="font-size:20px;cursor:pointer" onclick="closeNav()">&#9776; Close</span>
+                <div class="row" style="font-size:15px;">
+                    <div class="col-sm-4 left">
+                        <span id="open_nav" style="cursor:pointer" onclick="openNav()">&#9776; Open Search</span>
+                        <span id="close_nav" style="cursor:pointer" onclick="closeNav()">&#9776; Close Search</span>
+                    </div>
+                    <div class="col-sm-8 left">
+                        <span><span id="records_total" role="status" aria-live="polite">0</span> Trials found</span>
+                    </div>
+                </div>
                 <hr/>
-                <table id="datatable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                <table id="results" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                     <tr>
                         <th>NCI&nbsp;ID</th>
@@ -492,7 +500,7 @@ Clinical Trial Excursions
         }
     });
 
-    var datatable = $('#datatable').DataTable({
+    var datatable = $('#results').DataTable({
         dom: 'Brtip',
         serverSide: true,
         ajax: {
@@ -501,12 +509,12 @@ Clinical Trial Excursions
         },
         order: [], //disables sorted infication by first column
         columns: [
-            { data: "nci_id", name: "NCI-ID", orderable: false},
-            { data: "nct_id", name: "NCT-ID", orderable: false},
-            { data: "phase.phase", name: "Phase", orderable: false},
-            { data: "start_date", name: "Start Date", orderable: false},
-            { data: "current_trial_status", name: "Status", orderable: false},
-            { data: "official_title", name: "Official Title", orderable: false}
+            {data: "nci_id", name: "NCI-ID", orderable: false},
+            {data: "nct_id", name: "NCT-ID", orderable: false},
+            {data: "phase.phase", name: "Phase", orderable: false},
+            {data: "start_date", name: "Start Date", orderable: false},
+            {data: "current_trial_status", name: "Status", orderable: false},
+            {data: "official_title", name: "Official Title", orderable: false}
         ],
         buttons: [
             {
@@ -518,25 +526,59 @@ Clinical Trial Excursions
         ]
     });
 
-    //        // Add search fields to every column at the datatable footer
-    //        $("#age").on("slideStop", function (slideStop) {
-    //            $("#age_min").text(slideStop.value[0]);
-    //            $("#age_max").text(slideStop.value[1]);
-    //        });
-    //
-    //        // Apply the search
-    //        datatable.columns().every(function () {
-    //            var that = this;
-    //            $('input', this.footer()).on('keyup change', function () {
-    //                if (that.search() !== this.value) {
-    //                    that
-    //                        .search(this.value)
-    //                        .draw();
-    //                }
-    //            });
-    //        });
-</script>
+    datatable.on('draw.dt', function () {
+        console.log(datatable.page.info()['recordsTotal']);
+        $('#records_total').text(datatable.page.info()['recordsTotal']);
+    });
 
+    var search_params = {};
+
+    $('#fulltext').keyup(function () {
+        search_params['_fulltext'] = $(this).val();
+        datatable.search(JSON.stringify(search_params)).draw();
+    });
+
+    $("#diseases").on('change', function () {
+        search_params['diseases.nci_thesaurus_concept_id'] = $(this).val();
+        datatable.search(JSON.stringify(search_params)).draw();
+    });
+
+    $("#biomarkers").on('change', function () {
+        search_params['biomarkers.nci_thesaurus_concept_id'] = $(this).val();
+        datatable.search(JSON.stringify(search_params)).draw();
+    });
+
+    $("[name='phase[]']").on('change', function () {
+        var phases = [];
+        if ($("#phasena").is(':checked')) {
+            phases = phases.concat(['NA']);
+        }
+
+        if ($("#phase1").is(':checked')) {
+            phases = phases.concat(['I', 'I_II']);
+        }
+
+        if ($("#phase2").is(':checked')) {
+            phases = phases.concat(['I_II', 'II', 'II_III']);
+        }
+
+        if ($("#phase3").is(':checked')) {
+            phases = phases.concat(['II_III', 'III']);
+        }
+
+        if ($("#phase4").is(':checked')) {
+            phases = phases.concat(['IV']);
+        }
+
+        if (phases.length > 0) {
+            search_params['phase.phase'] = phases;
+        } else {
+            delete search_params['phase.phase'];
+        }
+        datatable.search(JSON.stringify(search_params)).draw();
+    });
+
+</script>
 <script>
 
     function openNav() {
