@@ -32,6 +32,7 @@
     "datatables.net-buttons-dt": "^1.2.4",
     "datatables.net-buttons-bs": "^1.2.4",
     "select2": "^4.0.3",
-    "select2-bootstrap-css": "^1.4.6"
+    "select2-bootstrap-css": "^1.4.6",
+    "pdfmake": "^0.1.27"
   }
 }
