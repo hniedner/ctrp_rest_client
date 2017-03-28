@@ -284,6 +284,7 @@ Clinical Trial Excursions
         src="{{ url_for('bower.static', filename='select2/dist/js/select2.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/search_utils.js') }}"></script>
 
+
 <script>
 
     function openNav() {
@@ -303,7 +304,15 @@ Clinical Trial Excursions
 
 <script type="text/javascript">
 
+
     openNav(); // hides close button and opens search side nav
+
+    function recalculateAccordionPanel() {
+        $('.accordion.active').each(function (index, elem) {
+            var panel = elem.nextElementSibling;
+            panel.style.maxHeight = panel.scrollHeight + "px";
+        })
+    }
 
     $("#terms").select2({
         ajax: {
@@ -567,6 +576,7 @@ Clinical Trial Excursions
     });
 
     $('#terms').on('change', function () { //TODO : add remove terms after deleting them
+        recalculateAccordionPanel();
         var term = $(this).val();
         var terms = term.split('#');
         console.log(terms);
@@ -582,11 +592,13 @@ Clinical Trial Excursions
     });
 
     $("#diseases").on('change', function () {
+        recalculateAccordionPanel();
         search_params['diseases.nci_thesaurus_concept_id'] = $(this).val();
         datatable.search(JSON.stringify(search_params)).draw();
     });
 
     $("#biomarkers").on('change', function () {
+        recalculateAccordionPanel();
         search_params['biomarkers.nci_thesaurus_concept_id'] = $(this).val();
         datatable.search(JSON.stringify(search_params)).draw();
     });
@@ -595,7 +607,7 @@ Clinical Trial Excursions
         if ($(this).val() == 'Any') {
             delete search_params['eligibility.structured.gender'];
         } else {
-            search_params['eligibility.structured.gender'] = $(this).val();;
+            search_params['eligibility.structured.gender'] = $(this).val();
         }
         datatable.search(JSON.stringify(search_params)).draw();
     });
