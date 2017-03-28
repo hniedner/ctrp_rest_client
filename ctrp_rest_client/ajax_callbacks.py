@@ -106,6 +106,17 @@ def get_name_for_code():
     return jsonify(name)
 
 
+@app.route('/search_terms')
+def search_terms():
+    query = request.args.get('query')
+    size = request.args.get('size')
+    retval = api_client.search_terms(query, size)
+    terms = []
+    if retval:
+        terms = retval['terms']
+    return jsonify(terms)
+
+
 @app.route('/process_datatable_callback', methods=['POST'])
 def process_datatable_callback():
 
@@ -116,13 +127,11 @@ def process_datatable_callback():
     search_val = request.values.get('search[value]', type=str)
 
     if search_val:
-        print('search_val', search_val)
         search_params = {**api_client.add_included_fields({}), **json.loads(search_val)}
     else:
         search_params = api_client.add_included_fields({})
 
     result = api_client.find_trials(search_params, start, length)
-
     result['draw'] = draw
     result['recordsFiltered'] = result['recordsTotal'] if result['recordsTotal'] else 0
     # result['error'] = 'there was an error'

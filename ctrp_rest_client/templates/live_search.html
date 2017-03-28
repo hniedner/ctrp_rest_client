@@ -11,12 +11,23 @@ Clinical Trial Excursions
 <div class="container-fluid">
     <div class="row">
         <div id="left_sidenav" class="col-sm-2 left sidenav">
-            <button class="accordion">Keywords</button>
+            <button class="accordion">Fulltext</button>
             <div class="panel">
                 <div class="row form-group">
                     <div class="col-sm-12 input-group select2-search">
                         <input class="form-control" id="fulltext" name="fulltext"
-                               placeholder="Keyword or phrase" type="text">
+                               placeholder="Keyword or phrase" type="text" style="width: 100%;">
+                    </div>
+                </div>
+            </div>
+
+            <button class="accordion">Indexed Terms</button>
+            <div class="panel">
+                <div class="row form-group">
+                    <div class="col-sm-12 input-group select2-bootstrap-prepend select2-bootstrap-prepend">
+                        <select id="terms" class="form-control select2 select2-multiple wrap"
+                                data-placeholder="Type Disease" multiple style="width: 100%;">
+                        </select>
                     </div>
                 </div>
             </div>
@@ -42,7 +53,7 @@ Clinical Trial Excursions
                     </div>
                 </div>
             </div>
-
+            <!--
             <button class="accordion">Anatomic Sites</button>
             <div class="panel">
                 <div class="row form-group">
@@ -86,6 +97,7 @@ Clinical Trial Excursions
                     </div>
                 </div>
             </div>
+            -->
 
             <button class="accordion">Structured Criteria</button>
             <div class="panel">
@@ -175,22 +187,6 @@ Clinical Trial Excursions
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <button class="accordion">Other</button>
-            <div class="panel">
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                    aliquip ex ea commodo consequat.
-                </p>
-            </div>
-
-            <button class="accordion">More</button>
-            <div class="panel">
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                    aliquip ex ea commodo consequat.
-                </p>
             </div>
         </div>
 
@@ -307,7 +303,33 @@ Clinical Trial Excursions
 
 <script type="text/javascript">
 
-    openNav();
+    openNav(); // hides close button and opens search side nav
+
+    $("#terms").select2({
+        ajax: {
+            minimumInputLength: 2,
+            cache: true,
+            url: "search_terms",
+            contentType: "application/json",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term || 'a' // search term
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: $.map(data, function (term) {
+                        return {
+                            text: term.term + ' (' + term.count + ' trials)',
+                            id: term.term_type + '#' + term.codes
+                        }
+                    })
+                };
+            }
+        },
+    });
 
     $("#diseases").select2({
         ajax: {
@@ -483,6 +505,9 @@ Clinical Trial Excursions
     $('#age').on('slideStop', function (slider) {
         $('#age_min').text(slider.value[0]);
         $('#age_max').text(slider.value[1]);
+        search_params['eligibility.structured.min_age_number_gte'] = slider.value[0];
+        search_params['eligibility.structured.max_age_number_lte'] = slider.value[1];
+        datatable.search(JSON.stringify(search_params)).draw();
     });
 
 
@@ -497,7 +522,11 @@ Clinical Trial Excursions
             $("#age").slider("disable");
             $("#age_min").text(0);
             $("#age_max").text(999);
+            $("#age").slider('refresh');
+            delete search_params['eligibility.structured.min_age_number_gte'];
+            delete search_params['eligibility.structured.max_age_number_lte'];
         }
+        datatable.search(JSON.stringify(search_params)).draw();
     });
 
     var datatable = $('#results').DataTable({
@@ -527,7 +556,6 @@ Clinical Trial Excursions
     });
 
     datatable.on('draw.dt', function () {
-        console.log(datatable.page.info()['recordsTotal']);
         $('#records_total').text(datatable.page.info()['recordsTotal']);
     });
 
@@ -538,6 +566,21 @@ Clinical Trial Excursions
         datatable.search(JSON.stringify(search_params)).draw();
     });
 
+    $('#terms').on('change', function () { //TODO : add remove terms after deleting them
+        var term = $(this).val();
+        var terms = term.split('#');
+        console.log(terms);
+        if ('_diseases' == terms[0])  {
+            delete terms[0];
+            console.log(term);
+            search_params['diseases.nci_thesaurus_concept_id'] = terms;
+        } else if ('_biomarkers' == terms[0])  {
+            delete terms[0];
+            search_params['biomarkers.nci_thesaurus_concept_id'] = terms;
+        }
+        datatable.search(JSON.stringify(search_params)).draw();
+    });
+
     $("#diseases").on('change', function () {
         search_params['diseases.nci_thesaurus_concept_id'] = $(this).val();
         datatable.search(JSON.stringify(search_params)).draw();
@@ -545,6 +588,24 @@ Clinical Trial Excursions
 
     $("#biomarkers").on('change', function () {
         search_params['biomarkers.nci_thesaurus_concept_id'] = $(this).val();
+        datatable.search(JSON.stringify(search_params)).draw();
+    });
+
+    $("#gender").on('change', function () {
+        if ($(this).val() == 'Any') {
+            delete search_params['eligibility.structured.gender'];
+        } else {
+            search_params['eligibility.structured.gender'] = $(this).val();;
+        }
+        datatable.search(JSON.stringify(search_params)).draw();
+    });
+
+    $("#accepts_healthy_volunteers_indicator").on('change', function () {
+        if ($(this).val() == 'NA') {
+            delete search_params['accepts_healthy_volunteers_indicator'];
+        } else {
+            search_params['accepts_healthy_volunteers_indicator'] = $(this).val();
+        }
         datatable.search(JSON.stringify(search_params)).draw();
     });
 

@@ -48,12 +48,15 @@ def find_trials(search_params, start, length, all=False):
     data = []
     while start < total or total < 0:
         search_params['from'] = start
-        draw = _call_api(search_params)
-        data.extend(draw['trials'])
-        total = draw['total']
-        start += 50  # max number of retrieved record supported
-        if all is False:  # no aggregation needed/wanted
-            break
+        draw = _call_api(search_params, 'clinical-trials?')
+        if draw:
+            data.extend(draw['trials'])
+            total = draw['total']
+            start += 50  # max number of retrieved record supported
+            if all is False:  # no aggregation needed/wanted
+                break
+        else: # no results or offline
+            total = 0
 
     # shaping the dictionary to suit jquery datatables
     result = {
@@ -93,14 +96,23 @@ def add_included_fields(search_params, fields=cols):
     return retval
 
 
+# returns terms values
+def search_terms(query, size=10):
+    search_params = dict()
+    search_params['term'] = query
+    search_params['size'] = size
+    return _call_api(search_params, 'terms?')
+
+
 # call clinical trials API and retrieves results and total number of results
-def _call_api(search_params):
-    req_url = urljoin(base_url, 'clinical-trials?')
+def _call_api(search_params, url_ext='clinical-trials?'):
+    req_url = urljoin(base_url, url_ext)
     log.debug('POST requesting: {}'.format(req_url))
     trials_retval = None
 
     try:
-        resp = requests.post(req_url, json=search_params)
+        log.debug('retrieving: ' + req_url)
+        resp = requests.post(req_url, json=search_params, timeout=0.999)  # wait 250 ms for response
         log.info('Status Code: {}'.format(resp.status_code))
 
         if resp.status_code != 200:
