@@ -324,15 +324,31 @@ Clinical Trial Excursions
             delay: 250,
             data: function (params) {
                 return {
-                    q: params.term || 'a' // search term
+                    q: params.term || 'a', // search term
+                    size: 20
                 };
             },
             processResults: function (data) {
                 return {
                     results: $.map(data, function (term) {
+                        var terms = [];
+                        if ('_diseases' === term.term_type) {
+                            terms.push('diseases.nci_thesaurus_concept_id');
+                            terms = terms.concat(term.codes);
+                        } else if ('_biomarkers' === term.term_type) {
+                            terms.push('biomarkers.nci_thesaurus_concept_id');
+                            terms = terms.concat(term.codes);
+                        } else if ('_treatments' === term.term_type) {
+                            console.log(term);
+                            terms.push('arms.interventions.intervention_name');
+                            terms = terms.concat((term.term.split('(')[0].trim()));
+                        } else if ('sites.org_name' === term.term_type) {
+                            terms.push('sites.org_name');
+                            terms.push(term.term);
+                        }
                         return {
                             text: term.term + ' (' + term.count + ' trials)',
-                            id: term.term_type + '#' + term.codes
+                            id: terms
                         }
                     })
                 };
@@ -514,8 +530,8 @@ Clinical Trial Excursions
     $('#age').on('slideStop', function (slider) {
         $('#age_min').text(slider.value[0]);
         $('#age_max').text(slider.value[1]);
-        search_params['eligibility.structured.min_age_number_gte'] = slider.value[0];
-        search_params['eligibility.structured.max_age_number_lte'] = slider.value[1];
+        search_params['eligibility.structured.min_age_in_years_gte'] = slider.value[0];
+        search_params['eligibility.structured.max_age_in_years_lte'] = slider.value[1];
         datatable.search(JSON.stringify(search_params)).draw();
     });
 
@@ -532,8 +548,8 @@ Clinical Trial Excursions
             $("#age_min").text(0);
             $("#age_max").text(999);
             $("#age").slider('refresh');
-            delete search_params['eligibility.structured.min_age_number_gte'];
-            delete search_params['eligibility.structured.max_age_number_lte'];
+            delete search_params['eligibility.structured.min_age_in_years_gte'];
+            delete search_params['eligibility.structured.max_age_in_years_lte'];
         }
         datatable.search(JSON.stringify(search_params)).draw();
     });
@@ -575,19 +591,26 @@ Clinical Trial Excursions
         datatable.search(JSON.stringify(search_params)).draw();
     });
 
-    $('#terms').on('change', function () { //TODO : add remove terms after deleting them
+    $('#terms').on('change', function () {
         recalculateAccordionPanel();
-        var term = $(this).val();
-        var terms = term.split('#');
-        console.log(terms);
-        if ('_diseases' == terms[0])  {
-            delete terms[0];
-            console.log(term);
-            search_params['diseases.nci_thesaurus_concept_id'] = terms;
-        } else if ('_biomarkers' == terms[0])  {
-            delete terms[0];
-            search_params['biomarkers.nci_thesaurus_concept_id'] = terms;
+        // TODO the deletes below will actually affect the disease and biomarker constraints
+        search_params['arms.interventions.intervention_name'] = [];
+        search_params['biomarkers.nci_thesaurus_concept_id'] = [];
+        search_params['diseases.nci_thesaurus_concept_id'] = [];
+        search_params['sites.org_name'] = [];
+        var selected = $(this).val();
+        if (selected) {
+            for (i = 0; i < selected.length; i++) {
+
+                var terms = selected[i].split(',');
+                var search_key = terms.shift();
+                console.log(search_key);
+                console.log(terms);
+
+                search_params[search_key] = search_params[search_key].concat(terms);
+            }
         }
+        console.log(search_params); //TODO
         datatable.search(JSON.stringify(search_params)).draw();
     });
 

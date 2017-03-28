@@ -90,8 +90,8 @@ def _parse_search_params(form):
         search_params["eligibility.structured.gender"] = form.gender.data
 
     _conditional_add_value(search_params, '_fulltext', form.fulltext.data)
-    _conditional_add_value(search_params, 'eligibility.structured.min_age_number_gte', form.min_age_number.data)
-    _conditional_add_value(search_params, 'eligibility.structured.max_age_number_lte', form.max_age_number.data)
+    _conditional_add_value(search_params, 'eligibility.structured.min_age_in_years_gte', form.min_age_number.data)
+    _conditional_add_value(search_params, 'eligibility.structured.max_age_in_years_lte', form.max_age_number.data)
 
     disease_codes = _parse_list_values(form.disease_codes)
     _conditional_add_value(search_params, 'diseases.nci_thesaurus_concept_id', disease_codes)

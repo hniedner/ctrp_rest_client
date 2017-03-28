@@ -1,5 +1,5 @@
-import sqlite3
 import logging
+import sqlite3
 
 # create logger
 logger = logging.getLogger('terminology')
@@ -138,35 +138,9 @@ def search_drug_by_substring(query):
 
 
 def search_biomarker_by_substring(query):
-    sql = 'select code, name from ncit ' \
-          'where (semantic_type = "Acquired Abnormality" ' \
-          'or semantic_type = "Amino Acid, Peptide, or Protein" ' \
-          'or semantic_type = "Amino Acid, Peptide, or Protein|Biologically Active Substance" ' \
-          'or semantic_type = "Amino Acid, Peptide, or Protein|Enzyme" ' \
-          'or semantic_type = "Amino Acid, Peptide, or Protein|Enzyme|Receptor" ' \
-          'or semantic_type = "Amino Acid, Peptide, or Protein|Hormone" ' \
-          'or semantic_type = "Amino Acid, Peptide, or Protein|Immunologic Factor" ' \
-          'or semantic_type = "Amino Acid, Peptide, or Protein|Receptor" ' \
-          'or semantic_type = "Cell" ' \
-          'or semantic_type = "Cell Component" ' \
-          'or semantic_type = "Cell or Molecular Dysfunction" ' \
-          'or semantic_type = "Clinical Attribute" ' \
-          'or semantic_type = "Element, Ion, or Isotope" ' \
-          'or semantic_type = "Finding" ' \
-          'or semantic_type = "Functional Concept" ' \
-          'or semantic_type = "Gene or Genome" ' \
-          'or semantic_type = "Hazardous or Poisonous Substance|Inorganic Chemical" ' \
-          'or semantic_type = "Hormone" ' \
-          'or semantic_type = "Hormone|Organic Chemical" ' \
-          'or semantic_type = "Immunologic Factor|Organic Chemical" ' \
-          'or semantic_type = "Laboratory Procedure" ' \
-          'or semantic_type = "Laboratory or Test Result" ' \
-          'or semantic_type = "Nucleotide Sequence" ' \
-          'or semantic_type = "Organic Chemical|Pharmacologic Substance" ' \
-          'or semantic_type = "Pharmacologic Substance" ' \
-          'or semantic_type = "Pharmacologic Substance|Vitamin" ' \
-          'or semantic_type = "Virus") ' \
-          'and (name like ? or synonyms like ?)'
+    sql = 'select ncit.code, ncit.name from biomarkers ' \
+          'JOIN ncit ON biomarkers.code = ncit.code ' \
+          'where ncit.name like ? or ncit.synonyms like ?'
     querytokens = ['%' + query + '%', '%' + query + '%']
     results = get_code_name_list_result(sql, querytokens)
     return results

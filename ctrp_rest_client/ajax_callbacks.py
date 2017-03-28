@@ -1,4 +1,5 @@
 from flask import jsonify, request, json
+
 from ctrp_rest_client import app, api_client
 from ctrp_rest_client import terminology
 
@@ -108,7 +109,7 @@ def get_name_for_code():
 
 @app.route('/search_terms')
 def search_terms():
-    query = request.args.get('query')
+    query = request.args.get('q')
     size = request.args.get('size')
     retval = api_client.search_terms(query, size)
     terms = []

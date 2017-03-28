@@ -97,7 +97,7 @@ def add_included_fields(search_params, fields=cols):
 
 
 # returns terms values
-def search_terms(query, size=10):
+def search_terms(query, size=20):
     search_params = dict()
     search_params['term'] = query
     search_params['size'] = size
@@ -117,7 +117,7 @@ def _call_api(search_params, url_ext='clinical-trials?'):
 
         if resp.status_code != 200:
             # This means something went wrong.
-            log.warning(' Search for trials returned: {}'.format(resp.status_code))
+            log.warning(' Search for trials returned: {} \n {}'.format(resp.status_code, search_params))
         else:
             trials_retval = resp.json()
 
