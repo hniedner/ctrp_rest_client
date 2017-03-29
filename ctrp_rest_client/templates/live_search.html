@@ -570,6 +570,13 @@ Clinical Trial Excursions
             {data: "current_trial_status", name: "Status", orderable: false},
             {data: "official_title", name: "Official Title", orderable: false}
         ],
+        aoColumnDefs: [ {
+            "aTargets": [ 0 ],
+            "mData": "download_link",
+            "mRender": function ( data, type, full ) {
+                return '<a href="/display_trial/'+data+'">'+data+'</a>';
+            }
+        } ],
         buttons: [
             {
                 extend: 'copyHtml5'
