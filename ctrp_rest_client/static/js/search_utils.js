@@ -270,6 +270,7 @@ function select(node, dom, datatable) {
     var code = get_code_for_id(node.id);
     var search_params = {};
 
+
     $.get('get_subtree_codes', {code: code}, function (codes) {
         console.log(codes);
         if ('disease' === dom) {
