@@ -8,7 +8,7 @@ class ZipCodeService:
         _coords = {}
 
         def __init__(self):
-            f = open('zip_codes.json', 'r')
+            f = open('gis_service_db.json', 'r')
             self._coords = json.load(f)
             f.close()
 
