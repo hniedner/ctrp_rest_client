@@ -131,27 +131,6 @@ function add_item_to_comma_delimited_list(field_name, item) {
 }
 
 
-function get_callback_url(dom) {
-    var url = '';
-    if ('disease' === dom) {
-        url = 'search_diseases?q=';
-    } else if('finding' === dom) {
-        url = 'search_findings?q=';
-    } else if('diagnostic' === dom) {
-        url = 'search_diagnostic_test?q=';
-    } else if('test' === dom) {
-        url = 'search_lab_test?q=';
-    } else if('drug' === dom) {
-        url = 'search_drugs?q=';
-    } else if('procedure' === dom) {
-        url = 'search_therapies?q=';
-    } else if('biomarker' === dom) {
-        url = 'search_biomarkers?q=';
-    }
-    return url;
-}
-
-
 function update_tree(code, item, dom) {
     var tree = $('#jstree').jstree(true);
     var root = tree.get_node('root');
@@ -265,31 +244,44 @@ function remove_parents(child, tree) {
     }
 }
 
-function select(node, dom) {
-    var code = get_code_for_id(node.id);
-    var tmp_li_id = code +'_li';
-    var list_item = '<li id="' + tmp_li_id + '">' + node.text + ' (' + code + ') - ' +
-        '<img style="width:2%;" src="static/img/spinner.gif"/> trials found</li>\n';
-    if ("disease" == dom) {
-        $("#selected_diseases").append(list_item);
-    } else if (("biomarker" == dom)) {
-        $("#selected_biomarkers").append(list_item);
+
+function get_callback_url(dom) {
+    var url = '';
+    if ('disease' === dom) {
+        url = 'search_diseases?q=';
+    } else if ('finding' === dom) {
+        url = 'search_findings?q=';
+    } else if ('diagnostic' === dom) {
+        url = 'search_diagnostic_test?q=';
+    } else if ('test' === dom) {
+        url = 'search_lab_test?q=';
+    } else if ('drug' === dom) {
+        url = 'search_drugs?q=';
+    } else if ('procedure' === dom) {
+        url = 'search_therapies?q=';
+    } else if ('biomarker' === dom) {
+        url = 'search_biomarkers?q=';
     }
-
-
-    $.get('get_nr_of_trials?code=' + code + '&dom=' + dom,
-        function (nr_of_trials) {
-            list_item = "<li>" + node.text + " (" + code + ") - " + nr_of_trials + " trials found</li>\n";
-            $('#' + tmp_li_id).remove();
-            if ("disease" == dom) {
-                $("#selected_diseases").append(list_item);
-            } else if (("biomarker" == dom)) {
-                $("#selected_biomarkers").append(list_item);
-            }
-        });
+    return url;
 }
 
-function get_jstree_context_menu() {
+function select(node, dom, datatable) {
+    $("#records_total").prepend('<img style="width:2%;" src="static/img/spinner.gif"/>');
+    var code = get_code_for_id(node.id);
+    var search_params = {};
+
+    if ('disease' === dom) {
+        search_params['diseases.nci_thesaurus_concept_id'] = [code];
+    } else if ('biomarker' === dom) {
+        search_params['biomarkers.nci_thesaurus_concept_id'] = [code];
+    }
+
+    datatable.search(JSON.stringify(search_params)).draw();
+
+
+}
+
+function get_jstree_context_menu(datatable) {
     return {
         "items": function ($node) {
             var tree = $("#jstree").jstree(true);
@@ -297,10 +289,7 @@ function get_jstree_context_menu() {
                 "Select": _build_jstree_context_menu_item(
                     "Select",
                     function select_term(obj) {
-                        select($node, dom);
-                        if ($node !== tree.get_node('root')) {
-                            tree.delete_node($node);
-                        }
+                        select($node, dom, datatable);
                     }
                 ),
                 "Remove": _build_jstree_context_menu_item(
@@ -309,12 +298,14 @@ function get_jstree_context_menu() {
                         if ($node !== tree.get_node('root')) {
                             tree.delete_node($node);
                         }
+                        datatable.search(JSON.stringify({})).draw();
                     }
                 ),
                 "AddChildren": _build_jstree_context_menu_item(
                     "Add child concepts",
                     function add_ch(obj) {
                         add_children($node, tree);
+                        datatable.search(JSON.stringify({})).draw();
                     }
                 ),
                 "RemoveChildren": _build_jstree_context_menu_item(
@@ -331,7 +322,7 @@ function get_jstree_context_menu() {
                         } else {
                             remove_children($node, tree);
                         }
-
+                        datatable.search(JSON.stringify({})).draw();
                     }
                 ),
                 "AddParent": _build_jstree_context_menu_item(
@@ -344,6 +335,7 @@ function get_jstree_context_menu() {
                     "Remove parent concepts",
                     function rm_par(obj) {
                         remove_parents($node, tree);
+                        datatable.search(JSON.stringify({})).draw();
                     }
                 )
             }
