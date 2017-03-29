@@ -2,6 +2,7 @@ from flask import jsonify, request, json
 
 from ctrp_rest_client import app, api_client
 from ctrp_rest_client import terminology
+from gis_service import ZipCodeService
 
 
 @app.route('/get_nr_of_trials')
@@ -143,3 +144,12 @@ def _process_route(request_param, function_name):
     value = request.args.get(request_param)
     result = function_name(value)
     return jsonify(result)
+
+
+zcs = ZipCodeService()
+
+
+@app.route('/get_zip_coords')
+def get_zip_coords():
+    zip_code = request.args.get('zip_code')
+    return jsonify(zcs.get_coords(zip_code))

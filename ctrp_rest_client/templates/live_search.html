@@ -11,23 +11,30 @@ Clinical Trial Excursions
 <div class="container-fluid">
     <div class="row">
         <div id="left_sidenav" class="col-sm-2 left sidenav">
+
+            <button class="accordion">Indexed Terms</button>
+            <div class="panel">
+                <div class="row form-group">
+                    <div class="col-sm-12 input-group">
+                        Search for indexed Trial Sites, Diseases and Biomarkers.
+                        Clears Keyword, Disease and Biomarker fields!
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-12 input-group select2-bootstrap-prepend select2-bootstrap-prepend">
+                        <select id="terms" class="form-control select2 select2-multiple wrap"
+                                data-placeholder="Disease, Biomarker, Site" multiple style="width: 100%;">
+                        </select>
+                    </div>
+                </div>
+            </div>
+
             <button class="accordion">Fulltext</button>
             <div class="panel">
                 <div class="row form-group">
                     <div class="col-sm-12 input-group select2-search">
                         <input class="form-control" id="fulltext" name="fulltext"
                                placeholder="Keyword or phrase" type="text" style="width: 100%;">
-                    </div>
-                </div>
-            </div>
-
-            <button class="accordion">Indexed Terms</button>
-            <div class="panel">
-                <div class="row form-group">
-                    <div class="col-sm-12 input-group select2-bootstrap-prepend select2-bootstrap-prepend">
-                        <select id="terms" class="form-control select2 select2-multiple wrap"
-                                data-placeholder="Type Disease" multiple style="width: 100%;">
-                        </select>
                     </div>
                 </div>
             </div>
@@ -106,8 +113,7 @@ Clinical Trial Excursions
                     <div class="col-sm-12 input-group ">
                         <div class="row">
                             <div class="col-sm-9">
-                                Constrain Age Range<br/>
-                                (<span id="age_min"/>0</span> - <span id="age_max">999</span>)
+                                Specify Age: <span id="age_val"/></span>
                             </div>
                             <div class="col-sm-3">
                                 <input id="age-enabled" type="checkbox"/>
@@ -188,6 +194,32 @@ Clinical Trial Excursions
                     </div>
                 </div>
             </div>
+
+            <button class="accordion">Location</button>
+            <div class="panel">
+                <div class="row form-group form-horizontal">
+                    <div class="col-sm-6 left">
+                        <label for="location">ZIP Code:</label>
+                    </div>
+                    <div class="col-sm-6 right">
+                        <input id="location" class="form-control" type="text" minlength="5" maxlength="5"/>
+                    </div>
+                </div>
+                <div class="row form-group form-horizontal">
+                    <div class="col-sm-6 left">
+                        <label for="location">Distance:</label>
+                    </div>
+                    <div class="col-sm-6 right">
+                        <select id="distance" class="form-control" type="select">
+                            <option label="10 miles" value="10mi" />
+                            <option label="25 miles" value="25mi" />
+                            <option label="50 miles" value="50mi" />
+                            <option label="100 miles" value="100mi" />
+                        </select>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <div id="main" class="col-sm-10">
@@ -339,11 +371,16 @@ Clinical Trial Excursions
                             terms.push('biomarkers.nci_thesaurus_concept_id');
                             terms = terms.concat(term.codes);
                         } else if ('_treatments' === term.term_type) {
-                            console.log(term);
                             terms.push('arms.interventions.intervention_name');
                             terms = terms.concat((term.term.split('(')[0].trim()));
+                        } else if ('_locations' === term.term_type) {
+                            terms.push('_fulltext');
+                            terms.push(term.term);
                         } else if ('sites.org_name' === term.term_type) {
                             terms.push('sites.org_name');
+                            terms.push(term.term);
+                        } else if ('sites.org_family' === term.term_type) {
+                            terms.push('sites.org_family');
                             terms.push(term.term);
                         }
                         return {
@@ -520,18 +557,16 @@ Clinical Trial Excursions
 
 
     $("#age").slider({
-        step: 1,
+        step: .25,
         min: 0,
-        max: 100,
-        value: [0, 999],
-        labelledby: ['age_min', 'age_max']
+        max: 120,
+        value: 50
     });
 
     $('#age').on('slideStop', function (slider) {
-        $('#age_min').text(slider.value[0]);
-        $('#age_max').text(slider.value[1]);
-        search_params['eligibility.structured.min_age_in_years_gte'] = slider.value[0];
-        search_params['eligibility.structured.max_age_in_years_lte'] = slider.value[1];
+        $('#age_val').text(slider.value);
+        search_params['eligibility.structured.min_age_in_years_lte'] = slider.value;
+        search_params['eligibility.structured.max_age_in_years_gte'] = slider.value;
         datatable.search(JSON.stringify(search_params)).draw();
     });
 
@@ -540,16 +575,17 @@ Clinical Trial Excursions
         if (this.checked) {
             // With JQuery
             $("#age").slider("enable");
-            $("#age_max").text(100);
+            $("#age_val").text(50);
+            search_params['eligibility.structured.min_age_in_years_lte'] = 50;
+            search_params['eligibility.structured.max_age_in_years_gte'] = 50;
         }
         else {
             // With JQuery
             $("#age").slider("disable");
-            $("#age_min").text(0);
-            $("#age_max").text(999);
+            $("#age_val").text('');
             $("#age").slider('refresh');
-            delete search_params['eligibility.structured.min_age_in_years_gte'];
-            delete search_params['eligibility.structured.max_age_in_years_lte'];
+            delete search_params['eligibility.structured.min_age_in_years_lte'];
+            delete search_params['eligibility.structured.max_age_in_years_gte'];
         }
         datatable.search(JSON.stringify(search_params)).draw();
     });
@@ -598,23 +634,59 @@ Clinical Trial Excursions
         datatable.search(JSON.stringify(search_params)).draw();
     });
 
+    function update_location_search() {
+        var zip_code = $('#location').val();
+        if (zip_code.length == 5) {
+            $.getJSON('/get_zip_coords', {zip_code: zip_code}, function (coords) {
+                search_params['sites.org_coordinates_lat'] = coords.lat;
+                search_params['sites.org_coordinates_lon'] = coords.lon;
+                search_params['sites.org_coordinates_dist'] = $('#distance').val();
+                datatable.search(JSON.stringify(search_params)).draw();
+            });
+        } else {
+            delete search_params['sites.org_coordinates_lat'];
+            delete search_params['sites.org_coordinates_lon'];
+            delete search_params['sites.org_coordinates_dist'];
+            datatable.search(JSON.stringify(search_params)).draw();
+        }
+    }
+
+    $('#location').keyup( function () {
+        update_location_search()
+    });
+
+    $('#distance').on('change',  function () {
+        update_location_search()
+    });
+
     $('#terms').on('change', function () {
         recalculateAccordionPanel();
-        // TODO the deletes below will actually affect the disease and biomarker constraints
         search_params['arms.interventions.intervention_name'] = [];
+        $('#biomarkers').val(null).trigger("change");
         search_params['biomarkers.nci_thesaurus_concept_id'] = [];
+        $('#diseases').val(null).trigger("change");
         search_params['diseases.nci_thesaurus_concept_id'] = [];
+        search_params['sites.org_family'] = [];
         search_params['sites.org_name'] = [];
+        $('#fulltext').val('');
+        delete search_params['_fulltext'];
         var selected = $(this).val();
         if (selected) {
             for (i = 0; i < selected.length; i++) {
 
+                console.log('selected: ' + selected[i]);
+
                 var terms = selected[i].split(',');
                 var search_key = terms.shift();
-                console.log(search_key);
-                console.log(terms);
-
-                search_params[search_key] = search_params[search_key].concat(terms);
+                if ('_fulltext' === search_key) {
+                    console.log('search_key: "' + search_key + '"');
+                    search_params[search_key] = search_params[search_key] = terms[0];
+                } else if (search_key && terms) {
+                    search_params[search_key] = search_params[search_key].concat(terms);
+                } else {
+                    console.log('search_key: ' + search_key);
+                    console.log('terms: ' + terms);
+                }
             }
         }
         console.log(search_params); //TODO
@@ -707,6 +779,7 @@ Clinical Trial Excursions
         acc[i].onclick = function () {
             this.classList.toggle("active");
             var panel = this.nextElementSibling;
+            console.log(panel.querySelector(".formcontrol");
             if (panel.style.maxHeight) {
                 panel.style.maxHeight = null;
             } else {
