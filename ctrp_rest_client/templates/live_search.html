@@ -23,7 +23,7 @@ Clinical Trial Excursions
                 <div class="row form-group">
                     <div class="col-sm-12 input-group select2-bootstrap-prepend select2-bootstrap-prepend">
                         <select id="terms" class="form-control select2 select2-multiple wrap"
-                                data-placeholder="Disease, Biomarker, Site" multiple style="width: 100%;">
+                                data-placeholder="Type term" multiple style="width: 100%;">
                         </select>
                     </div>
                 </div>
@@ -779,7 +779,10 @@ Clinical Trial Excursions
         acc[i].onclick = function () {
             this.classList.toggle("active");
             var panel = this.nextElementSibling;
-            console.log(panel.querySelector(".formcontrol");
+            var input_field = panel.querySelector(".form-control");
+            if (input_field) {
+                input_field.focus();
+            }
             if (panel.style.maxHeight) {
                 panel.style.maxHeight = null;
             } else {

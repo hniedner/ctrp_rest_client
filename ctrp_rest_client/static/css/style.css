@@ -92,6 +92,14 @@ div.panel {
     transition: max-height 0.2s ease-out;
 }
 
+input {
+    margin-top: 10px;
+}
+
+.select2-selection {
+    margin-top: 5px;
+}
+
 .select2-selection__choice {
     word-wrap: break-word;
     text-overflow: inherit;
