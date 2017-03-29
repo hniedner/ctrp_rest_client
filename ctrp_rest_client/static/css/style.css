@@ -92,9 +92,9 @@ div.panel {
     transition: max-height 0.2s ease-out;
 }
 
-input {
-    margin-top: 10px;
-}
+/*input.select2-selection {*/
+/*margin-top: 10px;*/
+/*}*/
 
 .select2-selection {
     margin-top: 5px;

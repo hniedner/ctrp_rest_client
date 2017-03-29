@@ -270,13 +270,15 @@ function select(node, dom, datatable) {
     var code = get_code_for_id(node.id);
     var search_params = {};
 
-    if ('disease' === dom) {
-        search_params['diseases.nci_thesaurus_concept_id'] = [code];
-    } else if ('biomarker' === dom) {
-        search_params['biomarkers.nci_thesaurus_concept_id'] = [code];
-    }
-
-    datatable.search(JSON.stringify(search_params)).draw();
+    $.get('get_subtree_codes', {code: code}, function (codes) {
+        console.log(codes);
+        if ('disease' === dom) {
+            search_params['diseases.nci_thesaurus_concept_id'] = codes;
+        } else if ('biomarker' === dom) {
+            search_params['biomarkers.nci_thesaurus_concept_id'] = codes;
+        }
+        datatable.search(JSON.stringify(search_params)).draw();
+    });
 
 
 }
