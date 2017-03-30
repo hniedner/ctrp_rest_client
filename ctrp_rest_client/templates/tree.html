@@ -223,6 +223,8 @@ Clinical Trial Excursions
 
     }).on('click', '.jstree-anchor', function (e) {
         $('#jstree').jstree(true).toggle_node(e.target);
+        var node = $('#jstree').jstree(true).get_node(this);
+        select(node, dom, datatable)
     });
 
 </script>

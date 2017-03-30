@@ -266,6 +266,7 @@ function get_callback_url(dom) {
 }
 
 function select(node, dom, datatable) {
+    $("#records_total").text('');
     $("#records_total").prepend('<img style="width:2%;" src="static/img/spinner.gif"/>');
     var code = get_code_for_id(node.id);
     var search_params = {};
@@ -289,12 +290,6 @@ function get_jstree_context_menu(datatable) {
         "items": function ($node) {
             var tree = $("#jstree").jstree(true);
             return {
-                "Select": _build_jstree_context_menu_item(
-                    "Select",
-                    function select_term(obj) {
-                        select($node, dom, datatable);
-                    }
-                ),
                 "Remove": _build_jstree_context_menu_item(
                     "Remove concept",
                     function rm(obj) {
