@@ -61,9 +61,9 @@ function remove_term(term, list_id) {
 
 // execute ajax callback, loop through server response
 // execute process_entry function for each return object (name code).
-function _do_code_callback(code, dom, url, process_entry) {
+function _do_code_callback(dom, url, process_entry) {
 
-    $.get(url + code, function (data) {
+    $.get(url, function (data) {
         data.forEach(function (entry) {
             var code = entry.code;
             var name = entry.name.replace(/_/g, ' ');
@@ -75,25 +75,25 @@ function _do_code_callback(code, dom, url, process_entry) {
 // code is nci thesaurus concept id
 // dom is domain either biomarker or disease (or other in the future)
 function add_child_terms(code, dom) {
-    _do_code_callback(code, dom, 'get_child_codes?code=', add_term);
+    _do_code_callback(dom, 'get_child_codes?code=' + code + '&dom=' + dom, add_term);
 }
 
 // code is nci thesaurus concept id
 // dom is domain either biomarker or disease (or other in the future)
 function rm_child_terms(code, dom) {
-    _do_code_callback(code, dom, 'get_child_codes?code=', rm_term);
+    _do_code_callback(dom, 'get_child_codes?code=' + code + '&dom=' + dom, rm_term);
 }
 
 // code is nci thesaurus concept id
 // dom is domain either biomarker or disease (or other in the future)
 function add_parent_terms(code, dom) {
-    _do_code_callback(code, dom, 'get_parent_codes?code=', add_term);
+    _do_code_callback(dom, 'get_parent_codes?code=' + code + '&dom=' + dom, add_term);
 }
 
 // code is nci thesaurus concept id
 // dom is domain either biomarker or disease (or other in the future)
 function rm_parent_terms(code, dom) {
-    _do_code_callback(code, dom, 'get_parent_codes?code=', rm_term);
+    _do_code_callback(dom, 'get_parent_codes?code=' + code, rm_term);
 }
 
 // generates link for selected code and name
@@ -186,7 +186,7 @@ function add_jstree_node(parent, node, tree) {
 function add_children(parent, tree, node_ids_to_recurse) {
     parent.state.opened = true;
     parent.state.selected = true;
-    $.get('/get_child_codes?code=' + get_code_for_id(parent.id), function (data) {
+    $.get('/get_child_codes', {code: get_code_for_id(parent.id), dom: dom}, function (data) {
         data.forEach(function (item) {
             var node = build_jstree_node(item.code, item.name, parent.id);
             if (tree.get_node(node)) {
@@ -208,7 +208,8 @@ function add_children(parent, tree, node_ids_to_recurse) {
 
 function remove_children(parent, tree) {
     parent.state.opened = false;
-    tree.get_children_dom(parent).each(
+    var children = tree.get_children_dom(parent);
+    children.each(
         function (index, child) {
             tree.delete_node(child);
         }
@@ -271,9 +272,17 @@ function select(node, dom, datatable) {
     var code = get_code_for_id(node.id);
     var search_params = {};
 
+    if ('disease' === dom) {
+        search_params['diseases.nci_thesaurus_concept_id'] = code;
+    } else if ('biomarker' === dom) {
+        search_params['biomarkers.nci_thesaurus_concept_id'] = code;
+    }
+    datatable.search(JSON.stringify(search_params)).draw();
+}
 
-    $.get('get_subtree_codes', {code: code}, function (codes) {
-        console.log(codes);
+function select_subtree(node, dom, datatable) {
+    $.get('get_subtree_codes', {code: code, dom: dom}, function (codes) {
+        codes.push(code); // add in the parent concept that was selected
         if ('disease' === dom) {
             search_params['diseases.nci_thesaurus_concept_id'] = codes;
         } else if ('biomarker' === dom) {
@@ -281,8 +290,6 @@ function select(node, dom, datatable) {
         }
         datatable.search(JSON.stringify(search_params)).draw();
     });
-
-
 }
 
 function get_jstree_context_menu(datatable) {
@@ -309,31 +316,25 @@ function get_jstree_context_menu(datatable) {
                 "RemoveChildren": _build_jstree_context_menu_item(
                     "Remove child concepts",
                     function rm_ch(obj) {
-                        if ("root" === $node.id) {
-                            var children = tree.get_children_dom($node);
-                            children.each(
-                                function (index, child) {
-                                    console.log(child);
-                                    tree.delete_node(child);
-                                }
-                            );
-                        } else {
-                            remove_children($node, tree);
-                        }
+                        remove_children($node, tree);
                         datatable.search(JSON.stringify({})).draw();
                     }
                 ),
                 "AddParent": _build_jstree_context_menu_item(
                     "Add parent concepts",
                     function add_par(obj) {
-                        add_parents($node, tree);
+                        if ($node !== tree.get_node('root')) {
+                            add_parents($node, tree);
+                        }
                     }
                 ),
                 "RemoveParents": _build_jstree_context_menu_item(
                     "Remove parent concepts",
                     function rm_par(obj) {
-                        remove_parents($node, tree);
-                        datatable.search(JSON.stringify({})).draw();
+                        if ($node !== tree.get_node('root')) {
+                            remove_parents($node, tree);
+                            datatable.search(JSON.stringify({})).draw();
+                        }
                     }
                 )
             }

@@ -6,9 +6,9 @@ logger = logging.getLogger('terminology')
 
 
 # if code (concept id) is 'root' replace with NCIt root concept
-def check_for_root(code):
+def check_for_root(code, dom):
     if 'root' == code:
-        return 'C7057'
+        return get_root_concept(dom)['code']
     return code
 
 
@@ -154,7 +154,7 @@ def search_diseases_associated_with_anatomic_site(code):
           'AND (role = "Disease Has Associated Anatomic Site" ' \
           'OR role = "Disease Has Primary Anatomic Site" ' \
           'OR role = "Disease Has Metastatic Anatomic Site")'
-    results = get_code_name_list_result(sql, [check_for_root(code)])
+    results = get_code_name_list_result(sql, [check_for_root(code, 'anantomicsite')])
     return results
 
 
@@ -164,7 +164,7 @@ def search_diseases_associated_with_finding(code):
           'JOIN ncit ON rel.subject_code = ncit.code ' \
           'WHERE rel.object_code = ? ' \
           'AND role = "Disease Has Finding"'
-    return get_code_name_list_result(sql, [check_for_root(code)])
+    return get_code_name_list_result(sql, [check_for_root(code, 'finding')])
 
 
 def search_diseases_associated_with_gene(code):
@@ -175,7 +175,7 @@ def search_diseases_associated_with_gene(code):
         'AND (role = "Gene Associated With Disease" ' \
         'OR role = "Gene Involved In Pathogenesis Of Disease" ' \
         'OR role = "Gene Product Malfunction Associated With Disease")'
-    return get_code_name_list_result(sql, [check_for_root(code)])
+    return get_code_name_list_result(sql, [check_for_root(code, 'gene')])
 
 
 def search_diseases_is_stage(code):
@@ -184,7 +184,7 @@ def search_diseases_is_stage(code):
           'JOIN ncit ON rel.subject_code = ncit.code ' \
           'WHERE rel.object_code = ? ' \
           'AND role = "Disease Is Stage"'
-    return get_code_name_list_result(sql, [check_for_root(code)])
+    return get_code_name_list_result(sql, [check_for_root(code, 'disease')])
 
 
 def search_diseases_is_grade(code):
@@ -193,10 +193,10 @@ def search_diseases_is_grade(code):
           'JOIN ncit ON rel.subject_code = ncit.code ' \
           'WHERE rel.object_code = ? ' \
           'AND role = "Disease Is Grade"'
-    return get_code_name_list_result(sql, [check_for_root(code)])
+    return get_code_name_list_result(sql, [check_for_root(code, 'disease')])
 
 
-def get_subtree_codes(code):
+def get_subtree_codes(code, dom):
     sql = 'WITH RECURSIVE ' \
           'subtree(x) AS (VALUES(?) ' \
           'UNION ' \
@@ -209,7 +209,7 @@ def get_subtree_codes(code):
     results = []
     try:
         cursor = connection.cursor()
-        cursor.execute(sql, [check_for_root(code)])
+        cursor.execute(sql, [check_for_root(code, dom)])
         results = cursor.fetchall()
         cursor.close()
     except sqlite3.Error as e:
@@ -217,20 +217,22 @@ def get_subtree_codes(code):
     return results
 
 
-def get_child_codes(code):
-    ccode = check_for_root(code)
-    sql = 'select code, name from ncit where parent_codes like ? or parent_codes like ?'
+def get_child_codes(code, dom):
+    # biomarkers are not marked up as such in ncit so we return all flat
+    ccode = check_for_root(code, dom)
     # parent codes are in a pipe (|) delimited list
     # just matching on the first term we get spurious substring matches
     # such as C8461 matching C84615
+    sql = 'select code, name from ncit where parent_codes like ? or parent_codes like ?'
     querytokens = ['%' + ccode, '%' + ccode + '|%']
     results = get_code_name_list_result(sql, querytokens)
     return results
 
 
-def get_parent_codes(code):
+def get_parent_codes(code, dom):
+    ccode = check_for_root(code, dom)
     sql = 'select parent_codes from ncit where code = ?'
-    parent_codes = get_single_string_result(sql, [code])
+    parent_codes = get_single_string_result(sql, [ccode])
     results = []
     # parent codes are in a pipe (|) delimited list
     for parent_code in parent_codes.split('|'):
@@ -239,20 +241,14 @@ def get_parent_codes(code):
     return results
 
 
-def get_name_for_code(domain, code):
-    if domain == 'biomarkers':
-        table = 'biomarkers'
-    elif domain == 'diseases':
-        table = 'neoplasm_core'
-    else:
-        table = 'ncit'
-
-    sql = 'select name from ' + table + ' where code = ?'
-    name = get_single_string_result(sql, [code])
-
-    if name:
-        return name
-
-    sql = 'select name from ncit where code = ?'
-    name = get_single_string_result(sql, [code])
-    return name
+def get_root_concept(dom):
+    root_concepts = {
+        'disease': {'name': 'Neoplasm', 'code': 'C3262'},
+        'finding': {'name': 'Finding', 'code': 'C3367'},
+        'diagnostic': {'name': 'Diagnostic Procedure', 'code': 'C18020'},
+        'test': {'name': 'Laboratory Procedure', 'code': 'C25294'},
+        'procedure': {'name': 'Therapeutic Procedure', 'code': 'C3262'},
+        'anatomicsite': {'name': 'Anatomic Site', 'code': 'C13717'},
+        'drug': {'name': 'Pharmacologic Substance', 'code': 'C1909'}
+    }
+    return root_concepts[dom] if dom in root_concepts else {'name': 'Disease, Disorder or Finding', 'code': 'C7057'}

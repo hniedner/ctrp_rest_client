@@ -10,35 +10,33 @@ Clinical Trial Excursions
 <div class="container">
     <div id="content" class="jumbotron">
         <div class="row">
-            <div class="col-md-12">
-
-                <div class="form-group horizontal">
-                    <input id="disease_codes" name="disease_codes" type="hidden" value="">
-                    <input id="disease_names" name="disease_names" type="hidden" value="">
-                    <strong>Search for: &nbsp; </strong>
-                    <!--
-                    <select id="dom" class="form-control">
-                        <option></option>
-                    </select>
-                    -->
-                    <label class="radio-inline"><input checked="checked" type="radio" id="disease"
-                                                       name="dom">Disease</label>
-                    <label class="radio-inline"><input type="radio" id="finding" name="dom">Finding</label>
-                    <label class="radio-inline"><input type="radio" id="procedure" name="dom">Therapeutic
-                        Procedure</label>
-                    <label class="radio-inline"><input type="radio" id="diagnostic" name="dom">Diagnostic
-                        Procedure</label>
-                    <label class="radio-inline"><input type="radio" id="test" name="dom">Lab Test</label>
-                    <label class="radio-inline"><input type="radio" id="drug" name="dom">Drug</label>
-                    <label class="radio-inline"><input type="radio" id="biomarker" name="dom">Biomarker</label>
-                    <br/><br/>
-                    <input id="search_diseases" placeholder="Start typing a disease" class="form-control">
-                </div>
-
-                <div>
-                    <strong>Search for term within the tree: </strong>
-                    <input class="search-input form-control"/>
-                </div>
+            <div class="col-sm-12">
+                <form>
+                    <div class="form-group row">
+                        <label for="dom" class="col-sm-1 col-form-label">Search</label>
+                        <div class="col-sm-3 left">
+                            <select id="dom" class="form-control">
+                                <option id="disease" name="dom" value="disease" selected="selected">Disease</option>
+                                <option id="finding" name="dom" value="finding">Finding</option>
+                                <option id="procedure" name="dom" value="procedure">Therapeutic Procedure</option>
+                                <option id="diagnostic" name="dom" value="diagnostic">Diagnostic Procedure</option>
+                                <option id="test" name="dom" value="test">Lab Test</option>
+                                <option id="drug" name="drug" value="drug">Drug</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-4 left">
+                            <input id="search_diseases" placeholder="Start typing a disease" class="form-control">
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group row">
+                                <label for="search_tree" class="col-sm-4 right col-form-label">Filter tree:</label>
+                                <div class="col-sm-8">
+                                    <input id="search_tree" class="search-input form-control"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
                 <br/>
 
                 <div id="jstree"></div>
@@ -125,12 +123,23 @@ Clinical Trial Excursions
 <script type="text/javascript" src="{{ url_for('static', filename='js/search_utils.js') }}"></script>
 <script type="text/javascript">
 
-    var dom = 'disease';
+    var dom = 'disease'; // this should be the same as the initially selected dom
 
-    $('input[name="dom"]').change(function () {
-        $('#search_diseases').attr("placeholder", "Start typing a " + this.id);
+    $.getJSON('get_root_concept', {dom: dom}, function (root_concept) {
+        var tree = $('#jstree').jstree(true);
+        tree.settings.core.data = build_jstree_node(root_concept.code, root_concept.name, dom);
+        tree.refresh();
+    })
+
+    $('#dom').change(function () {
+        dom = this.value;
+        $('#search_diseases').attr("placeholder", "Start typing a " + dom);
         $('#search_diseases').focus();
-        dom = this.id;
+        var tree = $('#jstree').jstree(true);
+        $.getJSON('get_root_concept', {dom: dom}, function (root_concept) {
+            tree.settings.core.data = build_jstree_node(root_concept.code, root_concept.name, dom);
+            tree.refresh();
+        })
     });
 
     $('#search_diseases').typeahead({
@@ -146,7 +155,6 @@ Clinical Trial Excursions
             });
         },
         updater: function (item) {
-            var dom = $('input[name="dom"]').id;
             update_tree(map[item].code, item, dom);
         },
         items: 20
@@ -199,9 +207,7 @@ Clinical Trial Excursions
     $('#jstree').jstree({
         core: {
             'check_callback': true,
-            'data': [
-                build_jstree_node('root', 'NCI Thesaurus Tree', undefined)
-            ]
+            'data': []
         },
         search: {
             'case_insensitive': true,
@@ -216,15 +222,15 @@ Clinical Trial Excursions
         var tree = $.jstree.reference(this);
         var node = tree.get_node(this);
         if (tree.is_leaf(node)) {
-            add_children(node, tree);
+            add_children(node, tree, dom);
         } else {
             remove_children(node, tree);
         }
 
     }).on('click', '.jstree-anchor', function (e) {
-        $('#jstree').jstree(true).toggle_node(e.target);
         var node = $('#jstree').jstree(true).get_node(this);
-        select(node, dom, datatable)
+        select(node, dom, datatable);
+        $('#jstree').jstree(true).toggle_node(e.target);
     });
 
 </script>
