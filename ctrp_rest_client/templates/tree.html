@@ -129,7 +129,7 @@ Clinical Trial Excursions
         var tree = $('#jstree').jstree(true);
         tree.settings.core.data = build_jstree_node(root_concept.code, root_concept.name, dom);
         tree.refresh();
-    })
+    });
 
     $('#dom').change(function () {
         dom = this.value;
@@ -155,7 +155,7 @@ Clinical Trial Excursions
             });
         },
         updater: function (item) {
-            update_tree(map[item].code, item, dom);
+            update_tree(map[item].code, item);
         },
         items: 20
     });

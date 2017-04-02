@@ -131,11 +131,10 @@ function add_item_to_comma_delimited_list(field_name, item) {
 }
 
 
-function update_tree(code, item, dom) {
+function update_tree(code, item) {
     var tree = $('#jstree').jstree(true);
-    var root = tree.get_node('root');
-    var node = build_jstree_node(code, item, 'root');
-    add_jstree_node(root, node, tree);
+    tree.settings.core.data = build_jstree_node(code, item);
+    tree.refresh();
 }
 
 function get_code_for_id(node_id) {
