@@ -127,7 +127,6 @@ def process_datatable_callback():
     draw = request.values.get('draw', type=int)
     start = request.values.get('start', type=int)
     length = request.values.get('length', type=int)
-    # search = request.values.get('search', type=list)
     search_val = request.values.get('search[value]', type=str)
 
     if search_val:
@@ -135,7 +134,12 @@ def process_datatable_callback():
     else:
         search_params = api_client.add_included_fields({})
 
-    result = api_client.find_trials(search_params, start, length)
+    fetch_all = False
+    if -1 == length:
+        length = 50
+        fetch_all = True
+
+    result = api_client.find_trials(search_params, start, length, fetch_all)
     result['draw'] = draw
     result['recordsFiltered'] = result['recordsTotal'] if result['recordsTotal'] else 0
     # result['error'] = 'there was an error'

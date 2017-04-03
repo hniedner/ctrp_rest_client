@@ -126,7 +126,6 @@ function add_term(code, name, dom) {
 // add item to list if it doesn't already exist in the list
 // join it back together and replace the value
 function add_item_to_comma_delimited_list(field_name, item) {
-
     $(field_name).val($.grep([$(field_name).val(), item], Boolean).join(", "));
 }
 
@@ -267,6 +266,7 @@ function get_callback_url(dom) {
 }
 
 function select(node, dom, datatable) {
+    $("[name='results_length']").val(10);
     $("#records_total").text('');
     $("#records_total").prepend('<img style="width:2%;" src="static/img/spinner.gif"/>');
     var code = get_code_for_id(node.id);
@@ -299,7 +299,8 @@ function select(node, dom, datatable) {
     }
 }
 
-function select_subtree(node, dom, datatable) {
+function select_subtree(code, dom, datatable) {
+    var code = get_code_for_id(node.id);
     $.get('get_subtree_codes', {code: code, dom: dom}, function (codes) {
         codes.push(code); // add in the parent concept that was selected
         if ('disease' === dom) {

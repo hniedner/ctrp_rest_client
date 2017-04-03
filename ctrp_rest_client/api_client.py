@@ -41,9 +41,9 @@ def find_all_trials(search_params):
     return find_trials(search_params, 0, 0, True)
 
 
-def find_trials(search_params, start, length, all=False):
+def find_trials(search_params, start, length, fetch_all=False):
     search_params["from"] = start if start else 0
-    search_params["size"] = 50 if all or length > 50 else length
+    search_params["size"] = 50 if fetch_all or length > 50 else length
     total = -1
     data = []
     while start < total or total < 0:
@@ -53,7 +53,7 @@ def find_trials(search_params, start, length, all=False):
             data.extend(draw['trials'])
             total = draw['total']
             start += 50  # max number of retrieved record supported
-            if all is False:  # no aggregation needed/wanted
+            if fetch_all is False:  # no aggregation needed/wanted
                 break
         else: # no results or offline
             total = 0

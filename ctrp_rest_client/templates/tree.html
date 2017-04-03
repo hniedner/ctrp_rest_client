@@ -169,7 +169,8 @@ Clinical Trial Excursions
 
 
     var datatable = $('#results').DataTable({
-        dom: 'Brtip',
+        dom: 'lBrtip',
+        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         serverSide: true,
         ajax: {
             url: '/process_datatable_callback',
