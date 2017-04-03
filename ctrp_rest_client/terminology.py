@@ -59,7 +59,16 @@ def get_single_string_result(sql, querytokens=None):
 
 def search_anatomicsite_by_substring(query):
     sql = 'select code, name from ncit ' \
-          'where semantic_type = "Anatomical Structure"' \
+          'where semantic_type = "Body Part, Organ, or Organ Component" ' \
+          'and (name like ? or synonyms like ?)'
+    querytokens = ['%' + query + '%', '%' + query + '%']
+    results = get_code_name_list_result(sql, querytokens)
+    return results
+
+
+def search_tissue_by_substring(query):
+    sql = 'select code, name from ncit ' \
+          'where semantic_type = "Tissue" ' \
           'and (name like ? or synonyms like ?)'
     querytokens = ['%' + query + '%', '%' + query + '%']
     results = get_code_name_list_result(sql, querytokens)

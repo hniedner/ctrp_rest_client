@@ -40,6 +40,11 @@ def search_anatomicsite():
     return _process_route(['q'], terminology.search_anatomicsite_by_substring)
 
 
+@app.route('/search_tissues')
+def search_tissue():
+    return _process_route(['q'], terminology.search_tissue_by_substring)
+
+
 @app.route('/search_drugs')
 def search_drug():
     return _process_route('q', terminology.search_drug_by_substring)
@@ -65,7 +70,7 @@ def search_finding():
     return _process_route(['q'], terminology.search_finding_by_substring)
 
 
-@app.route('/search_diseases_associated_with_anatomic_site')
+@app.route('/search_diseases_associated_with_anatomicsite')
 def search_diseases_associated_with_anatomic_site():
     return _process_route(['code'], terminology.search_diseases_associated_with_anatomic_site)
 

@@ -133,7 +133,8 @@ function add_item_to_comma_delimited_list(field_name, item) {
 
 function update_tree(code, item) {
     var tree = $('#jstree').jstree(true);
-    tree.settings.core.data = build_jstree_node(code, item);
+    var node = build_jstree_node(code, item);
+    tree.settings.core.data = node;
     tree.refresh();
 }
 
@@ -147,7 +148,7 @@ function get_id_for_code(parent_code, code) {
 }
 
 function get_icon_for_code(code) {
-    return (code === 'root') ? 'glyphicon glyphicon-info-sign' : 'glyphicon glyphicon-check';
+    return (code === 'root') ? 'glyphicon glyphicon-info-sign' : 'glyphicon glyphicon-menu-right';
 }
 
 function build_jstree_node(code, name, parent_id) {
@@ -261,6 +262,10 @@ function get_callback_url(dom) {
         url = 'search_therapies?q=';
     } else if ('biomarker' === dom) {
         url = 'search_biomarkers?q=';
+    } else if ('anatomicsite' === dom) {
+        url = 'search_anatomicsites?q=';
+    } else if ('tissue' === dom) {
+        url = 'search_tissues?q=';
     }
     return url;
 }
@@ -273,10 +278,29 @@ function select(node, dom, datatable) {
 
     if ('disease' === dom) {
         search_params['diseases.nci_thesaurus_concept_id'] = code;
+        datatable.search(JSON.stringify(search_params)).draw();
     } else if ('biomarker' === dom) {
         search_params['biomarkers.nci_thesaurus_concept_id'] = code;
+        datatable.search(JSON.stringify(search_params)).draw();
+    } else if ('finding' === dom) {
+        $.getJSON('search_diseases_associated_with_finding', {code: code}, function(data) {
+            var codes = $.map(data, function(item) {return item.code;});
+            if (codes.length === 0) {
+                codes[0] = 'CCCCCC' // dummy code to force 0 trials found
+            }
+            search_params['diseases.nci_thesaurus_concept_id'] = codes;
+            datatable.search(JSON.stringify(search_params)).draw();
+        });
+    } else if ('anatomicsite' === dom) {
+        $.getJSON('search_diseases_associated_with_anatomicsite', {code: code}, function(data) {
+            var codes = $.map(data, function(item) {return item.code;});
+            if (codes.length === 0) {
+                codes[0] = 'CCCCCC' // dummy code to force 0 trials found
+            }
+            search_params['diseases.nci_thesaurus_concept_id'] = codes;
+            datatable.search(JSON.stringify(search_params)).draw();
+        });
     }
-    datatable.search(JSON.stringify(search_params)).draw();
 }
 
 function select_subtree(node, dom, datatable) {

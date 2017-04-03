@@ -16,12 +16,13 @@ Clinical Trial Excursions
                         <label for="dom" class="col-sm-1 col-form-label">Search</label>
                         <div class="col-sm-3 left">
                             <select id="dom" class="form-control">
-                                <option id="disease" name="dom" value="disease" selected="selected">Disease</option>
+                                <option id="disease" name="dom" value="disease" selected="selected">
+                                    Disease (Neoplasm)
+                                </option>
+                                <option id="anatomicsite" name="dom" value="anatomicsite">Anatomic
+                                    Site
+                                </option>
                                 <option id="finding" name="dom" value="finding">Finding</option>
-                                <option id="procedure" name="dom" value="procedure">Therapeutic Procedure</option>
-                                <option id="diagnostic" name="dom" value="diagnostic">Diagnostic Procedure</option>
-                                <option id="test" name="dom" value="test">Lab Test</option>
-                                <option id="drug" name="drug" value="drug">Drug</option>
                             </select>
                         </div>
                         <div class="col-sm-4 left">
@@ -145,13 +146,13 @@ Clinical Trial Excursions
     $('#search_diseases').typeahead({
         source: function (query, process) {
             return $.get(get_callback_url(dom) + query, function (data) {
-                var diseases = [];
+                var labels = [];
                 map = {};
                 $.each(data, function (i, row) {
                     map[row.name] = row;
-                    diseases.push(row.name);
+                    labels.push(row.name);
                 });
-                return process(diseases);
+                return process(labels);
             });
         },
         updater: function (item) {
