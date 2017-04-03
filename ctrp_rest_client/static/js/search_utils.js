@@ -147,10 +147,6 @@ function get_id_for_code(parent_code, code) {
     return parent_code ? parent_code + '*' + code : code;
 }
 
-function get_icon_for_code(code) {
-    return (code === 'root') ? 'glyphicon glyphicon-info-sign' : 'glyphicon glyphicon-menu-right';
-}
-
 function build_jstree_node(code, name, parent_id) {
     var id;
     if (parent_id) {
@@ -162,7 +158,7 @@ function build_jstree_node(code, name, parent_id) {
     var node = {
         'id': id,
         'text': name.replace(/_/g, ' '),
-        'icon': get_icon_for_code(code),
+        'icon': 'glyphicon glyphicon-unchecked',
         'state': {'opened': true, 'selected': false}
     };
     return node;

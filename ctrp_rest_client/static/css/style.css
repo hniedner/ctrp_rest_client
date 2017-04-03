@@ -176,3 +176,7 @@ fieldset, legend {
     margin: 10px;
     width: 90% !important;
 }
+
+.jstree-default .jstree-clicked {
+    background: #f8f8f8 !important;
+}
