@@ -157,8 +157,8 @@ function build_jstree_node(code, name, parent_id) {
     var node = {
         'id': id,
         'text': name.replace(/_/g, ' '),
-        'icon': 'glyphicon glyphicon-unchecked',
-        'state': {'opened': true, 'selected': false}
+        // 'icon': 'glyphicon glyphicon-unchecked',
+        'state': {'opened': false, 'selected': false}
     };
     return node;
 }
@@ -266,7 +266,9 @@ function get_callback_url(dom) {
 }
 
 function select(node, dom, datatable) {
-    $("[name='results_length']").val(10);
+    $("[name='results_length']").val(10); // reset the row number to 10
+    datatable.search(JSON.stringify({})).draw(); // reset the datatable to all trials
+    // reset the total record counter and display temporary spinner
     $("#records_total").text('');
     $("#records_total").prepend('<img style="width:2%;" src="static/img/spinner.gif"/>');
     var code = get_code_for_id(node.id);

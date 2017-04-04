@@ -207,31 +207,35 @@ Clinical Trial Excursions
     });
 
     $('#jstree').jstree({
+        plugins: ['contextmenu', 'dnd', 'search', 'sort', 'checkbox'],
         core: {
-            'check_callback': true,
-            'data': []
+            check_callback: true,
+            data: [],
+            themes: { "icons":false }
+        },
+        checkbox: {
+            three_state: false,
+            cascade: 'undetermined'
         },
         search: {
-            'case_insensitive': true,
-            'show_only_matches': true
+            case_insensitive: true,
+            show_only_matches: true
         },
-        plugins: ['contextmenu', 'dnd', 'search', 'sort'],
         contextmenu: get_jstree_context_menu(datatable)
 
     }).on('dblclick', '.jstree-anchor', function (e) {
 
     }).on('click', '.jstree-anchor', function (e) {
-        var tree = $.jstree.reference(this);
+        var tree = $('#jstree').jstree(true);
         var node = tree.get_node(this);
+        // only one node is used to filter the datatable
+        // so only a single node is decorated as selected node
+        tree.uncheck_all();
         if (tree.is_leaf(node)) {
-            var parent_id = tree.get_parent(node);
-            tree.set_icon(tree.get_node(parent_id), 'glyphicon glyphicon-unchecked');
-            tree.set_icon(node, 'glyphicon glyphicon-check');
             add_children(node, tree, dom);
             select(node, dom, datatable);
             tree.open_node(node);
         } else {
-            tree.set_icon(node, 'glyphicon glyphicon-unchecked')
             remove_children(node, tree);
             datatable.search(JSON.stringify({})).draw();
             tree.close_node(node);
