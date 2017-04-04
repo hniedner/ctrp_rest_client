@@ -207,8 +207,7 @@ Clinical Trial Excursions
         core: {
             check_callback: true,
             data: [],
-            themes: { "icons":false },
-            dblclick_toggle: false
+            themes: { "icons":false }
         },
         checkbox: {
             three_state: false,
@@ -222,27 +221,16 @@ Clinical Trial Excursions
         contextmenu: get_jstree_context_menu(datatable, dom)
 
     }).on('dblclick', '.jstree-anchor', function (e) {
+        var tree = $('#jstree').jstree(true);
+        var node = tree.get_node(this);
+        if (tree.is_leaf(node)) {
+            add_children(node, tree, dom);
+        } else {
+            remove_children(node, tree);
+        }
 
     }).on('click', '.jstree-anchor', function (e) {
         var tree = $('#jstree').jstree(true);
-        var node = tree.get_node(this);
-        var parent_id = tree.get_parent(node);
-        var parent = tree.get_node(parent_id);
-        if (parent && tree.is_checked(parent)) {
-            tree.uncheck_node(parent);
-        } else if (parent) {
-            tree.check_node(parent);
-        } else {
-            tree.check_node(node);
-        }
-
-        if (tree.is_leaf(node)) {
-            add_children(node, tree, dom);
-            tree.open_node(node);
-        } else {
-            remove_children(node, tree);
-            tree.close_node(node);
-        }
         search_selected_nodes(dom, datatable, tree.get_checked());
     });
 
