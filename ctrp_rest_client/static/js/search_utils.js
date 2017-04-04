@@ -339,6 +339,20 @@ function get_jstree_context_menu(datatable, dom) {
                         );
                         search_selected_nodes(dom, datatable,tree.get_checked());
                     }
+                ),
+
+                "Expand": _build_jstree_context_menu_item(
+                    "Expand Tree",
+                    function check_children(obj) {
+                        tree.open_all();
+                    }
+                ),
+
+                "Collapse": _build_jstree_context_menu_item(
+                    "Collapse Tree",
+                    function check_children(obj) {
+                        tree.close_all();
+                    }
                 )
             }
         }
