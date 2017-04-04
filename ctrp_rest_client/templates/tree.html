@@ -19,10 +19,6 @@ Clinical Trial Excursions
                                 <option id="disease" name="dom" value="disease" selected="selected">
                                     Disease (Neoplasm)
                                 </option>
-                                <option id="anatomicsite" name="dom" value="anatomicsite">Anatomic
-                                    Site
-                                </option>
-                                <option id="finding" name="dom" value="finding">Finding</option>
                             </select>
                         </div>
                         <div class="col-sm-4 left">
@@ -211,35 +207,43 @@ Clinical Trial Excursions
         core: {
             check_callback: true,
             data: [],
-            themes: { "icons":false }
+            themes: { "icons":false },
+            dblclick_toggle: false
         },
         checkbox: {
             three_state: false,
-            cascade: 'undetermined'
+            cascade: 'undetermined',
+            whole_node: false
         },
         search: {
             case_insensitive: true,
             show_only_matches: true
         },
-        contextmenu: get_jstree_context_menu(datatable)
+        contextmenu: get_jstree_context_menu(datatable, dom)
 
     }).on('dblclick', '.jstree-anchor', function (e) {
 
     }).on('click', '.jstree-anchor', function (e) {
         var tree = $('#jstree').jstree(true);
         var node = tree.get_node(this);
-        // only one node is used to filter the datatable
-        // so only a single node is decorated as selected node
-        tree.uncheck_all();
+        var parent_id = tree.get_parent(node);
+        var parent = tree.get_node(parent_id);
+        if (parent && tree.is_checked(parent)) {
+            tree.uncheck_node(parent);
+        } else if (parent) {
+            tree.check_node(parent);
+        } else {
+            tree.check_node(node);
+        }
+
         if (tree.is_leaf(node)) {
             add_children(node, tree, dom);
-            select(node, dom, datatable);
             tree.open_node(node);
         } else {
             remove_children(node, tree);
-            datatable.search(JSON.stringify({})).draw();
             tree.close_node(node);
         }
+        search_selected_nodes(dom, datatable, tree.get_checked());
     });
 
 </script>

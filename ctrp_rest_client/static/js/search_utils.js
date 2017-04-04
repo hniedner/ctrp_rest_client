@@ -265,39 +265,27 @@ function get_callback_url(dom) {
     return url;
 }
 
-function select(node, dom, datatable) {
+function search_selected_nodes(dom, datatable, node_ids) {
     $("[name='results_length']").val(10); // reset the row number to 10
     datatable.search(JSON.stringify({})).draw(); // reset the datatable to all trials
     // reset the total record counter and display temporary spinner
     $("#records_total").text('');
     $("#records_total").prepend('<img style="width:2%;" src="static/img/spinner.gif"/>');
-    var code = get_code_for_id(node.id);
+    var codes = [];
+    for (var i = 0; i < node_ids.length; i++) {
+        var code = get_code_for_id(node_ids[i]);
+        codes.push(code);
+    }
+    console.log(codes);
+
     var search_params = {};
 
     if ('disease' === dom) {
-        search_params['diseases.nci_thesaurus_concept_id'] = code;
+        search_params['diseases.nci_thesaurus_concept_id'] = codes;
         datatable.search(JSON.stringify(search_params)).draw();
     } else if ('biomarker' === dom) {
-        search_params['biomarkers.nci_thesaurus_concept_id'] = code;
+        search_params['biomarkers.nci_thesaurus_concept_id'] = codes;
         datatable.search(JSON.stringify(search_params)).draw();
-    } else if ('finding' === dom) {
-        $.getJSON('search_diseases_associated_with_finding', {code: code}, function(data) {
-            var codes = $.map(data, function(item) {return item.code;});
-            if (codes.length === 0) {
-                codes[0] = 'CCCCCC' // dummy code to force 0 trials found
-            }
-            search_params['diseases.nci_thesaurus_concept_id'] = codes;
-            datatable.search(JSON.stringify(search_params)).draw();
-        });
-    } else if ('anatomicsite' === dom) {
-        $.getJSON('search_diseases_associated_with_anatomicsite', {code: code}, function(data) {
-            var codes = $.map(data, function(item) {return item.code;});
-            if (codes.length === 0) {
-                codes[0] = 'CCCCCC' // dummy code to force 0 trials found
-            }
-            search_params['diseases.nci_thesaurus_concept_id'] = codes;
-            datatable.search(JSON.stringify(search_params)).draw();
-        });
     }
 }
 
@@ -314,49 +302,42 @@ function select_subtree(code, dom, datatable) {
     });
 }
 
-function get_jstree_context_menu(datatable) {
+function get_jstree_context_menu(datatable, dom) {
     return {
         "items": function ($node) {
             var tree = $("#jstree").jstree(true);
             return {
-                "Remove": _build_jstree_context_menu_item(
-                    "Remove concept",
-                    function rm(obj) {
-                        if ($node !== tree.get_node('root')) {
-                            tree.delete_node($node);
+                "SelectChildren": _build_jstree_context_menu_item(
+                    "Select Child Concepts",
+                    function check_children(obj) {
+                        tree.uncheck_node($node);
+                        if (tree.is_closed($node)) {
+                            tree.open_node($node);
                         }
-                        datatable.search(JSON.stringify({})).draw();
+                        var children = tree.get_children_dom($node);
+                        children.each(
+                            function (index, child) {
+                                tree.check_node(child);
+                            }
+                        );
+                        search_selected_nodes(dom, datatable,tree.get_checked());
                     }
                 ),
-                "AddChildren": _build_jstree_context_menu_item(
-                    "Add child concepts",
-                    function add_ch(obj) {
-                        add_children($node, tree);
-                        datatable.search(JSON.stringify({})).draw();
-                    }
-                ),
-                "RemoveChildren": _build_jstree_context_menu_item(
-                    "Remove child concepts",
-                    function rm_ch(obj) {
-                        remove_children($node, tree);
-                        datatable.search(JSON.stringify({})).draw();
-                    }
-                ),
-                "AddParent": _build_jstree_context_menu_item(
-                    "Add parent concepts",
-                    function add_par(obj) {
-                        if ($node !== tree.get_node('root')) {
-                            add_parents($node, tree);
+
+                "DeSelectChildren": _build_jstree_context_menu_item(
+                    "Deselect Child Concepts",
+                    function check_children(obj) {
+                        tree.check_node($node);
+                        if (tree.is_closed($node)) {
+                            tree.toggle($node);
                         }
-                    }
-                ),
-                "RemoveParents": _build_jstree_context_menu_item(
-                    "Remove parent concepts",
-                    function rm_par(obj) {
-                        if ($node !== tree.get_node('root')) {
-                            remove_parents($node, tree);
-                            datatable.search(JSON.stringify({})).draw();
-                        }
+                        var children = tree.get_children_dom($node);
+                        children.each(
+                            function (index, child) {
+                                tree.uncheck_node(child);
+                            }
+                        );
+                        search_selected_nodes(dom, datatable,tree.get_checked());
                     }
                 )
             }
