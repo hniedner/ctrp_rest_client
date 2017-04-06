@@ -7,11 +7,11 @@ information from the NCI Thesaurus. Plans are to switch this to use NCI EVS prov
 web services.
 ## Install Python 3
 ## Create virtual Python environment
-    python -m venv venv # creates virtual environment in directory venv in the current directory
+    python3 -m venv venv # creates virtual environment in directory venv in the current directory
 ## Activate your virtual environment
     source venv/bin/activate
 ## Install required python packages (modules)
-    pip install -r requirements.txt
+    pip3 install -r requirements.txt
 ## In order to use the sqlite3 module in python you either need to copy the sqllite3 module directory
 from your system python installation to your virtual environment's library directory or
 install the virtual environment to use the system libraries.
