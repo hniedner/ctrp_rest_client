@@ -16,8 +16,10 @@ Clinical Trial Excursions
             <div class="panel">
                 <div class="row form-group">
                     <div class="col-sm-12 input-group">
-                        Search for indexed Trial Sites, Diseases and Biomarkers.
-                        Clears Keyword, Disease and Biomarker fields!
+                        <label for="terms">
+                            Search for indexed Trial Sites, Diseases and Biomarkers.
+                            Clears Keyword, Disease and Biomarker fields!
+                        </label>
                     </div>
                 </div>
                 <div class="row form-group">
@@ -33,7 +35,8 @@ Clinical Trial Excursions
             <div class="panel">
                 <div class="row form-group">
                     <div class="col-sm-12 input-group select2-search">
-                        <input class="form-control select2-selection" id="fulltext" name="fulltext"
+                        <label for="fulltext"></label>
+                        <input id="fulltext" class="form-control select2-selection" name="fulltext"
                                placeholder="Keyword or phrase" type="text" style="width: 100%;">
                     </div>
                 </div>
@@ -43,6 +46,7 @@ Clinical Trial Excursions
             <div class="panel">
                 <div class="row form-group">
                     <div class="col-sm-12 input-group select2-bootstrap-prepend select2-bootstrap-prepend">
+                        <label for="diseases"></label>
                         <select id="diseases" class="form-control select2 select2-multiple wrap"
                                 data-placeholder="Type Disease" multiple style="width: 100%;">
                         </select>
@@ -54,57 +58,13 @@ Clinical Trial Excursions
             <div class="panel">
                 <div class="row form-group">
                     <div class="col-sm-12 input-group select2-bootstrap-prepend select2-bootstrap-prepend">
+                        <label for="biomarkers"></label>
                         <select id="biomarkers" class="form-control select2 select2-multiple wrap"
                                 data-placeholder="Type Biomarker" multiple style="width: 100%;">
                         </select>
                     </div>
                 </div>
             </div>
-            <!--
-            <button class="accordion">Anatomic Sites</button>
-            <div class="panel">
-                <div class="row form-group">
-                    <div class="col-sm-12 input-group select2-bootstrap-prepend select2-bootstrap-prepend">
-                        <select id="anatomicsites" class="form-control select2 select2-multiple wrap"
-                                data-placeholder="Type Anatomic Site" multiple style="width: 100%;">
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <button class="accordion">Drugs</button>
-            <div class="panel">
-                <div class="row form-group">
-                    <div class="col-sm-12 input-group select2-bootstrap-prepend select2-bootstrap-prepend">
-                        <select id="drugs" class="form-control select2 select2-multiple wrap"
-                                multiple style="width: 100%;">
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <button class="accordion">Findings</button>
-            <div class="panel">
-                <div class="row form-group">
-                    <div class="col-sm-12 input-group select2-bootstrap-prepend select2-bootstrap-prepend">
-                        <select id="findings" class="form-control select2 select2-multiple wrap"
-                                data-placeholder="Type Finding" multiple style="width: 100%;">
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <button class="accordion">Therapies</button>
-            <div class="panel">
-                <div class="row form-group">
-                    <div class="col-sm-12 input-group select2-bootstrap-prepend select2-bootstrap-prepend">
-                        <select id="therapies" class="form-control select2 select2-multiple wrap"
-                                data-placeholder="Type Therapy" multiple style="width: 100%;">
-                        </select>
-                    </div>
-                </div>
-            </div>
-            -->
 
             <button class="accordion">Structured Criteria</button>
             <div class="panel">
@@ -113,9 +73,10 @@ Clinical Trial Excursions
                     <div class="col-sm-12 input-group ">
                         <div class="row">
                             <div class="col-sm-9">
-                                Specify Age: <span id="age_val"/></span>
+                                <label for="age">Specify Age: <span id="age_val"></span></label>
                             </div>
                             <div class="col-sm-3">
+                                <label for="age-enabled"></label>
                                 <input id="age-enabled" type="checkbox"/>
                             </div>
                         </div>
@@ -202,19 +163,20 @@ Clinical Trial Excursions
                         <label for="location">ZIP Code:</label>
                     </div>
                     <div class="col-sm-6 right">
-                        <input id="location" class="form-control select2-selection" type="text" minlength="5" maxlength="5"/>
+                        <input id="location" class="form-control select2-selection" type="text" minlength="5"
+                               maxlength="5"/>
                     </div>
                 </div>
                 <div class="row form-group form-horizontal">
                     <div class="col-sm-6 left">
-                        <label for="location">Distance:</label>
+                        <label for="distance">Distance:</label>
                     </div>
                     <div class="col-sm-6 right">
-                        <select id="distance" class="form-control" type="select">
-                            <option label="10 miles" value="10mi" />
-                            <option label="25 miles" value="25mi" />
-                            <option label="50 miles" value="50mi" />
-                            <option label="100 miles" value="100mi" />
+                        <select id="distance" class="form-control">
+                            <option label="10 miles" value="10mi">10 miles</option>
+                            <option label="25 miles" value="25mi">25 miles</option>
+                            <option label="50 miles" value="50mi">50 miles</option>
+                            <option label="100 miles" value="100mi">100 miles</option>
                         </select>
                     </div>
                 </div>
@@ -317,7 +279,26 @@ Clinical Trial Excursions
 <script type="text/javascript" src="{{ url_for('static', filename='js/search_utils.js') }}"></script>
 
 
-<script>
+<script type="text/javascript">
+    'use strict';
+    var acc = document.getElementsByClassName("accordion");
+    var i;
+
+    for (i = 0; i < acc.length; i++) {
+        acc[i].onclick = function () {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            var input_field = panel.querySelector(".form-control");
+            if (input_field) {
+                input_field.focus();
+            }
+            if (panel.style.maxHeight) {
+                panel.style.maxHeight = null;
+            } else {
+                panel.style.maxHeight = panel.scrollHeight + "px";
+            }
+        }
+    }
 
     function openNav() {
         document.getElementById("left_sidenav").style.width = "250px";
@@ -332,9 +313,6 @@ Clinical Trial Excursions
         document.getElementById("open_nav").style.display = 'block';
         document.getElementById("close_nav").style.display = 'none';
     }
-</script>
-
-<script type="text/javascript">
 
 
     openNav(); // hides close button and opens search side nav
@@ -346,7 +324,13 @@ Clinical Trial Excursions
         })
     }
 
-    $("#terms").select2({
+    var terms_selector = $("#terms");
+    var fulltext_selector = $("#fulltext");
+    var diseases_selector = $("#diseases");
+    var biomarkers_selector = $("#biomarkers");
+    var age_selector = $("#age");
+
+    terms_selector.select2({
         ajax: {
             minimumInputLength: 2,
             cache: true,
@@ -390,10 +374,10 @@ Clinical Trial Excursions
                     })
                 };
             }
-        },
+        }
     });
 
-    $("#diseases").select2({
+    diseases_selector.select2({
         ajax: {
             minimumInputLength: 2,
             cache: true,
@@ -417,17 +401,17 @@ Clinical Trial Excursions
                     })
                 };
             }
-        },
+        }
     });
 
-    $("#biomarkers").select2({
+    biomarkers_selector.select2({
         ajax: {
             minimumInputLength: 2,
             cache: true,
             multiple: true,
             url: "search_biomarkers",
             contentType: "application/json",
-            dataType: 'json',
+            dataType: "json",
             delay: 250,
             data: function (params) {
                 return {
@@ -444,126 +428,18 @@ Clinical Trial Excursions
                     })
                 };
             }
-        },
-    });
-
-    $("#anatomicsites").select2({
-        ajax: {
-            minimumInputLength: 2,
-            cache: true,
-            multiple: true,
-            url: "search_anatomicsites",
-            contentType: "application/json",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    q: params.term || 'A'  // search term
-                };
-            },
-            processResults: function (data) {
-                return {
-                    results: $.map(data, function (term) {
-                        return {
-                            text: term.name,
-                            id: term.code
-                        }
-                    })
-                };
-            }
-        },
-    });
-
-    $("#drugs").select2({
-        ajax: {
-            minimumInputLength: 2,
-            cache: true,
-            multiple: true,
-            url: "search_drugs",
-            contentType: "application/json",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    q: params.term || '1'  // search term
-                };
-            },
-            processResults: function (data) {
-                return {
-                    results: $.map(data, function (term) {
-                        return {
-                            text: term.name,
-                            id: term.code
-                        }
-                    })
-                };
-            }
-        },
-    });
-
-    $("#therapies").select2({
-        ajax: {
-            minimumInputLength: 2,
-            cache: true,
-            multiple: true,
-            url: "search_therapies",
-            contentType: "application/json",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    q: params.term || 'A'  // search term
-                };
-            },
-            processResults: function (data) {
-                return {
-                    results: $.map(data, function (term) {
-                        return {
-                            text: term.name,
-                            id: term.code
-                        }
-                    })
-                };
-            }
-        },
-    });
-
-    $("#findings").select2({
-        ajax: {
-            minimumInputLength: 2,
-            cache: true,
-            multiple: true,
-            url: "search_findings",
-            contentType: "application/json",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    q: params.term || 'A'  // search term
-                };
-            },
-            processResults: function (data) {
-                return {
-                    results: $.map(data, function (term) {
-                        return {
-                            text: term.name,
-                            id: term.code
-                        }
-                    })
-                };
-            }
-        },
+        }
     });
 
 
-    $("#age").slider({
+    age_selector.slider({
         step: .25,
         min: 0,
         max: 120,
         value: 50
     });
 
-    $('#age').on('slideStop', function (slider) {
+    age_selector.on('slideStop', function (slider) {
         $('#age_val').text(slider.value);
         search_params['eligibility.structured.min_age_in_years_lte'] = slider.value;
         search_params['eligibility.structured.max_age_in_years_gte'] = slider.value;
@@ -581,9 +457,9 @@ Clinical Trial Excursions
         }
         else {
             // With JQuery
-            $("#age").slider("disable");
+            age_selector.slider("disable");
             $("#age_val").text('');
-            $("#age").slider('refresh');
+            age_selector.slider('refresh');
             delete search_params['eligibility.structured.min_age_in_years_lte'];
             delete search_params['eligibility.structured.max_age_in_years_gte'];
         }
@@ -606,13 +482,13 @@ Clinical Trial Excursions
             {data: "current_trial_status", name: "Status", orderable: false},
             {data: "official_title", name: "Official Title", orderable: false}
         ],
-        aoColumnDefs: [ {
-            "aTargets": [ 0 ],
+        aoColumnDefs: [{
+            "aTargets": [0],
             "mData": "download_link",
-            "mRender": function ( data, type, full ) {
-                return '<a href="/display_trial/'+data+'">'+data+'</a>';
+            "mRender": function (data, type, full) {
+                return '<a href="/display_trial/' + data + '">' + data + '</a>';
             }
-        } ],
+        }],
         buttons: [
             {
                 extend: 'copyHtml5'
@@ -629,14 +505,14 @@ Clinical Trial Excursions
 
     var search_params = {};
 
-    $('#fulltext').keyup(function () {
+    fulltext_selector.keyup(function () {
         search_params['_fulltext'] = $(this).val();
         datatable.search(JSON.stringify(search_params)).draw();
     });
 
     function update_location_search() {
         var zip_code = $('#location').val();
-        if (zip_code.length == 5) {
+        if (5 === zip_code.length) {
             $.getJSON('/get_zip_coords', {zip_code: zip_code}, function (coords) {
                 search_params['sites.org_coordinates_lat'] = coords.lat;
                 search_params['sites.org_coordinates_lon'] = coords.lon;
@@ -651,24 +527,24 @@ Clinical Trial Excursions
         }
     }
 
-    $('#location').keyup( function () {
+    $('#location').keyup(function () {
         update_location_search()
     });
 
-    $('#distance').on('change',  function () {
+    $('#distance').on('change', function () {
         update_location_search()
     });
 
-    $('#terms').on('change', function () {
+    terms_selector.on('change', function () {
         recalculateAccordionPanel();
         search_params['arms.interventions.intervention_name'] = [];
-        $('#biomarkers').val(null).trigger("change");
+        biomarkers_selector.val(null).trigger("change");
         search_params['biomarkers.nci_thesaurus_concept_id'] = [];
-        $('#diseases').val(null).trigger("change");
+        diseases_selector.val(null).trigger("change");
         search_params['diseases.nci_thesaurus_concept_id'] = [];
         search_params['sites.org_family'] = [];
         search_params['sites.org_name'] = [];
-        $('#fulltext').val('');
+        fulltext_selector.val('');
         delete search_params['_fulltext'];
         var selected = $(this).val();
         if (selected) {
@@ -689,24 +565,23 @@ Clinical Trial Excursions
                 }
             }
         }
-        console.log(search_params); //TODO
         datatable.search(JSON.stringify(search_params)).draw();
     });
 
-    $("#diseases").on('change', function () {
+    diseases_selector.on('change', function () {
         recalculateAccordionPanel();
         search_params['diseases.nci_thesaurus_concept_id'] = $(this).val();
         datatable.search(JSON.stringify(search_params)).draw();
     });
 
-    $("#biomarkers").on('change', function () {
+    biomarkers_selector.on('change', function () {
         recalculateAccordionPanel();
-        search_params['biomarkers.nci_thesaurus_concept_id'] = $(this).val();
+        search_params["biomarkers.nci_thesaurus_concept_id"] = $(this).val();
         datatable.search(JSON.stringify(search_params)).draw();
     });
 
     $("#gender").on('change', function () {
-        if ($(this).val() == 'Any') {
+        if ('Any' === $(this).val()) {
             delete search_params['eligibility.structured.gender'];
         } else {
             search_params['eligibility.structured.gender'] = $(this).val();
@@ -715,7 +590,7 @@ Clinical Trial Excursions
     });
 
     $("#accepts_healthy_volunteers_indicator").on('change', function () {
-        if ($(this).val() == 'NA') {
+        if ('NA' === $(this).val()) {
             delete search_params['accepts_healthy_volunteers_indicator'];
         } else {
             search_params['accepts_healthy_volunteers_indicator'] = $(this).val();
@@ -753,42 +628,5 @@ Clinical Trial Excursions
         datatable.search(JSON.stringify(search_params)).draw();
     });
 
-</script>
-<script>
-
-    function openNav() {
-        document.getElementById("left_sidenav").style.width = "250px";
-        document.getElementById("main").style.marginLeft = "250px";
-        document.getElementById("open_nav").style.display = 'none';
-        document.getElementById("close_nav").style.display = 'block';
-    }
-
-    function closeNav() {
-        document.getElementById("left_sidenav").style.width = "0";
-        document.getElementById("main").style.marginLeft = "0";
-        document.getElementById("open_nav").style.display = 'block';
-        document.getElementById("close_nav").style.display = 'none';
-    }
-</script>
-
-<script>
-    var acc = document.getElementsByClassName("accordion");
-    var i;
-
-    for (i = 0; i < acc.length; i++) {
-        acc[i].onclick = function () {
-            this.classList.toggle("active");
-            var panel = this.nextElementSibling;
-            var input_field = panel.querySelector(".form-control");
-            if (input_field) {
-                input_field.focus();
-            }
-            if (panel.style.maxHeight) {
-                panel.style.maxHeight = null;
-            } else {
-                panel.style.maxHeight = panel.scrollHeight + "px";
-            }
-        }
-    }
 </script>
 {% endblock %}
