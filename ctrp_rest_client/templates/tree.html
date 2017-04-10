@@ -123,6 +123,8 @@ Clinical Trial Excursions
 <script type="text/javascript" src="{{ url_for('static', filename='js/search_utils.js') }}"></script>
 <script type="text/javascript">
 
+    'use strict';
+
     var dom = 'disease'; // this should be the same as the initially selected dom
 
     $.getJSON('get_root_concept', {dom: dom}, function (root_concept) {
@@ -131,10 +133,12 @@ Clinical Trial Excursions
         tree.refresh();
     });
 
+    var search_diseases_selector = $('#search_diseases');
+
     $('#dom').change(function () {
         dom = this.value;
-        $('#search_diseases').attr("placeholder", "Start typing a " + dom);
-        $('#search_diseases').focus();
+        search_diseases_selector.attr("placeholder", "Start typing a " + dom);
+        search_diseases_selector.focus();
         var tree = $('#jstree').jstree(true);
         $.getJSON('get_root_concept', {dom: dom}, function (root_concept) {
             tree.settings.core.data = build_jstree_node(root_concept.code, root_concept.name, dom);
@@ -142,20 +146,20 @@ Clinical Trial Excursions
         })
     });
 
-    $('#search_diseases').typeahead({
+    var diseases_map = {};
+    search_diseases_selector.typeahead({
         source: function (query, process) {
             return $.get(get_callback_url(dom) + query, function (data) {
                 var labels = [];
-                map = {};
                 $.each(data, function (i, row) {
-                    map[row.name] = row;
+                    diseases_map[row.name] = row;
                     labels.push(row.name);
                 });
                 return process(labels);
             });
         },
         updater: function (item) {
-            update_tree(map[item].code, item);
+            update_tree(diseases_map[item].code, item);
         },
         items: 20
     });
