@@ -353,14 +353,14 @@ function get_jstree_context_menu(selector) {
                 "Expand": _build_jstree_context_menu_item(
                     "Expand Tree",
                     function check_children() {
-                        $(tree_selector).jstree(true).open_all();
+                        $(selector).jstree(true).open_all();
                     }
                 ),
 
                 "Collapse": _build_jstree_context_menu_item(
                     "Collapse Tree",
                     function check_children() {
-                        $(tree_selector).jstree(true).close_all();
+                        $(selector).jstree(true).close_all();
                     }
                 )
             }
@@ -368,8 +368,8 @@ function get_jstree_context_menu(selector) {
     }
 }
 
-function _toggle_children_checkboxes(tree_selector, node, check) {
-    var tree = $(tree_selector).jstree(true);
+function _toggle_children_checkboxes(selector, node, check) {
+    var tree = $(selector).jstree(true);
 
     // add children before trying to check them
     if (tree.is_leaf(node)) {

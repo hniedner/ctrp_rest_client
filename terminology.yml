@@ -1,0 +1,49 @@
+# sql strings for terminology
+sql:
+  search_anatomicsite_by_substring: SELECT code, name FROM ncit WHERE semantic_type = "Body Part, Organ, or Organ Component" AND (name like ? or synonyms like ?)
+  search_tissue_by_substring: SELECT code, name FROM ncit WHERE semantic_type = "Tissue" AND (name LIKE ? OR synonyms LIKE ?)'
+  search_finding_by_substring: SELECT code, name FROM ncit WHERE semantic_type = "Finding" AND (name LIKE ? or synonyms LIKE ?)'
+  search_cancertype_by_substring: SELECT code, name FROM ncit WHERE semantic_type = "Neoplastic Process" AND (name LIKE ? OR synonyms LIKE ?)
+  search_therapeutic_procedure_by_substring: SELECT code, name from ncit WHERE semantic_type = "Therapeutic or Preventive Procedure" AND (name LIKE ? OR synonyms LIKE ?)
+  search_diagnostic_procedure_by_substring: SELECT code, name FROM ncit WHERE semantic_type = "Diagnostic Procedure" WHERE (name Like ? OR synonyms LIKE ?)
+  search_laboratory_procedure_by_substring: SELECT code, name FROM ncit WHERE semantic_type = "Laboratory Procedure" AND (name like ? OR synonyms like ?)
+  search_drug_by_substring: SELECT code, name FROM ncit WHERE (semantic_type = "Pharmacologic Substance" OR semantic_type = "Pharmacologic Substance|Plant" OR semantic_type = "Pharmacologic Substance|Research Device" OR semantic_type = "Pharmacologic Substance|Steroid" OR semantic_type = "Pharmacologic Substance|Substance" OR semantic_type = "Pharmacologic Substance|Virus" OR semantic_type = "Pharmacologic Substance|Vitamin" OR semantic_type = "Organic Chemical|Pharmacologic Substance|Vitamin" OR semantic_type = "Organic Chemical|Pharmacologic Substance" OR semantic_type = "Nucleic Acid, Nucleoside, or Nucleotide|Pharmacologic Substance" OR semantic_type = "Inorganic Chemical|Pharmacologic Substance" OR semantic_type = "Immunologic Factor|Pharmacologic Substance" OR semantic_type = "Element, Ion, or Isotope|Pharmacologic Substance" OR semantic_type = "Clinical Drug" OR semantic_type = "Cell|Pharmacologic Substance" OR semantic_type = "Antibiotic|Pharmacologic Substance" OR semantic_type = "Amino Acid, Peptide, or Protein|Pharmacologic Substance" OR semantic_type = "Amino Acid, Peptide, or Protein|Immunologic Factor|Pharmacologic Substance") AND (name like ? OR synonyms like ?)
+  search_biomarker_by_substring: SELECT ncit.code, ncit.name FROM biomarkers JOIN ncit ON biomarkers.code = ncit.code WHERE (ncit.name LIKE ? OR ncit.synonyms LIKE ?)
+  search_diseases_associated_with_anatomic_site: SELECT DISTINCT rel.subject_code code, ncit.name name FROM ncit_relationships rel JOIN ncit ON rel.subject_code = ncit.code WHERE rel.object_code = ? AND (role = "Disease Has Associated Anatomic Site" OR role = "Disease Has Primary Anatomic Site" OR role = "Disease Has Metastatic Anatomic Site")
+  search_diseases_associated_with_finding: SELECT DISTINCT rel.subject_code code, ncit.name name FROM ncit_relationships rel JOIN ncit ON rel.subject_code = ncit.code WHERE rel.object_code = ? AND role = "Disease Has Finding"
+  search_diseases_associated_with_gene: SELECT rel.subject_code, ncit.name FROM ncit_relationships rel JOIN ncit ON ncit.code = rel.subject_code WHERE rel.object_code = ? AND (role = "Gene Associated With Disease" OR role = "Gene Involved In Pathogenesis Of Disease" OR role = "Gene Product Malfunction Associated With Disease")
+  search_diseases_is_stage: SELECT DISTINCT rel.subject_code code, ncit.name name FROM ncit_relationships rel JOIN ncit ON rel.subject_code = ncit.code WHERE rel.object_code = ? AND role = "Disease Is Stage"
+  search_diseases_is_grade: SELECT DISTINCT rel.subject_code code, ncit.name name FROM ncit_relationships rel JOIN ncit ON rel.subject_code = ncit.code WHERE rel.object_code = ? AND role = "Disease Is Grade"
+  get_subtree_codes: WITH RECURSIVE subtree(x) AS (VALUES(?) UNION SELECT ncit.code FROM ncit, subtree WHERE ncit.parent_codes LIKE "%" || subtree.x OR ncit.parent_codes LIKE "%" || subtree.x || "|") SELECT ncit.code FROM ncit WHERE ncit.code IN subtree
+  get_child_codes: SELECT code, name FROM ncit WHERE (parent_codes LIKE ? OR parent_codes LIKE ?)
+  get_parent_codes: SELECT parent_codes FROM ncit WHERE code = ?
+  get_parent_codes_sub: SELECT code, name FROM ncit WHERE code = ?
+
+
+root_concept:
+  disease:
+    name: Neoplasm
+    code: C3262
+  finding:
+    name: Finding
+    code: C3367
+  diagnostic:
+    name: Diagnostic Procedure
+    code: C18020
+  test:
+    name: Laboratory Procedure
+    code: C25294
+  procedure:
+    name: Therapeutic Procedure
+    code: C3262
+  anatomicsite:
+    name: Anatomic Site
+    code: C13717
+  drug:
+    name: Pharmacologic Substance
+    code: C1909
+
+
+  root_concept_default:
+    name: Disease, Disorder or Finding
+    code: C7057

@@ -1,7 +1,7 @@
 from flask import jsonify, request, json
 
+import terminology
 from ctrp_rest_client import app, api_client
-from ctrp_rest_client import terminology
 from gis_service import ZipCodeService
 
 
