@@ -112,7 +112,7 @@ def _call_api(search_params, url_ext='clinical-trials?'):
 
     try:
         log.debug('retrieving: ' + req_url)
-        resp = requests.post(req_url, json=search_params, timeout=0.999)  # wait 250 ms for response
+        resp = requests.post(req_url, json=search_params, timeout=3)  # wait 3 s for response
         log.info('Status Code: {}'.format(resp.status_code))
 
         if resp.status_code != 200:

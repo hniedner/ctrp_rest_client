@@ -206,53 +206,10 @@ Clinical Trial Excursions
     });
 
     datatable.on('draw.dt', function () {
-        $('#records_total').text(datatable.page.info()['recordsTotal']);
+        $("#records_total").text(datatable.page.info()['recordsTotal']);
     });
 
-    // timeout to avoid single click jstree event trigger on double click
-    var is_enabled = true;
-    function timer() {
-        is_enabled = false;
-        setTimeout(function () {
-            is_enabled = true;
-        }, 250);
-    }
-
-    $('#jstree').jstree({
-        plugins: ['contextmenu', 'dnd', 'search', 'sort', 'checkbox'],
-        core: {
-            check_callback: true,
-            data: [],
-            themes: {"icons": false}
-        },
-        checkbox: {
-            three_state: false,
-            cascade: 'undetermined',
-            whole_node: false
-        },
-        search: {
-            case_insensitive: true,
-            show_only_matches: true
-        },
-        contextmenu: get_jstree_context_menu(datatable, dom)
-
-    }).on('dblclick', '.jstree-anchor', function (e) {
-        var tree = $('#jstree').jstree(true);
-        var node = tree.get_node(this);
-        if (tree.is_leaf(node)) {
-            add_children(node, tree, dom);
-        } else {
-            remove_children(node, tree);
-        }
-
-    }).on('click', '.jstree-anchor', function (e) {
-        // avoid triggering the single click event on the doubleclick
-        if (is_enabled) {
-            var tree = $('#jstree').jstree(true);
-            search_selected_nodes(dom, datatable, tree.get_checked());
-            timer();
-        }
-    });
+    var jstree = build_jstree('#jstree');
 
 </script>
 

@@ -1,3 +1,5 @@
+"use strict";
+
 // add pound symbol for jquery element id addressing
 function tag_id(id_name) {
 
@@ -132,8 +134,7 @@ function add_item_to_comma_delimited_list(field_name, item) {
 
 function update_tree(code, item) {
     var tree = $('#jstree').jstree(true);
-    var node = build_jstree_node(code, item);
-    tree.settings.core.data = node;
+    tree.settings.core.data = build_jstree_node(code, item);
     tree.refresh();
 }
 
@@ -154,13 +155,11 @@ function build_jstree_node(code, name, parent_id) {
     } else {
         id = code;
     }
-    var node = {
+    return {
         'id': id,
         'text': name.replace(/_/g, ' '),
-        // 'icon': 'glyphicon glyphicon-unchecked',
         'state': {'opened': false, 'selected': false}
     };
-    return node;
 }
 
 function add_jstree_node(parent, node, tree) {
@@ -211,36 +210,6 @@ function remove_children(parent, tree) {
     );
 }
 
-function add_parents(child, tree) {
-    var current_parent_id = tree.get_parent(child);
-    var current_parent = tree.get_node(current_parent_id);
-    var grandparent = ('root' === current_parent_id) ? current_parent : tree.get_node(tree.get_parent(current_parent));
-    var child_code = get_code_for_id(child.id);
-    $.get('/get_parent_codes?code=' + child_code, function (data) {
-        data.forEach(function (item) {
-            var parent_code = item.code;
-            var parent = build_jstree_node(parent_code, item.name, grandparent.id);
-            if (tree.get_node(parent) === false) {
-                add_jstree_node(grandparent, parent, tree);
-                add_children(parent, tree, [get_id_for_code(parent_code, child_code)]);
-                // we dispose the child nodes
-                if ('root' === current_parent_id) {
-                    tree.delete_node(child);
-                }
-            }
-        });
-    });
-}
-
-function remove_parents(child, tree) {
-    var parent_id = tree.get_parent(child);
-    var parent = tree.get_node(parent_id);
-    if (parent && parent !== tree.get_node('root')) {
-        tree.delete_node(parent);
-    }
-}
-
-
 function get_callback_url(dom) {
     var url = '';
     if ('disease' === dom) {
@@ -269,8 +238,9 @@ function search_selected_nodes(dom, datatable, node_ids) {
     $("[name='results_length']").val(10); // reset the row number to 10
     datatable.search(JSON.stringify({})).draw(); // reset the datatable to all trials
     // reset the total record counter and display temporary spinner
-    $("#records_total").text('');
-    $("#records_total").prepend('<img style="width:2%;" src="static/img/spinner.gif"/>');
+    var records_total = $("#records_total");
+    records_total.text('');
+    records_total.prepend('<img style="width:2%;" src="static/img/spinner.gif"/>');
     var codes = [];
     for (var i = 0; i < node_ids.length; i++) {
         var code = get_code_for_id(node_ids[i]);
@@ -289,7 +259,7 @@ function search_selected_nodes(dom, datatable, node_ids) {
     }
 }
 
-function select_subtree(code, dom, datatable) {
+function select_subtree(node, dom, datatable) {
     var code = get_code_for_id(node.id);
     $.get('get_subtree_codes', {code: code, dom: dom}, function (codes) {
         codes.push(code); // add in the parent concept that was selected
@@ -302,63 +272,6 @@ function select_subtree(code, dom, datatable) {
     });
 }
 
-function get_jstree_context_menu(datatable, dom) {
-    return {
-        "items": function ($node) {
-            var tree = $("#jstree").jstree(true);
-            return {
-                "SelectChildren": _build_jstree_context_menu_item(
-                    "Select Child Concepts",
-                    function check_children(obj) {
-                        tree.uncheck_node($node);
-                        if (tree.is_closed($node)) {
-                            tree.open_node($node);
-                        }
-                        var children = tree.get_children_dom($node);
-                        children.each(
-                            function (index, child) {
-                                tree.check_node(child);
-                            }
-                        );
-                        search_selected_nodes(dom, datatable,tree.get_checked());
-                    }
-                ),
-
-                "DeSelectChildren": _build_jstree_context_menu_item(
-                    "Deselect Child Concepts",
-                    function check_children(obj) {
-                        tree.check_node($node);
-                        if (tree.is_closed($node)) {
-                            tree.toggle($node);
-                        }
-                        var children = tree.get_children_dom($node);
-                        children.each(
-                            function (index, child) {
-                                tree.uncheck_node(child);
-                            }
-                        );
-                        search_selected_nodes(dom, datatable,tree.get_checked());
-                    }
-                ),
-
-                "Expand": _build_jstree_context_menu_item(
-                    "Expand Tree",
-                    function check_children(obj) {
-                        tree.open_all();
-                    }
-                ),
-
-                "Collapse": _build_jstree_context_menu_item(
-                    "Collapse Tree",
-                    function check_children(obj) {
-                        tree.close_all();
-                    }
-                )
-            }
-        }
-    }
-}
-
 function _build_jstree_context_menu_item(label, action) {
     return {
         "separator_before": false,
@@ -367,4 +280,129 @@ function _build_jstree_context_menu_item(label, action) {
         "label": label,
         "action": action
     }
+}
+
+// timeout to avoid single click jstree event trigger on double click
+var is_enabled = true;
+function timer() {
+    is_enabled = false;
+    setTimeout(function () {
+        is_enabled = true;
+    }, 250); // 250 ms seems to be the sweet spot for me wrt double click speed
+}
+
+function _toggle_leafnode(selector, leafnode_id) {
+    var tree = $(selector).jstree(true);
+    var node = tree.get_node(leafnode_id);
+    if (tree.is_leaf(node)) {
+        add_children(node, tree, dom);
+    } else {
+        remove_children(node, tree);
+    }
+}
+
+function build_jstree(selector) {
+    return $(selector).jstree({
+        plugins: ['contextmenu', 'dnd', 'search', 'sort', 'checkbox'],
+        core: {
+            check_callback: true,
+            data: [],
+            themes: {"icons": false}
+        },
+        checkbox: {
+            three_state: false,
+            cascade: 'undetermined',
+            whole_node: false
+        },
+        search: {
+            case_insensitive: true,
+            show_only_matches: true
+        },
+        contextmenu: get_jstree_context_menu(selector)
+
+    }).on('dblclick', '.jstree-anchor', function () {
+        _toggle_leafnode(selector, this);
+
+    }).on('click', '.jstree-anchor', function () {
+        // avoid triggering the single click event on the doubleclick
+        if (is_enabled) {
+            search_selected_nodes(dom, datatable, $(selector).jstree(true).get_checked());
+            timer();
+        }
+    });
+}
+
+function get_jstree_context_menu(selector) {
+    return {
+        "items": function (node) {
+            return {
+                "SelectChildren": _build_jstree_context_menu_item(
+                    "Select Child Concepts",
+                    function check_children() {
+                        _toggle_children_checkboxes(selector, node, true);
+                    }
+                ),
+
+                "DeSelectChildren": _build_jstree_context_menu_item(
+                    "Deselect Child Concepts",
+                    function check_children() {
+                        _toggle_children_checkboxes(selector, node, false);
+                    }
+                ),
+
+                "Expand": _build_jstree_context_menu_item(
+                    "Expand Tree",
+                    function check_children() {
+                        $(tree_selector).jstree(true).open_all();
+                    }
+                ),
+
+                "Collapse": _build_jstree_context_menu_item(
+                    "Collapse Tree",
+                    function check_children() {
+                        $(tree_selector).jstree(true).close_all();
+                    }
+                )
+            }
+        }
+    }
+}
+
+function _toggle_children_checkboxes(tree_selector, node, check) {
+    var tree = $(tree_selector).jstree(true);
+
+    // add children before trying to check them
+    if (tree.is_leaf(node)) {
+        add_children(node, tree, dom);
+    }
+
+    setTimeout(function () {
+
+        // open the node and expose the children
+        if (tree.is_closed(node)) {
+            tree.open_node(node);
+        }
+
+        // if selecting the child nodes deselect parent
+        // if deselecting the child nodes select parent
+        if (check) {
+            tree.uncheck_node(node);
+        } else {
+            tree.check_node(node);
+        }
+
+        // enable the checkboxes for all children
+        var children = tree.get_children_dom(node);
+        // avoid asynchronous loop to make sure all nodes are checked before search commences
+        for(var i = 0; i < children.length; i++){
+            var child = children[i];
+            if (check) {
+                console.log(child);
+                tree.check_node(child); // using the children directly only selects first node
+            } else {
+                tree.uncheck_node(child);
+            }
+        }
+        search_selected_nodes(dom, datatable,tree.get_checked());
+    }, 500);
 }
