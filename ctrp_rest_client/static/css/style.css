@@ -10,7 +10,7 @@ body {
 
 #main {
     transition: margin-left .5s;
-    padding: 0px 20px 0px 5px;
+    padding: 0 20px 0 5px;
 }
 
 .sidenav {
@@ -23,10 +23,7 @@ body {
     background-color: #fff;
     overflow-x: hidden;
     transition: 0.5s;
-    padding-bottom: 0px;
-    padding-left: 5px;
-    padding-right: 5px;
-    padding-top: 65px;
+    padding: 65px 5px 0 5px;
 }
 
 .sidenav a {
@@ -82,8 +79,8 @@ button.accordion.active:after {
     content: "\2212";
 }
 
-div.panel {
-    margin: 5px 0px 0px 0px;
+.panel {
+    margin: 5px 0 0 0;
     padding: 0 18px;
     background-color: white;
     max-height: 0;
@@ -110,7 +107,7 @@ div.panel {
     width: 90% !important;
 }
 
-div.jumbotron {
+.jumbotron {
     background-color: #f8f8f8;
     border: solid;
     border-width: thin;
@@ -123,11 +120,11 @@ th {
     background-color: #c0c0c0;
 }
 
-th.sorting_asc {
+.sorting_asc {
     background-color: #9d9d9d;
 }
 
-th.sorting_desc {
+.sorting_desc {
     background-color: #9d9d9d;
 }
 
@@ -147,12 +144,12 @@ th.sorting_desc {
 }
 
 /* Search Filter Input Field for Datatable */
-input.form-control.input-sm {
+.form-control.input-sm {
     margin-left: 5px;
 }
 
 /* Datatable info number of rec shown */
-div#datatable_info.dataTables_info {
+.dataTables_info {
     padding-left: 5px;
     padding-top: 10px;
     padding-bottom: 10px;
