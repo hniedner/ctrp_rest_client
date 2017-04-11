@@ -210,28 +210,24 @@ function remove_children(parent, tree) {
     );
 }
 
+var urls = {
+    'disease': 'search_diseases?q=',
+    'finding': 'search_findings?q=',
+    'diagnostic': 'search_diagnostic_test?q=',
+    'test': 'search_lab_test?q=',
+    'drug': 'search_drugs?q=',
+    'procedure': 'search_therapies?q=',
+    'biomarker': 'search_biomarkers?q=',
+    'anatomicsite': 'search_anatomicsites?q=',
+    'tissue': 'search_tissues?q='
+}
+
 function get_callback_url(dom) {
-    var url = '';
-    if ('disease' === dom) {
-        url = 'search_diseases?q=';
-    } else if ('finding' === dom) {
-        url = 'search_findings?q=';
-    } else if ('diagnostic' === dom) {
-        url = 'search_diagnostic_test?q=';
-    } else if ('test' === dom) {
-        url = 'search_lab_test?q=';
-    } else if ('drug' === dom) {
-        url = 'search_drugs?q=';
-    } else if ('procedure' === dom) {
-        url = 'search_therapies?q=';
-    } else if ('biomarker' === dom) {
-        url = 'search_biomarkers?q=';
-    } else if ('anatomicsite' === dom) {
-        url = 'search_anatomicsites?q=';
-    } else if ('tissue' === dom) {
-        url = 'search_tissues?q=';
+    if (dom in urls) {
+        return urls[dom];
+    } else {
+        return '';
     }
-    return url;
 }
 
 function search_selected_nodes(dom, datatable, node_ids) {
