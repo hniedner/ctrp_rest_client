@@ -463,7 +463,8 @@ Clinical Trial Excursions
     });
 
     var datatable = $('#results').DataTable({
-        dom: 'Brtip',
+        dom: 'lBrtip',
+        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         serverSide: true,
         ajax: {
             url: '/process_datatable_callback',
@@ -481,7 +482,7 @@ Clinical Trial Excursions
         aoColumnDefs: [{
             "aTargets": [0],
             "mData": "download_link",
-            "mRender": function (data, type, full) {
+            "mRender": function (data) {
                 return '<a href="/display_trial/' + data + '">' + data + '</a>';
             }
         }],
