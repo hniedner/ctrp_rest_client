@@ -25,49 +25,9 @@ def get_root_concept():
     return _process_route(['dom'], terminology.get_root_concept)
 
 
-@app.route('/search_diseases')
-def search_disease():
-    return _process_route(['q'], terminology.search_cancertype_by_substring)
-
-
-@app.route('/search_biomarkers')
-def search_biomarker():
-    return _process_route(['q'], terminology.search_biomarker_by_substring)
-
-
-@app.route('/search_anatomicsites')
-def search_anatomicsite():
-    return _process_route(['q'], terminology.search_anatomicsite_by_substring)
-
-
-@app.route('/search_tissues')
-def search_tissue():
-    return _process_route(['q'], terminology.search_tissue_by_substring)
-
-
-@app.route('/search_drugs')
-def search_drug():
-    return _process_route('q', terminology.search_drug_by_substring)
-
-
-@app.route('/search_diagnostic_test')
-def search_diagnostic_test():
-    return _process_route(['q'], terminology.search_diagnostic_procedure_by_substring)
-
-
-@app.route('/search_lab_test')
-def search_lab_test():
-    return _process_route(['q'], terminology.search_laboratory_procedure_by_substring)
-
-
-@app.route('/search_therapies')
-def search_therapies():
-    return _process_route(['q'], terminology.search_therapeutic_procedure_by_substring)
-
-
-@app.route('/search_findings')
-def search_finding():
-    return _process_route(['q'], terminology.search_finding_by_substring)
+@app.route('/search_terminology')
+def search_domain_by_substring():
+    return _process_route(['dom', 'q'], terminology.search_domain_by_substring)
 
 
 @app.route('/search_diseases_associated_with_anatomicsite')

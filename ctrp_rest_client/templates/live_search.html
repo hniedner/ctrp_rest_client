@@ -378,12 +378,13 @@ Clinical Trial Excursions
             minimumInputLength: 2,
             cache: true,
             multiple: true,
-            url: "search_diseases",
+            url: "search_terminology",
             contentType: "application/json",
             dataType: 'json',
             delay: 250,
             data: function (params) {
                 return {
+                    dom: 'disease',
                     q: params.term || 'Neoplasm' // search term
                 };
             },
@@ -405,12 +406,13 @@ Clinical Trial Excursions
             minimumInputLength: 2,
             cache: true,
             multiple: true,
-            url: "search_biomarkers",
+            url: "search_terminology",
             contentType: "application/json",
             dataType: "json",
             delay: 250,
             data: function (params) {
                 return {
+                    dom: 'biomarker',
                     q: params.term || 'A' // search term
                 };
             },

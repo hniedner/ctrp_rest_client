@@ -149,7 +149,7 @@ Clinical Trial Excursions
     var diseases_map = {};
     search_diseases_selector.typeahead({
         source: function (query, process) {
-            return $.get(get_callback_url(dom) + query, function (data) {
+            return $.get('search_terminology', {dom: dom, q:query}, function (data) {
                 var labels = [];
                 $.each(data, function (i, row) {
                     diseases_map[row.name] = row;

@@ -16,11 +16,18 @@ def load_terminology_data():
     return data
 
 
-def get_sql(query_name):
+def get_dom_sql(dom):
     global data
     if len(data) == 0:
         load_terminology_data()
-    return data['sql'][query_name]
+    return data['dom_sql'][dom]
+
+
+def get_sql(query):
+    global data
+    if len(data) == 0:
+        load_terminology_data()
+    return data['sql'][query]
 
 
 def get_root_concept(dom):
@@ -85,49 +92,8 @@ def get_single_string_result(sql, querytokens=None):
     return result
 
 
-def search_anatomicsite_by_substring(query):
-    return get_code_name_list_result(get_sql('search_anatomicsite_by_substring'),
-                                     ['%' + query + '%', '%' + query + '%'])
-
-
-def search_tissue_by_substring(query):
-    return get_code_name_list_result(get_sql('search_tissue_by_substring'),
-                                     ['%' + query + '%', '%' + query + '%'])
-
-
-def search_finding_by_substring(query):
-    return get_code_name_list_result(get_sql('search_finding_by_substring'),
-                                     ['%' + query + '%', '%' + query + '%'])
-
-
-def search_cancertype_by_substring(query):
-    return get_code_name_list_result(get_sql('search_cancertype_by_substring'),
-                                     ['%' + query + '%', '%' + query + '%'])
-
-
-def search_therapeutic_procedure_by_substring(query):
-    return get_code_name_list_result(get_sql('search_therapeutic_procedure_by_substring'),
-                                     ['%' + query + '%', '%' + query + '%'])
-
-
-def search_diagnostic_procedure_by_substring(query):
-    return get_code_name_list_result(get_sql('search_diagnostic_procedure_by_substring'),
-                                     ['%' + query + '%', '%' + query + '%'])
-
-
-def search_laboratory_procedure_by_substring(query):
-    return get_code_name_list_result(get_sql('search_laboratory_procedure_by_substring'),
-                                     ['%' + query + '%', '%' + query + '%'])
-
-
-def search_drug_by_substring(query):
-    return get_code_name_list_result(get_sql('search_drug_by_substring'),
-                                     ['%' + query + '%', '%' + query + '%'])
-
-
-def search_biomarker_by_substring(query):
-    return get_code_name_list_result(get_sql('search_biomarker_by_substring'),
-                                     ['%' + query + '%', '%' + query + '%'])
+def search_domain_by_substring(dom, query):
+    return get_code_name_list_result(get_dom_sql(dom), ['%' + query + '%', '%' + query + '%'])
 
 
 def search_diseases_associated_with_anatomic_site(code):

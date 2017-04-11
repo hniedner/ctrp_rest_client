@@ -210,26 +210,6 @@ function remove_children(parent, tree) {
     );
 }
 
-var urls = {
-    'disease': 'search_diseases?q=',
-    'finding': 'search_findings?q=',
-    'diagnostic': 'search_diagnostic_test?q=',
-    'test': 'search_lab_test?q=',
-    'drug': 'search_drugs?q=',
-    'procedure': 'search_therapies?q=',
-    'biomarker': 'search_biomarkers?q=',
-    'anatomicsite': 'search_anatomicsites?q=',
-    'tissue': 'search_tissues?q='
-}
-
-function get_callback_url(dom) {
-    if (dom in urls) {
-        return urls[dom];
-    } else {
-        return '';
-    }
-}
-
 function search_selected_nodes(dom, datatable, node_ids) {
     $("[name='results_length']").val(10); // reset the row number to 10
     datatable.search(JSON.stringify({})).draw(); // reset the datatable to all trials
