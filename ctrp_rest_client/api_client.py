@@ -43,7 +43,7 @@ def find_all_trials(search_params):
 
 def find_trials(search_params, start, length, fetch_all=False):
     search_params["from"] = start if start else 0
-    search_params["size"] = 50 if fetch_all or length > 50 else length
+    search_params["size"] = _calculate_fetch_size(length, fetch_all)
 
     # shaping the dictionary to suit jquery datatables
     result = {
@@ -53,7 +53,7 @@ def find_trials(search_params, start, length, fetch_all=False):
 
     while start < result['recordsTotal'] or result['recordsTotal'] < 0:
         start = _fetch_results(start, search_params, result)
-        if fetch_all is False:  # no aggregation needed/wanted
+        if fetch_all is False: # no aggregation needed/wanted
             break
 
     # sanitize search_params
@@ -61,6 +61,10 @@ def find_trials(search_params, start, length, fetch_all=False):
     search_params.pop('size', None)
     search_params["returned"] = result['recordsTotal']
     return result
+
+
+def _calculate_fetch_size(length, fetch_all):
+    return 50 if fetch_all or length > 50 else length
 
 
 def _fetch_results(start, search_params, result):
