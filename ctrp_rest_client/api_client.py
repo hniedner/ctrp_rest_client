@@ -44,31 +44,35 @@ def find_all_trials(search_params):
 def find_trials(search_params, start, length, fetch_all=False):
     search_params["from"] = start if start else 0
     search_params["size"] = 50 if fetch_all or length > 50 else length
-    total = -1
-    data = []
-    while start < total or total < 0:
-        search_params['from'] = start
-        draw = _call_api(search_params, 'clinical-trials?')
-        if draw:
-            data.extend(draw['trials'])
-            total = draw['total']
-            start += 50  # max number of retrieved record supported
-            if fetch_all is False:  # no aggregation needed/wanted
-                break
-        else: # no results or offline
-            total = 0
 
     # shaping the dictionary to suit jquery datatables
     result = {
-        "recordsTotal": total,
-        "data": data
+        "recordsTotal": -1,
+        "data": []
     }
+
+    while start < result['recordsTotal'] or result['recordsTotal'] < 0:
+        start = _fetch_results(start, search_params, result)
+        if fetch_all is False:  # no aggregation needed/wanted
+            break
 
     # sanitize search_params
     search_params.pop('from', None)
     search_params.pop('size', None)
-    search_params["returned"] = total
+    search_params["returned"] = result['recordsTotal']
     return result
+
+
+def _fetch_results(start, search_params, result):
+    search_params['from'] = start
+    draw = _call_api(search_params, 'clinical-trials?')
+    if draw:
+        result['data'].extend(draw['trials'])
+        result['recordsTotal'] = draw['total']
+        start += 50  # max number of retrieved record supported
+    else:
+        result['recordsTotal'] = 0
+    return start
 
 
 # return the total number of trials found matching
@@ -112,7 +116,7 @@ def _call_api(search_params, url_ext='clinical-trials?'):
 
     try:
         log.debug('retrieving: ' + req_url)
-        resp = requests.post(req_url, json=search_params, timeout=3)  # wait 3 s for response
+        resp = requests.post(req_url, json=search_params, timeout=3)  # wait 3s for response
         log.info('Status Code: {}'.format(resp.status_code))
 
         if resp.status_code != 200:
