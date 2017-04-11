@@ -89,10 +89,6 @@ button.accordion.active:after {
     transition: max-height 0.2s ease-out;
 }
 
-/*input.select2-selection {*/
-/*margin-top: 10px;*/
-/*}*/
-
 .select2-selection {
     margin-top: 5px;
 }
@@ -104,7 +100,7 @@ button.accordion.active:after {
 }
 
 .select2-search__field {
-    width: 90% !important;
+    width: 90%;
 }
 
 .jumbotron {
@@ -171,9 +167,9 @@ fieldset, legend {
 
 .slider {
     margin: 10px;
-    width: 90% !important;
+    width: 90%;
 }
 
 .jstree-default .jstree-clicked {
-    background: #f8f8f8 !important;
+    background: #f8f8f8;
 }
