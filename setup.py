@@ -8,5 +8,9 @@ setup(
         'flask',
         'Flask-Bootstrap',
         'Flask-WTF',
+        'Flask-Bower',
+        'Flask-WTF',
+        'requests',
+        'ruamel.yaml',
     ],
 )
